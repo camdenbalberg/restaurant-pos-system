@@ -1,0 +1,21 @@
+default: &default
+  database: csce331_12
+  adapter: postgresql
+  encoding: unicode
+  username: csce331_12
+  password: <%= ENV['DATABASE_PASSWORD'] %> # Use an environment variable for security
+  host: csce-315-db.engr.tamu.edu
+  port: 5432
+  pool: 5
+
+development:
+  <<: *default
+  database: csce331_12
+
+test:
+  <<: *default
+  database: csce331_12
+
+production:
+  <<: *default
+  database: csce331_12
