@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./panda-web-app-backend
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./.env
+
+  frontend:
+    build:
+      context: ./panda-web-app-frontend
+    ports:
+      - '5173:5173'
+    env_file:
+      - ./.env

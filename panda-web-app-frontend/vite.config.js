@@ -10,4 +10,8 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'), // Allows using '@' to refer to 'src'
     },
   },
+  server: {
+    port: 5173,
+    host: true,
+  },
 });

@@ -30,7 +30,7 @@ export default {
   methods: {
     async fetchMenuItems() {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/menu_items');
+        const response = await axios.get('${import.meta.env.VITE_API_BACKEND_URL}/v1/menu_items');
         this.menuItems = response.data;
       } catch (error) {
         console.error('Error fetching menu items:', error);

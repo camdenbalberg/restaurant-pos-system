@@ -27,11 +27,11 @@ module PandaWebAppBackend
     # rack-cors configuration
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'http://localhost:5173' # Address of Vue.js + Vite app that is connected to
-        
-        resource '*', 
-          headers: :any, 
-          methods: [:get, :post, :put, :patch, :delete, :options, :head]
+        origins "http://localhost:5173", "http://frontend:5173" # Address of Vue.js + Vite app that is connected to
+
+        resource "*",
+          headers: :any,
+          methods: [ :get, :post, :put, :patch, :delete, :options, :head ]
       end
     end
   end
