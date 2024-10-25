@@ -1,18 +1,15 @@
+<!-- src/App.vue -->
 <template>
   <div id="app">
-    <MenuItems />
+    <h1>My Vite + Vue App</h1>
+    <router-view />
   </div>
 </template>
 
 <script>
-import MenuItems from './components/MenuItems.vue'
-
 export default {
   name: 'App',
-  components: {
-    MenuItems,
-  }
-}
+};
 </script>
 
 <style>
@@ -25,3 +22,4 @@ export default {
   margin-top: 60px;
 }
 </style>
+
