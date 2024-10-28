@@ -48,6 +48,7 @@ Alternatively, let Docker Desktop find the container and images and run there.
 ~~To connect to database: http://localhost:3000/~~
 
 ~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
+
 Now that Nginx has been added and being used as a reverse proxy:
 `http://localhost` or simply `localhost`
 
@@ -154,6 +155,7 @@ Alternatively, let Docker Desktop find the container and images and run there.
 ~~To connect to database: http://localhost:3000/~~
 
 ~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
+
 Now that Nginx has been added and being used as a reverse proxy:
 `http://localhost` or simply `localhost`
 
