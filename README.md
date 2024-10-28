@@ -5,6 +5,15 @@
 This is a very serious project regarding sugar chicken.
 
 # QUICKSTART
+This product utilizes the following tech-stack:
+  - Front-end: Vue.js + Vite build tool, Tailwind CSS
+  - Back-end: Ruby on RAILS
+  - Web-Server: Nginx
+  - Database: PostgreSQL (hosted on AWS)
+  - Deployment & Infrastructure: Docker
+  - And Several APIs: Google OAuth2, Google Translate, OpenWeather
+
+
 Before anything download the .env file in the team google drive and include it inside the cloned repository
 
 - [Windows users](#WINDOWS)
@@ -35,10 +44,16 @@ To start up the containers and launch both the front and backend:
 
 Alternatively, let Docker Desktop find the container and images and run there.
 
-### Connecting to Apps
-To connect to database: http://localhost:3000/
+### Connecting to App
+~~To connect to database: http://localhost:3000/~~
 
-To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal
+~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
+
+Now that Nginx has been added and being used as a reverse proxy, in your browser:
+`http://localhost` or simply `localhost`
+
+And to connect to specific rails controllers (backend API):
+`http://localhost/api/v1/menu_items`
 
 ### Running the backend
 If you choose not to use Docker to run individually, do the following before doing any of the steps below:
@@ -136,9 +151,16 @@ To start up the containers and launch both the front and backend:
 
 Alternatively, let Docker Desktop find the container and images and run there.
 
-To connect to database: http://localhost:3000/
+### Connecting to App
+~~To connect to database: http://localhost:3000/~~
 
-To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal
+~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
+
+Now that Nginx has been added and being used as a reverse proxy, in your browser:
+`http://localhost` or simply `localhost`
+
+And to connect to specific rails controllers (backend API):
+`http://localhost/api/v1/menu_items`
 
 ### Running the backend
 If you choose not to use Docker to run individually, do the following before doing any of the steps below:

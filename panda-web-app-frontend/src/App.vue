@@ -1,7 +1,7 @@
 <!-- src/App.vue -->
 <template>
   <div id="app">
-    <h1>My Vite + Vue App</h1>
+    <h1>Menu Items</h1>
     <router-view />
   </div>
 </template>
