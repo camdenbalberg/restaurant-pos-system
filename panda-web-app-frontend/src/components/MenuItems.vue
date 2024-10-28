@@ -30,8 +30,9 @@ export default {
   methods: {
     async fetchMenuItems() {
       try {
+        // Example usage of env var
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/v1/menu_items`);
+        const response = await axios.get('/api/v1/menu_items');
         this.menuItems = response.data;
       } catch (error) {
         console.error('Error fetching menu items:', error);
