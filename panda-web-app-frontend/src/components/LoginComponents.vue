@@ -1,15 +1,18 @@
 <template>
-  <div class="menu-items">
-    <h1>Menu Items</h1>
-    <div v-if="loading">Loading...</div>
-    <ul v-if="!loading && menuItems.length">
-      <li v-for="item in menuItems" :key="item.menu_id" class="menu-item">
-        <h2>{{ item.menu_name }}</h2>
-        <p>Price: ${{ item.price }}</p>
-        <p>Category: {{ item.category }}</p>
-      </li>
-    </ul>
-    <div v-if="!loading && !menuItems.length">No menu items available.</div>
+  <div class="login-screen">
+    <h1>Login Screen</h1>
+
+    <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
+
+    <div class="login-text-fields">
+      <label for="username">Username:</label>
+      <input type="text" id="login-username" v-model="username">
+      <br />
+      <label for="password">Password:</label>
+      <input type="password" id="login-password" v-model="password">
+      <button @click="submitForm">Submit</button>
+    </div>
+
   </div>
 </template>
 
@@ -17,54 +20,23 @@
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      menuItems: [],
-      loading: true,
-    };
-  },
-  mounted() {
-    this.fetchMenuItems();
-  },
-  name: 'MenuItems',
-  methods: {
-    async fetchMenuItems() {
-      try {
-        // Example usage of env var
-        console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response = await axios.get('/api/v1/menu_items');
-        this.menuItems = response.data;
-      } catch (error) {
-        console.error('Error fetching menu items:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
+  // data() {
+  //   return {
+  //     menuItems: [],
+  //     loading: false,
+  //   };
+  // },
+  // mounted() {
+  //   this.fetchMenuItems();
+  // },
+  // name: '',
+  // methods: {
+
+  // },
 };
 </script>
 
 <style scoped>
-.menu-items {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-}
 
-.menu-item {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 15px;
-  margin: 10px 0;
-  background-color: #f9f9f9;
-}
-
-.menu-item h2 {
-  margin: 0;
-}
-
-.menu-item p {
-  margin: 5px 0;
-}
 </style>
 
