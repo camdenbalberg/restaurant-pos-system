@@ -49,7 +49,7 @@ Alternatively, let Docker Desktop find the container and images and run there.
 
 ~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
 
-Now that Nginx has been added and being used as a reverse proxy:
+Now that Nginx has been added and being used as a reverse proxy, in your browser:
 `http://localhost` or simply `localhost`
 
 And to connect to specific rails controllers (backend API):
@@ -156,7 +156,7 @@ Alternatively, let Docker Desktop find the container and images and run there.
 
 ~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
 
-Now that Nginx has been added and being used as a reverse proxy:
+Now that Nginx has been added and being used as a reverse proxy, in your browser:
 `http://localhost` or simply `localhost`
 
 And to connect to specific rails controllers (backend API):
