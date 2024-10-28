@@ -50,9 +50,10 @@ th, td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  color: white;
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: black;
 }
 </style>
