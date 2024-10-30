@@ -6,8 +6,13 @@
         <div class="order-list">
             <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
                 <h2>Order Number: #{{ item.transaction_id }}</h2>
-                <p>Time: {{ formatTime(item.transaction_time) }}</p>
-                <p>Contents: (Date until I fix it) {{ item.transaction_date }}</p>
+                <p>Time: {{ item.formatted_transaction_time }}</p>
+                <p>Contents:</p>
+                    <ul>
+                    <li v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
+                        {{ saleItem.menu_id }} * {{ saleItem.quantity }} Cost: $ {{ saleItem.price }}
+                    </li>
+                    </ul>
             </div>
         </div>
       <div v-if="!loading && !transactions.length">No transactions available.</div>
@@ -31,28 +36,25 @@ export default {
   methods: {
     async fetchTransactions() {
       try {
-        // Current date is cast in YYYY-MM-DD format
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0]; 
-
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        // const response = await axios.get(`/api/v1/transactions/by_date/2024-09-24`);
-        
+        // Current date is cast in YYYY-MM-DD format
+        // const today = new Date();
+        // const formattedDate = today.toISOString().split('T')[0]; 
+        // const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
+        const response = await axios.get(`/api/v1/transactions/by_date/2023-09-23`); //temporary hardcoded value for testing
         this.transactions = response.data;
+
+        // Fetch sale items for each transaction
+        await Promise.all(this.transactions.map(async (transaction) => {
+          const saleItemsResponse = await axios.get(`/api/v1/sale_items/by_transaction_id/${transaction.transaction_id}`);
+          transaction.sale_items = saleItemsResponse.data;
+        }));
+
       } catch (error) {
         console.error('Error fetching transactions:', error);
       } finally {
         this.loading = false;
       }
-    },
-    formatTime(isoTime) {
-      const date = new Date(isoTime);
-      return new Intl.DateTimeFormat('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }).format(date);
     },
   },
 };
