@@ -1,7 +1,5 @@
 <template>
   <div class="login-screen">
-    <h1>Login Screen</h1>
-
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
 
     <div class="login-text-fields">
