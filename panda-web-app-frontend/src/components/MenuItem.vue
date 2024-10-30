@@ -5,8 +5,8 @@
     <ul v-if="!loading && filteredMenuItems.length" class="category">
       <li v-for="item in filteredMenuItems" :key="item.menu_id" class="menu-item">
         <picture>
-          <source :srcset="`../assets/menu/${item.menu_name}.avif`" type="image/avif">
-          <img :src="`../assets/menu/${item.menu_name}.avif`" :alt="item.menu_name">
+          <source :srcset="`../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
+          <img :src="`../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
         </picture>
         <h2>{{ item.menu_name }}</h2>
         <p>Price: ${{ item.price }}</p>
@@ -59,13 +59,19 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .menu-items {
   padding: 20px;
+  max-width: 600px;
+  margin: auto;
 }
 
 .menu-item {
-  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
 }
 
 .category{
