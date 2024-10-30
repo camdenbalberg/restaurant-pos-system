@@ -31,9 +31,14 @@ export default {
   methods: {
     async fetchTransactions() {
       try {
-        // Example usage of env var
+        // Current date is cast in YYYY-MM-DD format
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0]; 
+
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response = await axios.get('/api/v1/transactions/by_date/2023-09-24');
+        const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
+        // const response = await axios.get(`/api/v1/transactions/by_date/2024-09-24`);
+        
         this.transactions = response.data;
       } catch (error) {
         console.error('Error fetching transactions:', error);

@@ -1,12 +1,8 @@
 <!-- src/views/AboutView.vue -->
 <template>
   <div>
-    <h1>Order List</h1>
+    <Transactions />
     <router-link to="/">Go to Home</router-link>
-
-    <!-- <div class="order-list"> -->
-      <Transactions />
-    <!-- </div> -->
   </div>
 </template>
 
