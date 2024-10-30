@@ -12,6 +12,6 @@ class Transaction < ApplicationRecord
 
   # Custom method for formatted time with seconds
   def formatted_transaction_time
-    transaction_time.strftime("%H:%M:%S")  # Formats as 'HH:MM:SS' in 24-hour format
+    transaction_time.strftime("%H:%M")  # Formats as 'HH:MM' in 24-hour format
   end
 end
