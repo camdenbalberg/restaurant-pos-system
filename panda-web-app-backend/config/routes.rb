@@ -2,7 +2,46 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   namespace :api do
     namespace :v1 do
-      resources :menu_items, only: [:index, :show]
+      resources :menu_items, only: [ :index, :show ]
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :employees, only: [ :index, :show ]
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :inventory_items, only: [ :index, :show ]
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :transactions, only: [ :index, :show ] do
+        collection do
+          get "by_date/:date", to: "transactions#by_date"
+          get "by_employee/:employee", to: "transactions#by_employee"
+        end
+      end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :recipes, only: [ :index, :show ]
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :sale_items, only: [ :index, :show ] do
+        collection do 
+          get "by_transaction_id/:id", to: "sale_items#by_transaction_id"
+        end
+      end
     end
   end
 
