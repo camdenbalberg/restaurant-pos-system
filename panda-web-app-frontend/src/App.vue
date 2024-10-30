@@ -22,6 +22,10 @@ export default {
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
     --subTextColor: #5c5f77;
+
+    background: url("./assets/bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   #app {
@@ -30,11 +34,13 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
-    background: url("./assets/bg.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+
   }
+
   input {
     background-color: var(--surfaceColor);
     margin-top: 15px;
