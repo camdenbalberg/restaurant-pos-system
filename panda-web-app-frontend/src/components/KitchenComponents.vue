@@ -2,15 +2,15 @@
     <div class="kitchen-display">
         <h1>Order List</h1>
         <div v-if="loading">Loading...</div>
-        <ul v-if="!loading && menuItems.length"></ul>
+        <ul v-if="!loading && transactions.length"></ul>
         <div class="order-list">
-            <li v-for="item in menuItems" :key="item.menu_id" class="order-box">
-                <h2>{{ item.menu_name }}</h2>
-                <p>Order Number: ${{ item.price }}</p>
-                <p>Contents: {{ item.category }}</p>
-            </li>
+            <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
+                <h2>Order Number: #{{ item.transaction_id }}</h2>
+                <p>Time: {{ formatTime(item.transaction_time) }}</p>
+                <p>Contents: (Date until I fix it) {{ item.transaction_date }}</p>
+            </div>
         </div>
-      <div v-if="!loading && !menuItems.length">No menu items available.</div>
+      <div v-if="!loading && !transactions.length">No transactions available.</div>
     </div>
 </template>
 
@@ -20,26 +20,34 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      menuItems: [],
+      transactions: [],
       loading: true,
     };
   },
   mounted() {
-    this.fetchMenuItems();
+    this.fetchTransactions();
   },
-  name: 'MenuItems',
+  name: 'Transactions',
   methods: {
-    async fetchMenuItems() {
+    async fetchTransactions() {
       try {
         // Example usage of env var
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response = await axios.get('/api/v1/menu_items');
-        this.menuItems = response.data;
+        const response = await axios.get('/api/v1/transactions/by_date/2023-09-24');
+        this.transactions = response.data;
       } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error fetching transactions:', error);
       } finally {
         this.loading = false;
       }
+    },
+    formatTime(isoTime) {
+      const date = new Date(isoTime);
+      return new Intl.DateTimeFormat('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(date);
     },
   },
 };

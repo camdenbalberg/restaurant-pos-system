@@ -4,48 +4,21 @@
     <h1>Order List</h1>
     <router-link to="/">Go to Home</router-link>
 
-    <div>
-      <input v-model="newOrder" placeholder="Enter new order" />
-      <button @click="addOrder">Add Order</button>
-    </div>
-
     <!-- <div class="order-list"> -->
-      <MenuItems />
+      <Transactions />
     <!-- </div> -->
   </div>
 </template>
 
 
 <script>
-import MenuItems from '../components/KitchenComponents.vue';
+import Transactions from '../components/KitchenComponents.vue';
 export default { 
   name: 'HomeView',
   components: {
-  MenuItems,
+  Transactions,
   },
 };
-// export default {
-//   data() {
-//     return {
-//       newOrder: '',
-//       orders: [
-//         'Order #1: Burger & Fries',
-//         'Order #2: Chicken Sandwich',
-//         'Order #3: Veggie Wrap',
-//         'Order #4: Soft Drink',
-//         'Order #5: Ice Cream'
-//       ]
-//     };
-//   },
-//   methods: {
-//     addOrder() {
-//       if (this.newOrder) {
-//         this.orders.push(this.newOrder);
-//         this.newOrder = ''; // Clear the input field
-//       }
-//     }
-//   }
-// };
 </script>
 
 <style>
