@@ -7,10 +7,10 @@
     <div class="login-text-fields">
       <label for="username">Username:</label>
       <input type="text" id="login-username" v-model="username">
-      <br />
+      <br>
       <label for="password">Password:</label>
       <input type="password" id="login-password" v-model="password">
-      <br />
+      <br id="bigBr">
       <button @click="submitForm">Submit</button>
     </div>
 
@@ -53,6 +53,27 @@ export default {
 
   img {
     scale: 0.75;
+    /* Center the image */
+    margin: auto;
+    width: 50%;
+  }
+
+  label {
+    font-size: 30px;
+    width: 100px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  button {
+    margin-top: 70px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
   }
 </style>
 

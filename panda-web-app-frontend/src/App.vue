@@ -47,6 +47,7 @@ export default {
     margin-bottom: 15px;
     margin-left: 25px;
     margin-right: 25px;
+    border-radius: 5px;
   }
 
   input:focus {
@@ -56,6 +57,7 @@ export default {
   button {
     background-color: var(--surfaceColor);
     scale: 1;
+    border-radius: 5px;
     transition: scale 0.5s ease;
     transition: background-color 0.25s ease;
   }
