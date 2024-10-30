@@ -4,28 +4,48 @@
     <h1>Order List</h1>
     <router-link to="/">Go to Home</router-link>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Order #</th>
-          <th>Order Contents</th>
-          <th>Time</th>
-        </tr>
-      </thead>
-      <body>
-        <div class="order-list">
-          <!-- Implement adding new orders in the future -->
-            <div class="order-box">Order #1: Burger & Fries</div>
-            <div class="order-box">Order #2: Chicken Sandwich</div>
-            <div class="order-box">Order #3: Veggie Wrap</div>
-            <div class="order-box">Order #4: Soft Drink</div>
-            <div class="order-box">Order #5: Ice Cream</div>
-        </div>
-      </body>
-    </table>
+    <div>
+      <input v-model="newOrder" placeholder="Enter new order" />
+      <button @click="addOrder">Add Order</button>
+    </div>
 
+    <div class="order-list">
+      <div 
+        class="order-box" 
+        v-for="(order, index) in orders" 
+        :key="index"
+      >
+        {{ order }}
+      </div>
+    </div>
   </div>
 </template>
+
+
+<script>
+export default {
+  data() {
+    return {
+      newOrder: '',
+      orders: [
+        'Order #1: Burger & Fries',
+        'Order #2: Chicken Sandwich',
+        'Order #3: Veggie Wrap',
+        'Order #4: Soft Drink',
+        'Order #5: Ice Cream'
+      ]
+    };
+  },
+  methods: {
+    addOrder() {
+      if (this.newOrder) {
+        this.orders.push(this.newOrder);
+        this.newOrder = ''; // Clear the input field
+      }
+    }
+  }
+};
+</script>
 
 <style>
   body {
