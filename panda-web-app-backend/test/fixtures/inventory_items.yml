@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  inv_id: 1
+  inv_name: MyString
+  stock: 1
+  base_stock: 1
+
+two:
+  inv_id: 1
+  inv_name: MyString
+  stock: 1
+  base_stock: 1
