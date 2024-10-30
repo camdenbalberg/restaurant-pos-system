@@ -54,34 +54,5 @@ export default {
   img {
     scale: 0.75;
   }
-
-  input {
-    background-color: var(--surfaceColor);
-    margin-top: 15px;
-    margin-bottom: 15px;
-    margin-left: 25px;
-    margin-right: 25px;
-  }
-
-  input:focus {
-    background-color: var(--accentColorWeak);
-  }
-
-  button {
-    background-color: var(--surfaceColor);
-    scale: 1;
-    transition: scale 0.5s ease;
-    transition: background-color 0.25s ease;
-  }
-
-  button:hover {
-    background-color: var(--accentColorWeak);
-    scale: 1.1;
-  }
-
-  button:active {
-    scale: 1;
-    background-color: var(--accentColor);
-  }
 </style>
 
