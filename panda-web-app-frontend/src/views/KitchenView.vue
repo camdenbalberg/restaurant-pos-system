@@ -9,48 +9,48 @@
       <button @click="addOrder">Add Order</button>
     </div>
 
-    <div class="order-list">
-      <div 
-        class="order-box" 
-        v-for="(order, index) in orders" 
-        :key="index"
-      >
-        {{ order }}
-      </div>
-    </div>
+    <!-- <div class="order-list"> -->
+      <MenuItems />
+    <!-- </div> -->
   </div>
 </template>
 
 
 <script>
-export default {
-  data() {
-    return {
-      newOrder: '',
-      orders: [
-        'Order #1: Burger & Fries',
-        'Order #2: Chicken Sandwich',
-        'Order #3: Veggie Wrap',
-        'Order #4: Soft Drink',
-        'Order #5: Ice Cream'
-      ]
-    };
+import MenuItems from '../components/KitchenComponents.vue';
+export default { 
+  name: 'HomeView',
+  components: {
+  MenuItems,
   },
-  methods: {
-    addOrder() {
-      if (this.newOrder) {
-        this.orders.push(this.newOrder);
-        this.newOrder = ''; // Clear the input field
-      }
-    }
-  }
 };
+// export default {
+//   data() {
+//     return {
+//       newOrder: '',
+//       orders: [
+//         'Order #1: Burger & Fries',
+//         'Order #2: Chicken Sandwich',
+//         'Order #3: Veggie Wrap',
+//         'Order #4: Soft Drink',
+//         'Order #5: Ice Cream'
+//       ]
+//     };
+//   },
+//   methods: {
+//     addOrder() {
+//       if (this.newOrder) {
+//         this.orders.push(this.newOrder);
+//         this.newOrder = ''; // Clear the input field
+//       }
+//     }
+//   }
+// };
 </script>
 
 <style>
   body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
