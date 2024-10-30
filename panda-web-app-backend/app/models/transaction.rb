@@ -5,4 +5,13 @@ class Transaction < ApplicationRecord
   validates :current_balance, presence: true, numericality: true
   validates :is_expense, inclusion: { in: [ true, false ] }
   validates :employee_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to_0: true }
+
+  def as_json(options = {})
+    super(options.merge(methods: :formatted_transaction_time, except: :transaction_time))
+  end
+
+  # Custom method for formatted time with seconds
+  def formatted_transaction_time
+    transaction_time.strftime("%H:%M:%S")  # Formats as 'HH:MM:SS' in 24-hour format
+  end
 end
