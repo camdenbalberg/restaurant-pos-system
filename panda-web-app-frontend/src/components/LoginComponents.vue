@@ -21,20 +21,24 @@
 import axios from 'axios';
 
 export default {
-  // data() {
-  //   return {
-  //     menuItems: [],
-  //     loading: false,
-  //   };
-  // },
-  // mounted() {
-  //   this.fetchMenuItems();
-  // },
-  // name: '',
-  // methods: {
-
-  // },
+  data() {
+    return {
+      username: '',
+      password: ''
+    }
+  },
+  methods: {
+    submitForm() {
+      // Validate the form
+      if (this.username && this.password) {
+        console.log(this.username + this.password);
+      } else {
+        console.log('Invalid credentials');
+      }
+    }
+  }
 };
+
 </script>
 
 <style scoped>
