@@ -1,11 +1,16 @@
 <template>
     <div>
       <div v-if="loading">Loading...</div>
-      <ul v-if="!loading && menuItems.length" class="menu-category">
-        <li v-for="item in menuItems" :key="item.menu_id">
-          <button class="menu-item">{{item.menu_name}}</button>
-        </li>
-      </ul>
+
+      <div v-if="!loading && menuItems.length" class="menu-category">
+        I am a category title!
+        <ul>
+          <li v-for="item in menuItems">
+            <button class="menu-item" :key="item.menu_id">{{item.menu_name}}</button>
+          </li>
+        </ul>
+      </div>
+      
       <div v-if="!loading && !menuItems.length">No menu items available.</div>
     </div>
   </template>
@@ -18,6 +23,12 @@
       return {
         menuItems: [],
         loading: true,
+
+        combos: [],
+        entrees: [],
+        sides: [],
+        appetizers: [],
+        drinks: [],
       };
     },
     mounted() {
@@ -35,6 +46,13 @@
           console.error('Error fetching menu items:', error);
         } finally {
           this.loading = false;
+
+          for (item in this.menuItems) {
+            if (item.category == "meal") {
+              this.combos += item;
+            }
+          }
+
         }
       },
     },
@@ -42,25 +60,20 @@
   </script>
   
 <style scoped>  
-  .menu-category {
+  .menu-category ul {
     display: grid;
     grid-template-columns: auto auto auto auto;
-    gap: 1em;
+    gap: 1.5em 1em;
   }
 
   .menu-item {
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 1em;
+    padding: 0.5em;
     background-color: #f9f9f9;
-  }
-  
-  .menu-item h2 {
-    margin: 0;
-  }
-  
-  .menu-item p {
-    margin: 5px 0;
+
+    width: 100%;
+    height: 100%;
   }
 </style>
   
