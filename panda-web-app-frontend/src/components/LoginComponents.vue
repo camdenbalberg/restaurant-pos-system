@@ -25,9 +25,6 @@ export default {
       password: ''
     }
   },
-  mounted() {
-    
-  },
   methods: {
     async submitForm() {
 
@@ -41,24 +38,10 @@ export default {
         const response = await axios.get(`/api/v1/employees/by_password/${this.password}`); //temporary hardcoded value for testing
         this.employees = response.data;
         console.log("employees is " + this.employees)
-        // Fetch sale items for each transaction
-        // await Promise.all(this.transactions.map(async (transaction) => {
-        //   const saleItemsResponse = await axios.get(`/api/v1/sale_items/by_transaction_id/${transaction.transaction_id}`);
-        //   transaction.sale_items = saleItemsResponse.data;
-        // }));
 
       } catch (error) {
         console.error('Error fetching employees:', error);
-      } finally {
-
-      }
-
-      // Validate the form
-      // if (this.username && this.password) {
-      //   console.log(this.username + this.password);
-      // } else {
-      //   console.log('Invalid credentials');
-      // }
+      } 
     }
   }
 };
