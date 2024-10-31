@@ -38,7 +38,7 @@ export default {
         this.employees_pwd = response_pwd.data;
         const response_usr = await axios.get(`/api/v1/employees/by_employee_id/${this.username}`);
         this.employees_usr = response_usr.data;
-        if (this.employees_pwd == this.employees_usr) {
+        if (this.employees_pwd[0].email == this.employees_usr[0].email) {
           console.log("Matching employee found")
         }
         else {
