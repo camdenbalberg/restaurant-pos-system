@@ -38,15 +38,17 @@ export default {
         this.employees_pwd = response_pwd.data;
         const response_usr = await axios.get(`/api/v1/employees/by_employee_id/${this.username}`);
         this.employees_usr = response_usr.data;
-        if (this.employees_pwd[0].email == this.employees_usr[0].email) {
-          console.log("Matching employee found")
+        let found = false;
+        for (let i = 0; i < this.employees_pwd.length; i++) {
+          if (this.employees_pwd[i].email == this.employees_usr[0].email) {
+            console.log("Matching employee found");
+            found = true;
+            break;
+          }
         }
-        else {
-          console.log("Invalid")
+        if (!found) {
+          console.log("Invalid");
         }
-
-
-
 
       } catch (error) {
         console.error('Error fetching employees:', error);
