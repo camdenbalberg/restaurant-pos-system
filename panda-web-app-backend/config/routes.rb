@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       resources :employees, only: [ :index, :show ] do
         collection do
           get "by_password/:password", to: "employees#by_password"
+          get "by_employee_id/:employee_id", to: "employees#by_employee_id"
         end
       end
     end

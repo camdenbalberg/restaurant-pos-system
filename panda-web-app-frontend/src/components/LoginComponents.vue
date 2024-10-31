@@ -34,10 +34,19 @@ export default {
         // const today = new Date();
         // const formattedDate = today.toISOString().split('T')[0]; 
         // const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        console.log(`/api/v1/employees/by_password/${this.password}`);
-        const response = await axios.get(`/api/v1/employees/by_password/${this.password}`); //temporary hardcoded value for testing
-        this.employees = response.data;
-        console.log("employees is " + this.employees)
+        const response_pwd = await axios.get(`/api/v1/employees/by_password/${this.password}`);
+        this.employees_pwd = response_pwd.data;
+        const response_usr = await axios.get(`/api/v1/employees/by_employee_id/${this.username}`);
+        this.employees_usr = response_usr.data;
+        if (this.employees_pwd == this.employees_usr) {
+          console.log("Matching employee found")
+        }
+        else {
+          console.log("Invalid")
+        }
+
+
+
 
       } catch (error) {
         console.error('Error fetching employees:', error);

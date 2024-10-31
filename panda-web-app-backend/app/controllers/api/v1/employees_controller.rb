@@ -35,9 +35,22 @@ class Api::V1::EmployeesController < ApplicationController
       render json: @employees
     end
 
-    rescue ActiveRecord::RecordNotFound
-        render json: { error: "No employees found for this password"}, status: :not_found
-    end
+  rescue ActiveRecord::RecordNotFound
+      render json: { error: "No employees found for this password"}, status: :not_found
   end
+
+
+  def by_employee_id
+    usr = params[:employee_id]
+    @employees = Employee.where(employee_id: usr)
+    if @employees.any?
+      render json: @employees
+    end
+
+  rescue ActiveRecord::RecordNotFound
+      render json: { error: "No employees found for this username"}, status: :not_found
+  end
+
+end
 
 
