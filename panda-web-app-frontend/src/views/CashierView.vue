@@ -33,14 +33,16 @@
   }
 
   .order-items {
-    width: 33%;
+    width: 60vh;
     overflow-y: scroll;
     border: 1px solid white;
     padding: 1em;
   }
 
   .menu-items {
+    width: 140vh;
     overflow-y: scroll;
     border: 1px solid white;
+    padding: 1em;
   }
 </style>
