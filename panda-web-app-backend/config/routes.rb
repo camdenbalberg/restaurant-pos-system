@@ -24,6 +24,7 @@ Rails.application.routes.draw do
         collection do
           get "by_date/:date", to: "transactions#by_date"
           get "by_employee/:employee", to: "transactions#by_employee"
+          patch :toggle_completed
         end
       end
     end

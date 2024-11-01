@@ -49,4 +49,14 @@ class Api::V1::TransactionsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
       render json: { error: "No history or records of transactions for this employee"}, status: :not_found
   end
+  
+  def toggle_completed
+    @transaction = Transaction.find(params[:id])
+    @transaction.completed = !@transaction.completed # Toggle the completed status
+    if @transaction.save
+      redirect_to transactions_path, notice: 'Transaction status updated successfully.'
+    else
+      redirect_to transactions_path, alert: 'Failed to update transaction status.'
+    end
+  end
 end

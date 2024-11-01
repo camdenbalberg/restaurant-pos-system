@@ -4,16 +4,16 @@
         <div v-if="loading">Loading...</div>
         <ul v-if="!loading && transactions.length"></ul>
         <div class="order-list">
-            <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
+          <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
                 <h2>Order Number: #{{ item.transaction_id }}</h2>
                 <p>Time: {{ item.formatted_transaction_time }}</p>
                 <p>Contents:</p>
-                    <ul>
+                <ul>
                     <li v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
                         {{ saleItem.menu_id }} * {{ saleItem.quantity }} Cost: $ {{ saleItem.price }}
                     </li>
-                    </ul>
-                    <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
+                </ul>
+                <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
             </div>
         </div>
       <div v-if="!loading && !transactions.length">No transactions available.</div>
@@ -58,9 +58,21 @@ export default {
       }
     },
     
-    bumpOrder(transactionId) {
+    async bumpOrder(transactionId) {
       this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
-      // Optionally, you could also add code here to notify the backend of the order bump, if needed.
+      //process on the backend
+      try {
+            // Make a PATCH request to the Rails backend to toggle the completed status
+            const response = await axios.patch(`/transactions/${transactionId}/toggle_completed`);
+
+            if (response.status === 200) {
+                // Optionally, you can fetch the updated transactions list again
+                await this.fetchTransactions(); // or just update the local state if needed
+            }
+        } catch (error) {
+            console.error('Error bumping order:', error);
+        }
+
     }
   },
 };
