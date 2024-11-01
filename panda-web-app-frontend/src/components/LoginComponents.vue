@@ -30,10 +30,6 @@ export default {
 
       try {
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        // Current date is cast in YYYY-MM-DD format
-        // const today = new Date();
-        // const formattedDate = today.toISOString().split('T')[0]; 
-        // const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
         const response_pwd = await axios.get(`/api/v1/employees/by_password/${this.password}`);
         this.employees_pwd = response_pwd.data;
         const response_usr = await axios.get(`/api/v1/employees/by_employee_id/${this.username}`);
@@ -43,7 +39,8 @@ export default {
           if (this.employees_pwd[i].email == this.employees_usr[0].email) {
             console.log("Matching employee found");
             found = true;
-            break;
+            // https://router.vuejs.org/guide/essentials/navigation.html
+            return this.$router.push('/kitchen');
           }
         }
         if (!found) {
