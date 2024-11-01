@@ -13,6 +13,7 @@
                         {{ saleItem.menu_id }} * {{ saleItem.quantity }} Cost: $ {{ saleItem.price }}
                     </li>
                     </ul>
+                    <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
             </div>
         </div>
       <div v-if="!loading && !transactions.length">No transactions available.</div>
@@ -56,6 +57,11 @@ export default {
         this.loading = false;
       }
     },
+    
+    bumpOrder(transactionId) {
+      this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
+      // Optionally, you could also add code here to notify the backend of the order bump, if needed.
+    }
   },
 };
 </script>
