@@ -9,7 +9,9 @@
       <label for="password">Password:</label>
       <input type="password" id="login-password" v-model="password">
       <br id="bigBr">
-      <button @click="submitForm">Submit</button>
+      <button @click="submitForm">
+        {{ buttonText }}
+      </button>
     </div>
 
   </div>
@@ -22,13 +24,15 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      buttonText: 'Submit',
     }
   },
   methods: {
     async submitForm() {
 
       try {
+        this.buttonText = "Loading..."
         console.log(import.meta.env.VITE_API_BACKEND_URL);
         const response_pwd = await axios.get(`/api/v1/employees/by_password/${this.password}`);
         this.employees_pwd = response_pwd.data;
@@ -50,6 +54,7 @@ export default {
       } catch (error) {
         console.error('Error fetching employees:', error);
       } 
+      this.buttonText = "Submit\nInvalid"
     }
   }
 };
