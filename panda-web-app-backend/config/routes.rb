@@ -8,7 +8,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :employees, only: [ :index, :show ]
+      resources :employees, only: [ :index, :show ] do
+        collection do
+          get "by_password/:password", to: "employees#by_password"
+          get "by_employee_id/:employee_id", to: "employees#by_employee_id"
+        end
+      end
     end
   end
 
