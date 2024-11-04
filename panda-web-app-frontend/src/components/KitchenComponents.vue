@@ -65,7 +65,12 @@ export default {
       //process on the backend
       try {
             // Make a PATCH request to the Rails backend to toggle the completed status
-            const response = await axios.patch(`/transactions/${transactionId}/toggle_completed`);
+            console.log("Passed 68 " + transactionId + "\n");
+            const response = await axios.patch(`/api/v1/transactions/${transactionId}/toggle_completed`, {}, {
+              headers:{
+                'Content-Type': 'application/json',
+              }
+            });
 
             if (response.status === 200) {
                 // Optionally, you can fetch the updated transactions list again

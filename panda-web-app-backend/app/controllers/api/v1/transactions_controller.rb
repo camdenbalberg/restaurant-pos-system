@@ -5,7 +5,7 @@ class Api::V1::TransactionsController < ApplicationController
     render json: @transactions
   end
 
-  # GET /api/v1/employees_controller/id
+  # GET /api/v1/transactions_controller/id
   # retrieve employee data with id
   def show
     @transaction = Transaction.find(params[:id])
@@ -52,11 +52,15 @@ class Api::V1::TransactionsController < ApplicationController
   
   def toggle_completed
     @transaction = Transaction.find(params[:id])
+    # @transaction = Transaction.where(transaction_id: id)
     @transaction.completed = !@transaction.completed # Toggle the completed status
     if @transaction.save
-      redirect_to transactions_path, notice: 'Transaction status updated successfully.'
+      render json: @transaction, status: :ok
     else
-      redirect_to transactions_path, alert: 'Failed to update transaction status.'
+      Rails.logger.error(@transaction.errors.full_messages.join(", "))
+      render json: { error: 'Failed to update transaction status.' }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Transaction not found" }, status: :not_found
   end
 end
