@@ -2,7 +2,6 @@
     <div class="popup">
       <p>{{ menu_item }}</p>
       <ul>
-        //loop through the items passed in cat and display using MenuItem component
         <li v-for="item in cat" :key="item">
           <MenuItem :category="item" />
         </li>
