@@ -4,8 +4,8 @@
         <div v-if="loading">Loading...</div>
         <ul v-if="!loading && transactions.length"></ul>
         <div class="order-list">
-          <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
-              <div v-if="!item.completed">
+          <div v-for="item in transactions">
+              <div v-if="!item.completed" :key="item.transaction_id" class="order-box">
                 <h2>Order Number: #{{ item.transaction_id }}</h2>
                 <p>Time: {{ item.formatted_transaction_time }}</p>
                 <p>Contents:</p>
