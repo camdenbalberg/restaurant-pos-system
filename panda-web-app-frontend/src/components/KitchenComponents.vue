@@ -11,7 +11,7 @@
                 <p>Contents:</p>
                 <ul>
                     <li v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
-                        {{ saleItem.menu_id }} * {{ saleItem.quantity }} Cost: $ {{ saleItem.price }}
+                        {{ getMenuName(saleItem.menu_id) }} * {{ saleItem.quantity }}
                     </li>
                 </ul>
                 <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
@@ -30,10 +30,12 @@ export default {
     return {
       transactions: [],
       loading: true,
+      menuItems: {},
     };
   },
   mounted() {
     this.fetchTransactions();
+    this.fetchMenuItems();
   },
   name: 'Transactions',
   methods: {
@@ -41,10 +43,10 @@ export default {
       try {
         console.log(import.meta.env.VITE_API_BACKEND_URL);
         // Current date is cast in YYYY-MM-DD format
-        // const today = new Date();
-        // const formattedDate = today.toISOString().split('T')[0]; 
-        // const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        const response = await axios.get(`/api/v1/transactions/by_date/2023-09-24`); //temporary hardcoded value for testing
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0]; 
+        const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
+        // const response = await axios.get(`/api/v1/transactions/by_date/2023-09-24`); //temporary hardcoded value for testing
         this.transactions = response.data;
 
         // Fetch sale items for each transaction
@@ -60,6 +62,24 @@ export default {
       }
     },
     
+    async fetchMenuItems() {
+      try {
+        const response = await axios.get(`/api/v1/menu_items`);
+        this.menuItems = response.data.reduce((acc, item) => {
+          console.log(item.menu_id + " : " + item.menu_name);
+          acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
+          return acc;
+        }, {});
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
+    },
+
+    getMenuName(menuId) {
+      console.log(menuId);
+      return this.menuItems[menuId] || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
+    },
+
     async bumpOrder(transactionId) {
       this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
       //process on the backend
