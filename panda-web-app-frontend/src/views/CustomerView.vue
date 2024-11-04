@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <div @click="showKart()" class="circle"></div>
     <div :class="['button-container', { 'no-scroll': popupType }]">
       <button @click="showPopup('Bowl', ['entree', 'side'])">
         <picture>
@@ -53,6 +54,7 @@
 
 <script>
 import Popup from '../components/Popup.vue'; // Adjust path if necessary
+import Kart from '../components/Kart.vue'; // Adjust path if necessary
 
 export default {
   name: 'Customer',
@@ -73,6 +75,10 @@ export default {
     closePopup() {
       this.popupType = null;
       this.popupItems = [];
+    },
+    showKart() {
+    },
+    closeKart() {
     },
   },
 };
@@ -97,6 +103,27 @@ export default {
 
 .button-container.no-scroll {
   overflow: hidden; /* Hide the scrollbar when the popup is visible */
+}
+
+.circle {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.circle:hover {
+  background-color: var(--accentColorWeak);
+  scale: 1.1;
+}
+
+.circle:active {
+  scale: 1;
+  background-color: var(--accentColor);
 }
 
 button {

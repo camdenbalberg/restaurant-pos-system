@@ -1,16 +1,18 @@
 <template>
   <div class="menu-items">
-    <h1>Menu Items</h1>
+    <h1>{{ category }}</h1>
     <div v-if="loading">Loading...</div>
     <ul v-if="!loading && filteredMenuItems.length" class="category">
       <li v-for="item in filteredMenuItems" :key="item.menu_id" class="menu-item">
-        <picture>
-          <source :srcset="`../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
-          <img :src="`../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
-        </picture>
-        <h2>{{ item.menu_name }}</h2>
-        <p>Price: ${{ item.price }}</p>
-        <p>Category: {{ item.category }}</p>
+        <button>
+          <picture>
+            <source :srcset="`../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
+            <img :src="`../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
+          </picture>
+          <h2>{{ item.menu_name }}</h2>
+          <p>Price: ${{ item.price }}</p>
+          <p>Category: {{ item.category }}</p>
+        </button>
       </li>
     </ul>
     <div v-if="!loading && !filteredMenuItems.length">No menu items available.</div>
@@ -80,5 +82,27 @@ export default {
   overflow-y: scroll;
   left: 50%;
   height:350px;
+}
+
+button{
+  flex: 1 1 20%;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  max-width: 200px;
+  min-width: 100px;
+}
+button:hover {
+  background-color: var(--accentColorWeak);
+  scale: 1.1;
+}
+
+button:active {
+  scale: 1;
+  background-color: var(--accentColor);
 }
 </style>
