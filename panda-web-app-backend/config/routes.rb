@@ -8,7 +8,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :employees, only: [ :index, :show ]
+      resources :employees, only: [ :index, :show ] do
+        collection do
+          get "by_password/:password", to: "employees#by_password"
+          get "by_employee_id/:employee_id", to: "employees#by_employee_id"
+        end
+      end
     end
   end
 
@@ -20,10 +25,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :transactions, only: [ :index, :show ] do
+      resources :transactions do
         collection do
           get "by_date/:date", to: "transactions#by_date"
           get "by_employee/:employee", to: "transactions#by_employee"
+        end
+        member do
+          patch :toggle_completed
         end
       end
     end

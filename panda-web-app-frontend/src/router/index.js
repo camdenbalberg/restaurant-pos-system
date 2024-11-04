@@ -6,6 +6,7 @@ import KitchenView from "../views/KitchenView.vue";
 import LoginView from "@/views/LoginView.vue";
 import CustomerView from "@/views/CustomerView.vue"; // Create this component
 import ManagerView from "@/views/ManagerView.vue"; // Create this component
+import CashierView from '@/views/CashierView.vue';
 
 const routes = [
   {
@@ -29,8 +30,13 @@ const routes = [
     component: LoginView,
   },
   {
-    path: "/customer",
-    name: "customer",
+    path: '/cashier',
+    name: 'cashier',
+    component: CashierView,
+  },
+  {
+    path: '/customer',
+    name: 'customer',
     component: CustomerView,
   },
   {
