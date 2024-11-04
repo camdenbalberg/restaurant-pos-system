@@ -5,6 +5,7 @@ class Transaction < ApplicationRecord
   validates :current_balance, presence: true, numericality: true
   validates :is_expense, inclusion: { in: [ true, false ] }
   validates :employee_id, presence: true, numericality: { only_integer: true, greater_than_or_equal_to_0: true }
+  validates :completed, inclusion: { in: [ true, false ] }
 
   def as_json(options = {})
     super(options.merge(methods: :formatted_transaction_time, except: :transaction_time))
