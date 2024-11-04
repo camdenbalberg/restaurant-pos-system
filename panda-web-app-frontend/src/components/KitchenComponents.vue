@@ -5,6 +5,7 @@
         <ul v-if="!loading && transactions.length"></ul>
         <div class="order-list">
           <div v-for="item in transactions" :key="item.transaction_id" class="order-box">
+              <div v-if="!item.completed">
                 <h2>Order Number: #{{ item.transaction_id }}</h2>
                 <p>Time: {{ item.formatted_transaction_time }}</p>
                 <p>Contents:</p>
@@ -14,6 +15,7 @@
                     </li>
                 </ul>
                 <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
+              </div>
             </div>
         </div>
       <div v-if="!loading && !transactions.length">No transactions available.</div>
