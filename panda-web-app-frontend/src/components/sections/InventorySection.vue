@@ -1,26 +1,67 @@
 <template>
-    <div class="inventory-section">
-      <h2>Inventory Management</h2>
-      <div class="inventory-content">
-        <div class="inventory-stats">
-          <div class="stat-card">
-            <h4>Total Items</h4>
-            <p>150</p>
-          </div>
-          <div class="stat-card">
-            <h4>Low Stock Items</h4>
-            <p>12</p>
-          </div>
+  <div class="inventory-section">
+    <h2>Inventory Management</h2>
+    <div class="inventory-content">
+      <div class="inventory-stats">
+        <div class="stat-card">
+          <h4>Total Items</h4>
+          <p>150</p>
+        </div>
+        <div class="stat-card">
+          <h4>Low Stock Items</h4>
+          <p>12</p>
         </div>
       </div>
+      <button @click="addMenuItem">Add menu item</button>
     </div>
-  </template>
+  </div>
+</template>
+
   
-  <script>
+<script>
+import axios from 'axios';
+
   export default {
-    name: 'InventorySection'
-  }
-  </script>
+    name: 'InventorySection',
+    methods: {
+      addMenuItem() {
+        // Prompt for menu name, price, and recipe
+        const menuName = prompt("Enter menu name:");
+        const price = prompt("Enter price:");
+        const recipeInput = prompt("Enter recipe (comma-separated integers):");
+        const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
+
+        if (menuName && price && recipeInput) {
+          // Parse recipe input into an array of integers
+          const recipe = recipeInput.split(',').map(item => parseInt(item.trim(), 10));
+
+          // Here you can process the new menu item (e.g., save it to a list or send to a server)
+          const data = {
+            menuName: menuName,
+            price: parseFloat(price),
+            category: category
+            // recipe: recipe.join(',')
+          };
+
+          axios.post('/api/v1/menu_items/add_menu_item', data)
+          .then(response => {
+            console.log('Menu item added:', response.data);
+            // Optionally, alert the user or refresh data after success
+            alert(`Added ${category}${menuName} with price $${price} and recipe ingredients: ${recipe.join(', ')}`);
+          })
+          .catch(error => {
+            console.error('Error adding menu item:', error.response ? error.response.data : error.message);
+            alert('Failed to add menu item.');
+          });
+
+        } else {
+          alert("Please fill out all fields.");
+        }
+      }
+    }
+  };
+</script>
+
   
   <style scoped>
   .inventory-section {
