@@ -1,7 +1,8 @@
 <template>
   <div class="login-screen">
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
-
+    <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
+    
     <div class="login-text-fields">
       <label for="username">Username:</label>
       <input type="text" id="login-username" v-model="username">
