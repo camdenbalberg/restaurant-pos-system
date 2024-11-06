@@ -1,36 +1,42 @@
 <template>
     <div class="popup">
-      <p>{{ menu_item }}</p>
+      <p>Kart</p>
       <ul>
-        <li v-for="item in cat" :key="item">
-          <MenuItem :category="item" />
+        <li v-for="item in orderedItems" :key="item">
+          <div v-for="(i,index) in item" :key="i">
+            <!--for now check for first index since meal is a string-->
+            {{ i }}
+          </div>
         </li>
       </ul>
       <button @click="$emit('close')">Close</button>
+      <button @click="completeTransaction">Order</button>
     </div>
 </template>
 
 <script>
-import MenuItem from './MenuItem.vue'; // Adjust path if necessary
+import MenuItem from './MealItems.vue'; // Adjust path if necessary
 
 export default {
-  name: 'Popup',
+  name: 'Kart',
   components: {
     MenuItem,
   },
   props: {
-    menu_item: {
-      type: String,
-      required: true,
-    },
-    cat:{
+    orderedItems: {
       type: Array,
       required: true,
-      validator(value) {
-        return value.every(item => typeof item === 'string');
-      },
-    }
+      //validator(value) {
+      //  return value.every(item => typeof item === 'string');
+      //},
+    },
   },
+  methods: {
+    completeTransaction() {
+      console.log('Transaction complete:', this.orderedItems);
+      this.$emit('close');
+    },
+  }
 };
 </script>
 

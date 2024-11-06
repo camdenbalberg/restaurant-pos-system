@@ -3,8 +3,10 @@
     <h1>{{ category }}</h1>
     <div v-if="loading">Loading...</div>
     <ul v-if="!loading && filteredMenuItems.length" class="category">
-      <li v-for="item in filteredMenuItems" :key="item.menu_id" class="menu-item">
-        <button>
+      <!--loop through all items in each category-->
+      <li v-for="(item, index) in filteredMenuItems" :key="item.menu_id" class="menu-item">
+        <button :class="{ 'active-button': activeButtonIndex === index }"
+        @click="handleButtonClick(index, item)">
           <picture>
             <source :srcset="`../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
             <img :src="`../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
@@ -23,7 +25,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'MenuItems',
+  name: 'MealItems',
   props: {
     category: {
       type: String,
@@ -34,6 +36,7 @@ export default {
     return {
       menuItems: [],
       loading: true,
+      activeButtonIndex: null,
     };
   },
   computed: {
@@ -48,7 +51,6 @@ export default {
     async fetchMenuItems() {
       try {
         // Example usage of env var
-        console.log(import.meta.env.VITE_API_BACKEND_URL);
         const response = await axios.get('/api/v1/menu_items');
         this.menuItems = response.data;
       } catch (error) {
@@ -56,6 +58,14 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    selected(item) {
+      console.log('Selected New Item:', item); // Debugging log
+      this.$emit('selected', item);
+    },
+    handleButtonClick(index, item) {
+      this.activeButtonIndex = index;
+      this.selected(item);
     },
   },
 };
@@ -104,5 +114,9 @@ button:hover {
 button:active {
   scale: 1;
   background-color: var(--accentColor);
+}
+.active-button {
+  background-color: red;
+  color: white;
 }
 </style>
