@@ -10,7 +10,7 @@ import CashierView from '@/views/CashierView.vue';
 
 const routes = [
   {
-    path: "/home",
+    path: "/",
     name: "home",
     component: HomeView,
   },
