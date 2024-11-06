@@ -1,5 +1,6 @@
 class Api::V1::MenuItemsController < ApplicationController
 
+  skip_before_action :verify_authenticity_token, only: [:add_menu_item]
       # Query database for items and rendering it as json
       def index
         if params[:category]
@@ -27,7 +28,7 @@ class Api::V1::MenuItemsController < ApplicationController
 
           # Check if all required parameters are present
         if menu_name.nil? || price.nil? || category.nil?
-          render json: { error: 'Missing parameters: menuName, price, or recipe' }, status: :unprocessable_entity
+          render json: { error: 'Missing parameters: menuName, price, or category' }, status: :unprocessable_entity
           return
         end
 
