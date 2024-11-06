@@ -30,17 +30,17 @@ class Api::V1::RecipesController < ApplicationController
       render json: { error: 'Missing parameters: inv_id' }, status: :unprocessable_entity
       return
     end
-    inv_ids = Array(inv_ids).map(&:to_i)#ensure invIds is being treated as a list of ints
-    Rails.logger.info "#{inv_ids} : #{menu_id}"
+    inv_id = Array(inv_id).map(&:to_i)#ensure invIds is being treated as a list of ints
+    Rails.logger.info "#{inv_id} : #{menu_id}"
     recipes = []
-    inv_ids.each do |inv_id|
-      recipe = Recipe.new(menu_id: menu_id, inv_id: inv_id, quantity: quantity)
+    inv_id.each do |i_id|
+      recipe = Recipe.new(menu_id: menu_id, inv_id: i_id, quantity: quantity)
       
       if recipe.save
         recipes << recipe
       else
         # If any recipe fails return an error and stop
-        render json: { error: "Failed to create recipe for inv_id #{inv_id}" }, status: :unprocessable_entity
+        render json: { error: "Failed to create recipe for inv_id #{i_id}" }, status: :unprocessable_entity
         return
       end
     end
