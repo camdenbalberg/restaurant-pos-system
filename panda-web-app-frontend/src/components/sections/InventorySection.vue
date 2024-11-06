@@ -22,15 +22,6 @@
 import axios from 'axios';
 
   export default {
-    // data() {
-    //   return {
-    //     menuItem: {
-    //       name: '',
-    //       category: '',
-    //       price: 0,
-    //     },
-    //   };
-    // },
     name: 'InventorySection',
     methods: {
       async addMenuItem() {
@@ -48,10 +39,17 @@ import axios from 'axios';
             price: parseFloat(price),
             category: category
           };
-          console.log(data)
+          const recipe = recipeInput.split(',').map(id => id.trim());
+            
+          console.log(data);
+
           const response = await axios.post('/api/v1/menu_items/add_menu_item', data)
           .then(response => {
             console.log('Menu item added:', response.data);
+            //if successfully added menu item then add recipe.
+            console.log(response.data.menu_id, " AHHHHH ", recipe.join(','))
+            this.addRecipe(response.data.menu_id, recipe);
+
             // Optionally, alert the user or refresh data after success
             alert(`Added ${category}${menuName} with price $${price} and recipe ingredients:`);
           })
@@ -62,6 +60,24 @@ import axios from 'axios';
 
         } else {
           alert("Please fill out all fields.");
+        }
+      },
+
+      async addRecipe(menuId, recipe) {
+        const data = {
+          menu_id: menuId,
+          recipe: recipe
+        };
+        console.log("Starting add recipe: ", data);
+        try {
+          const response = await axios.post('/api/v1/recipes/add_recipe', data);
+
+          console.log("Recipe added successfully:", response.data);
+          alert('Recipe added successfully.');
+          
+        } catch (error) {
+          console.error('Error adding recipe:', error.response ? error.response.data : error.message);
+          alert('Failed to add recipe.');
         }
       }
     }

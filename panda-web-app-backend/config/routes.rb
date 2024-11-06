@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :recipes, only: [ :index, :show ]
+      post '/recipes/add_recipe', to: 'recipes#add_recipe'
     end
   end
 
