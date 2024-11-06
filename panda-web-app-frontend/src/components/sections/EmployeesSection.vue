@@ -252,7 +252,7 @@ export default {
       try {
         if (this.editingEmployee) {
           // Update existing employee
-          await axios.put(
+          await axios.post(
             `/api/v1/employees/${this.editingEmployee.employee_id}`,
             this.formData
           );
