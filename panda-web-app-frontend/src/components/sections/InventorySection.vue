@@ -22,32 +22,38 @@
 import axios from 'axios';
 
   export default {
+    // data() {
+    //   return {
+    //     menuItem: {
+    //       name: '',
+    //       category: '',
+    //       price: 0,
+    //     },
+    //   };
+    // },
     name: 'InventorySection',
     methods: {
-      addMenuItem() {
+      async addMenuItem() {
         // Prompt for menu name, price, and recipe
         const menuName = prompt("Enter menu name:");
         const price = prompt("Enter price:");
         const recipeInput = prompt("Enter recipe (comma-separated integers):");
         const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
 
-        if (menuName && price && recipeInput) {
-          // Parse recipe input into an array of integers
-          const recipe = recipeInput.split(',').map(item => parseInt(item.trim(), 10));
+        if (menuName && price && category) {
 
           // Here you can process the new menu item (e.g., save it to a list or send to a server)
           const data = {
-            menuName: menuName,
+            menu_name: menuName,
             price: parseFloat(price),
             category: category
-            // recipe: recipe.join(',')
           };
-
-          axios.post('/api/v1/menu_items/add_menu_item', data)
+          console.log(data)
+          const response = await axios.post('/api/v1/menu_items/add_menu_item', data)
           .then(response => {
             console.log('Menu item added:', response.data);
             // Optionally, alert the user or refresh data after success
-            alert(`Added ${category}${menuName} with price $${price} and recipe ingredients: ${recipe.join(', ')}`);
+            alert(`Added ${category}${menuName} with price $${price} and recipe ingredients:`);
           })
           .catch(error => {
             console.error('Error adding menu item:', error.response ? error.response.data : error.message);

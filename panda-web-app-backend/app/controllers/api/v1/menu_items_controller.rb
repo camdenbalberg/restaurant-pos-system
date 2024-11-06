@@ -21,10 +21,9 @@ class Api::V1::MenuItemsController < ApplicationController
 
       # POST /api/v1/menu_items/add_menu_item
       def add_menu_item
-        menu_name = params[:menuName]
+        menu_name = params[:menu_name]
         price = params[:price]
         category = params[:category]
-        # recipe = params[:recipe]
 
           # Check if all required parameters are present
         if menu_name.nil? || price.nil? || category.nil?
@@ -32,11 +31,13 @@ class Api::V1::MenuItemsController < ApplicationController
           return
         end
 
-        # Convert recipe into an array of integers
-        # recipe = recipe.split(',').map { |ingredient| ingredient.strip.to_i }
+        highest_menu_id = MenuItem.maximum(:menu_id) || 0  # Returns 0 if no menu_items exist
+        Rails.logger.info "#{highest_menu_id}"
+        new_menu_id = highest_menu_id + 1
 
+        Rails.logger.info "Received parameters: menuName = #{menu_name}, price = #{price}, category = #{category}"
         # Create new MenuItem instance
-        menu_item = MenuItem.new(menu_name: menu_name, price: price, category: category)
+        menu_item = MenuItem.new(menu_id: new_menu_id, menu_name: menu_name, price: price, category: category)
         if menu_item.save
           render json: menu_item, status: :created
         else
