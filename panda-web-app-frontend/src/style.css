@@ -1,58 +1,62 @@
-  :root {
-    --accentColor: #dc8a78;
-    --accentColorIntense: #db5132;
-    --accentColorWeak: #edbeb4;
-    --surfaceColor: #ccd0da;
-    --backgroundColor: #eff1f5;
-    --borderColor: #dce0e8;
-    --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+:root {
+  --accentColor: #dc8a78;
+  --accentColorIntense: #db5132;
+  --accentColorWeak: #edbeb4;
+  --surfaceColor: #ccd0da;
+  --backgroundColor: #eff1f5;
+  --borderColor: #dce0e8;
+  --textColor: #4c4f69;
+  --subTextColor: #5c5f77;
 
-    background: url("./assets/bg.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
-  
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: var(--textColor);
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
+  background: url("./assets/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 
-  }
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: var(--textColor);
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 0px;
+  margin-left: 0px;
 
-  input {
-    background-color: var(--surfaceColor);
-    margin-top: 15px;
-    margin-bottom: 15px;
-    margin-left: 25px;
-    margin-right: 25px;
-    border-radius: 5px;
-  }
+}
 
-  input:focus {
-    background-color: var(--accentColorWeak);
-  }
+input {
+  background-color: var(--surfaceColor);
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 25px;
+  margin-right: 25px;
+  border-radius: 5px;
+}
 
-  button {
-    background-color: var(--surfaceColor);
-    scale: 1;
-    border-radius: 5px;
-    transition: scale 0.5s ease;
-    transition: background-color 0.25s ease;
-  }
+input:focus {
+  background-color: var(--accentColorWeak);
+}
 
-  button:hover {
-    background-color: var(--accentColorWeak);
-    scale: 1.1;
-  }
+button {
+  background-color: var(--surfaceColor);
+  scale: 1;
+  border-radius: 5px;
+  transition: scale 0.5s ease;
+  transition: background-color 0.25s ease;
+}
 
-  button:active {
-    scale: 1;
-    background-color: var(--accentColor);
-  }
+button:hover {
+  background-color: var(--accentColorWeak);
+  scale: 1.1;
+}
+
+button:active {
+  scale: 1;
+  background-color: var(--accentColor);
+}
+
+.slogan {
+  font-size: 50px
+}

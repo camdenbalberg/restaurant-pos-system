@@ -1,6 +1,7 @@
 <template>
     <div class="home">
       <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
+      <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
       <ul class="home-links">
         <li>
           <RouterLink to="/cashier">
