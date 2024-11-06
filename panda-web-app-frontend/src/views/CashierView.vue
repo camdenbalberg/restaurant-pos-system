@@ -1,10 +1,10 @@
 <template>
-  <h1>Cashier View</h1>
   <div class="cashier-view">
+
     <!-- Items in Order -->
-     <div class="order-items">
+    <div class="order-items">
       I am an order!
-     </div>
+    </div>
 
     <!-- Menu Items -->
     <div class="menu-items">
@@ -28,25 +28,20 @@
 <style scoped>
   .cashier-view {
     display: flex;
-    width: 100%;
+    height: 100vh;
+    padding: 1em 2em;
   }
 
   .order-items {
-    width: 33%;
-    height: 75%;
-    order: 1;
+    width: 60vh;
     overflow-y: scroll;
-
     border: 1px solid white;
     padding: 1em;
   }
 
   .menu-items {
-    width: 67%;
-    height: 100%;
-    order: 2;
+    width: 140vh;
     overflow-y: scroll;
-
     border: 1px solid white;
     padding: 1em;
   }

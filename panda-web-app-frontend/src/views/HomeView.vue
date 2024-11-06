@@ -1,18 +1,17 @@
 <!-- src/views/HomeView.vue -->
 <template>
   <div>
-    <h1>Home View</h1>
-    <MenuItems />
+    <HomeComponents />
   </div>
 </template>
 
 <script>
-import MenuItems from '../components/MenuItems.vue'; // Adjust path if necessary
+import HomeComponents from '../components/HomeComponents.vue'; // Adjust path if necessary
 
 export default {
   name: 'HomeView',
   components: {
-    MenuItems,
+    HomeComponents,
   },
 };
 </script>
