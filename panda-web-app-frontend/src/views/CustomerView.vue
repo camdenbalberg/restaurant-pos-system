@@ -92,11 +92,13 @@ export default {
     },
     closeKart() {
       this.kartVisible = false;
+      this.orderedItems = [];
     },
     addToKart(items) {
       //Doesn't quite work because meal is just a string and not a menu_item at the moment
       console.log('Adding to kart:', items);
       let newItems = [];
+      newItems.push(items[0]);
       for(let i = 1; i < items.length; i++){
         newItems.push(items[i].menu_name);
       }

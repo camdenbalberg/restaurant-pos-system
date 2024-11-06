@@ -10,6 +10,7 @@
         </li>
       </ul>
       <button @click="$emit('close')">Close</button>
+      <button @click="completeTransaction">Order</button>
     </div>
 </template>
 
@@ -30,6 +31,12 @@ export default {
       //},
     },
   },
+  methods: {
+    completeTransaction() {
+      console.log('Transaction complete:', this.orderedItems);
+      this.$emit('close');
+    },
+  }
 };
 </script>
 

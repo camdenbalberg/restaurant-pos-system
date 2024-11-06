@@ -54,6 +54,7 @@ export default {
       } else {
         console.log('Please select all items before adding to the cart.');
       }
+      this.$emit('close');
     },
     currentItems(index, item) {
       console.log('Selected Item:', item);
