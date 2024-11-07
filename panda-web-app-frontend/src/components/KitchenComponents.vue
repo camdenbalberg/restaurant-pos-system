@@ -46,7 +46,7 @@ export default {
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0]; 
         const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        // const response = await axios.get(`/api/v1/transactions/by_date/2023-10-24`); //temporary hardcoded value for testing
+        // const response = await axios.get(`/api/v1/transactions/by_date/2023-12-25`); //temporary hardcoded value for testing
         this.transactions = response.data;
 
         // Fetch sale items for each transaction
