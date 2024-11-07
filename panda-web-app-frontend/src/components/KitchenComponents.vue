@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api';
 
 export default {
   data() {
@@ -45,13 +45,13 @@ export default {
         // Current date is cast in YYYY-MM-DD format
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0]; 
-        const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        // const response = await axios.get(`/api/v1/transactions/by_date/2023-10-24`); //temporary hardcoded value for testing
+        const response = await api.get(`/transactions/by_date/${formattedDate}`);
+        // const response = await api.get(`/transactions/by_date/2023-10-24`); //temporary hardcoded value for testing
         this.transactions = response.data;
 
         // Fetch sale items for each transaction
         await Promise.all(this.transactions.map(async (transaction) => {
-          const saleItemsResponse = await axios.get(`/api/v1/sale_items/by_transaction_id/${transaction.transaction_id}`);
+          const saleItemsResponse = await api.get(`/sale_items/by_transaction_id/${transaction.transaction_id}`);
           transaction.sale_items = saleItemsResponse.data;
         }));
 
@@ -64,7 +64,7 @@ export default {
     
     async fetchMenuItems() {
       try {
-        const response = await axios.get(`/api/v1/menu_items`);
+        const response = await api.get(`/menu_items`);
         this.menuItems = response.data.reduce((acc, item) => {
           console.log(item.menu_id + " : " + item.menu_name);
           acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
@@ -86,7 +86,7 @@ export default {
       try {
             // Make a PATCH request to the Rails backend to toggle the completed status
             console.log("Passed 68 " + transactionId + "\n");
-            const response = await axios.patch(`/api/v1/transactions/${transactionId}/toggle_completed`, {}, {
+            const response = await api.patch(`/transactions/${transactionId}/toggle_completed`, {}, {
               headers:{
                 'Content-Type': 'application/json',
               }

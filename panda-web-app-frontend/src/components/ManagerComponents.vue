@@ -39,7 +39,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import api from '@/api';
   // Import the InventorySection component
   import InventorySection from './sections/InventorySection.vue';
   import EmployeesSection from './sections/EmployeesSection.vue';
