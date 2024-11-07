@@ -36,7 +36,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import api from '@/api';
   import CashierPopup from './CashierPopup.vue';
   
   export default {
@@ -66,7 +66,7 @@
       async fetchMenuItems() {
         try {
           console.log(import.meta.env.VITE_API_BACKEND_URL);
-          const response = await axios.get('/api/v1/menu_items');
+          const response = await api.get('/v1/menu_items');
           this.menuItems = response.data;
         } catch (error) {
           console.error('Error fetching menu items:', error);
@@ -125,5 +125,3 @@
     background-color: #f9f9f9;
   }
 </style>
-  
-  

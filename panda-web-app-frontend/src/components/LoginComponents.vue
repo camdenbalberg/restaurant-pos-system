@@ -1,7 +1,8 @@
 <template>
   <div class="login-screen">
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
-
+    <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
+    
     <div class="login-text-fields">
       <label for="username">Username:</label>
       <input type="text" id="login-username" v-model="username">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api';
 
 export default {
   data() {
@@ -34,9 +35,9 @@ export default {
       try {
         this.buttonText = "Loading..."
         console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response_pwd = await axios.get(`/api/v1/employees/by_password/${this.password}`);
+        const response_pwd = await api.get(`/employees/by_password/${this.password}`);
         this.employees_pwd = response_pwd.data;
-        const response_usr = await axios.get(`/api/v1/employees/by_employee_id/${this.username}`);
+        const response_usr = await api.get(`/employees/by_employee_id/${this.username}`);
         this.employees_usr = response_usr.data;
         let found = false;
         for (let i = 0; i < this.employees_pwd.length; i++) {
