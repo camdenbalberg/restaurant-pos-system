@@ -65,8 +65,7 @@
     methods: {
       async fetchMenuItems() {
         try {
-          console.log(import.meta.env.VITE_API_BACKEND_URL);
-          const response = await api.get('/v1/menu_items');
+          const response = await api.get('/menu_items');
           this.menuItems = response.data;
         } catch (error) {
           console.error('Error fetching menu items:', error);
