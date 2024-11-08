@@ -35,6 +35,7 @@ export default {
     completeTransaction() {
       console.log('Transaction complete:', this.orderedItems);
       this.$emit('close');
+      this.$emit('empty-kart');
     },
   }
 };

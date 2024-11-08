@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api';
 
 export default {
   name: 'MealItems',
@@ -51,7 +51,7 @@ export default {
     async fetchMenuItems() {
       try {
         // Example usage of env var
-        const response = await axios.get('/api/v1/menu_items');
+        const response = await api.get('/menu_items');
         this.menuItems = response.data;
       } catch (error) {
         console.error('Error fetching menu items:', error);

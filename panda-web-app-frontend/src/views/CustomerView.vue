@@ -49,7 +49,7 @@
     </div>
     <!--delete popup when dynamically made-->
     <Popup v-if="popupType" :menu_item="popupType" :cat="popupItems" @close="closePopup" @add-to-kart="addToKart($event)"/>
-    <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart"/>
+    <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
 
     <footer>
       <router-link to="/">Go to Home</router-link>
@@ -92,6 +92,8 @@ export default {
     },
     closeKart() {
       this.kartVisible = false;
+    },
+    emptyKart() {
       this.orderedItems = [];
     },
     addToKart(items) {
@@ -133,16 +135,24 @@ export default {
   position: absolute;
   top: 10px; /* Adjust as needed */
   right: 10px; /* Adjust as needed */
-  width: 50px; /* Adjust as needed */
-  height: 50px; /* Adjust as needed */
+  width: 75px; /* Adjust as needed */
+  height: 75px; /* Adjust as needed */
   border-radius: 50%;
-  background-color: white;
+  transition: scale 0.5s ease;
+  transition: background-color 0.25s ease;
+  background-color: var(--surfaceColor);
   border: 1px solid black;
 }
 
 .kart:hover {
   background-color: var(--accentColorWeak);
   cursor: hand;
+  scale: 1.1;
+}
+
+.kart:active {
+  scale: 1;
+  background-color: var(--accentColor);
 }
 
 .circle:hover {

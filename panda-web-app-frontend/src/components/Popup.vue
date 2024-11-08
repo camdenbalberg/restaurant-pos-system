@@ -51,10 +51,10 @@ export default {
         this.selected_items.unshift(this.menu_item);
         console.log('Emitting add-to-kart:', this.selected_items);
         this.$emit('add-to-kart', this.selected_items);
+        this.$emit('close');
       } else {
         console.log('Please select all items before adding to the cart.');
       }
-      this.$emit('close');
     },
     currentItems(index, item) {
       console.log('Selected Item:', item);
