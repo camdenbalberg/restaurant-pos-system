@@ -5,7 +5,7 @@
       <RouterLink to="/">
         <button class="scaffold-item" id="home-button">Home</button>
       </RouterLink>
-      <img class="scaffold-item" src="./assets/biglogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo">
+      <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo">
       <div class="scaffold-item" id="weather">Loading weather...</div>
     </div>
     <router-view />
