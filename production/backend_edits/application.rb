@@ -1,3 +1,4 @@
+## /backend/config/application.rb
 require_relative "boot"
 
 require "rails/all"
@@ -23,9 +24,7 @@ module PandaWebAppBackend
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    config.hosts << "backend"
-    config.hosts << "frontend"
-    config.hosts << "localhost"
+    config.hosts << "frontend-12-team-12-39b757c25b17.herokuapp.com"
+    config.hosts << "backend-12-team-12-699b369e6ba9.herokuapp.com"
   end
 end

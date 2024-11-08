@@ -90,4 +90,4 @@ export default {
 .menu-item p {
     margin: 5px 0;
 }
-</style>  
+</style>

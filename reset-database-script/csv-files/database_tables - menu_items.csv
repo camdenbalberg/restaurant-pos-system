@@ -1,0 +1,38 @@
+menu_id,menu_name,price,category
+0,A La Carte Entree,5.20,meal
+1,A La Carte Side,4.40,meal
+2,Bowl,8.30,meal
+3,Plate,9.80,meal
+4,Bigger Plate,11.30,meal
+5,Panda Cub Meal,6.60,meal
+6,Premium Panda Cub Meal,7.60,meal
+7,Blazing Bourbon Chicken,0.00,entree
+8,Orange Chicken,0.00,entree
+9,Black Pepper Angus Steak,1.50,entree
+10,Honey Walnut Shrimp,1.50,entree
+11,Grilled Teriyaki Chicken,0.00,entree
+12,Broccoli Beef,0.00,entree
+13,Kung Pao Chicken,0.00,entree
+14,Honey Sesame Chicken Breast,0.00,entree
+15,Beijing Beef,0.00,entree
+16,Mushroom Chicken,0.00,entree
+17,SweetFire Chicken Breast,0.00,entree
+18,String Bean Chicken Breast,0.00,entree
+19,Black pepper Chicken,0.00,entree
+20,Super Greens,0.00,side
+21,Chow Mein,0.00,side
+22,Fried Rice,0.00,side
+23,White Steamed Rice,0.00,side
+24,Chicken Egg Roll (2 pc),2.00,appetizer
+25,Chicken Egg Roll (6 pc),11.20,appetizer
+26,Veggie Spring Roll (1 pc),2.00,appetizer
+27,Veggie Spring Roll (12 pc),11.20,appetizer
+28,Cream Cheese Rangoon (3 pc),2.00,appetizer
+29,Apple Pie Roll (1 pc),2.00,appetizer
+30,Apple Pie Roll (4 pc),6.20,appetizer
+31,Apple Pie Roll (6 pc),8.00,appetizer
+32,Small Drink,2.10,drink
+33,Medium Drink,2.30,drink
+34,Large Drink,2.50,drink
+35,Aquafina,2.30,drink
+36,Gatorade Lemon Lime,2.70,drink
