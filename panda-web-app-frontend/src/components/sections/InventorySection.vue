@@ -25,48 +25,50 @@ import axios from 'axios';
     name: 'InventorySection',
     methods: {
       async addMenuItem() {
-        // Prompt for menu name, price, and recipe
         const menuName = prompt("Enter menu name:");
+        const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
         const price = prompt("Enter price:");
         const recipeInput = prompt("Enter recipe (comma-separated integers):");
-        const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
+        const quantityInput = prompt("For the recipe items you gave list their quantities (comma-separated integers):");
+        
+        // Validate inputs
+        const error = this.validateInputs(menuName, category, price, recipeInput, quantityInput);
+        if (error) {
+          alert(error);
+          return;
+        }
+        
+        const priceNum = parseFloat(price);
+        const recipe = recipeInput.split(',').map(id => id.trim());
+        const quantities = quantityInput.split(',').map(id => id.trim());
 
-        if (menuName && price && category) {
+        const data = {
+          menu_name: menuName,
+          price: priceNum,
+          category: category
+        };
 
-          // Here you can process the new menu item (e.g., save it to a list or send to a server)
-          const data = {
-            menu_name: menuName,
-            price: parseFloat(price),
-            category: category
-          };
-          const recipe = recipeInput.split(',').map(id => id.trim());
-            
-          console.log(data);
+        try {
+          // Make the request to add the menu item
+          const response = await axios.post('/api/v1/menu_items/add_menu_item', data);
+          console.log('Menu item added:', response.data);
 
-          const response = await axios.post('/api/v1/menu_items/add_menu_item', data)
-          .then(response => {
-            console.log('Menu item added:', response.data);
-            //if successfully added menu item then add recipe.
-            console.log(response.data.menu_id, " AHHHHH ", recipe.join(','))
-            this.addRecipe(response.data.menu_id, recipe);
+          // If the menu item is successfully added, then add the recipe
+          this.addRecipe(response.data.menu_id, recipe, quantities);
 
-            // Optionally, alert the user or refresh data after success
-            alert(`Added ${category}${menuName} with price $${price} and recipe ingredients:`);
-          })
-          .catch(error => {
-            console.error('Error adding menu item:', error.response ? error.response.data : error.message);
-            alert('Failed to add menu item.');
-          });
-
-        } else {
-          alert("Please fill out all fields.");
+          // Alert the user of success
+          alert(`Added ${category} ${menuName} with price $${price} and recipe ingredients: ${recipe.join(', ')}`);
+        } catch (error) {
+          console.error('Error adding menu item:', error.response ? error.response.data : error.message);
+          alert('Failed to add menu item.');
         }
       },
 
-      async addRecipe(menuId, recipe) {
+      async addRecipe(menuId, recipe, quantities) {
         const data = {
           menu_id: menuId,
-          recipe: recipe
+          recipe: recipe,
+          quantities: quantities
         };
         console.log("Starting add recipe: ", data);
         try {
@@ -79,6 +81,44 @@ import axios from 'axios';
           console.error('Error adding recipe:', error.response ? error.response.data : error.message);
           alert('Failed to add recipe.');
         }
+      },
+
+      validateInputs(menuName, category, price, recipeInput, quantityInput) {
+        if (!menuName || !category || !price || !recipeInput || !quantityInput) {
+          return "Please fill out all fields.";
+        }
+
+        // Category validation: Check if category is one of the allowed options
+        const validCategories = ['meal', 'entree', 'side', 'drink', 'appetizer'];
+        if (!validCategories.includes(category.toLowerCase())) {
+          return "Invalid category. Please select one from: meal, entree, side, drink, appetizer.";
+        }
+
+        // Price validation: Ensure price is a valid number and >= 0
+        const priceNum = parseFloat(price);
+        if (isNaN(priceNum) || priceNum < 0) {
+          return "Price must be a number greater than or equal to 0.";
+        }
+
+        // Recipe input validation: Ensure the recipe is a comma-separated list of integers
+        const recipe = recipeInput.split(',').map(id => id.trim());
+        if (recipe.some(id => isNaN(parseInt(id)))) {
+          return "Recipe input must be a list of integers.";
+        }
+
+        // Quantity input validation: Ensure quantities are a comma-separated list of integers
+        const quantities = quantityInput.split(',').map(id => id.trim());
+        if (quantities.some(qty => isNaN(parseInt(qty)))) {
+          return "Quantity input must be a list of integers.";
+        }
+
+        // Ensure the number of quantities matches the number of recipes
+        if (recipe.length !== quantities.length) {
+          return "The number of quantities must match the number of recipes.";
+        }
+
+        // All checks passed, return null indicating no error
+        return null;
       }
     }
   };
