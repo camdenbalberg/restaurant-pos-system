@@ -143,16 +143,26 @@
   }
 
   #time {
-    margin-right: 30px;
+    margin-right: 40px;
     text-align: left;
+    font-family: "Dongle", arial;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: 0px;
   }
 
   #clock {
-    font-size: 24px;
+    font-size: 40px;
+    margin: -15px;
+    padding: 0px;
   }
 
   #uptime {
     color: var(--accentColorIntense);
+    font-size: 30px;
+    margin: -15px;
+    padding: 0px;
   }
 </style>
 
