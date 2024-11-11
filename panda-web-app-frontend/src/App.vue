@@ -7,10 +7,17 @@
       </RouterLink>
       
       <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
-      <div class="scaffold-item" id="weather">Loading weather...</div>
-    </div>
+      <div class="scaffold-item">
+        <div id="clock">
+          <div v-show="time">{{ time }}</div>
+          <!-- TODO: Add uptime here -->
+        </div>
 
-    <div v-show="time">Time:{{ time }}</div>
+        <div id="weather">
+          Loading weather...
+        </div>
+      </div>
+    </div>
 
     <router-view />
   </div>
