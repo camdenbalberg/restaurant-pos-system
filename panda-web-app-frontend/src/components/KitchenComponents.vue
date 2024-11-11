@@ -26,6 +26,7 @@
 import api from '@/api';
 import axios from 'axios';
 import { fetchTransactions } from '../api/transactionService';
+import { fetchMenuItems } from '../api/menuService';
 
 export default {
   data() {
@@ -37,7 +38,7 @@ export default {
   },
   mounted() {
     this.loadTransctions();
-    this.fetchMenuItems();
+    this.loadMenuItems();
   },
   methods: {
     async loadTransctions() {
@@ -50,15 +51,15 @@ export default {
       }
     },
 
-    async fetchMenuItems() {
+    async loadMenuItems() {
       try {
-        const response = await api.get(`/menu_items`);
-        this.menuItems = response.data.reduce((acc, item) => {
+        const menuData = await fetchMenuItems();  // Fetch menu items from API
+        this.menuItems = menuData.reduce((acc, item) => {
           acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
           return acc;
         }, {});
       } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error loading menu items:', error);
       }
     },
 
