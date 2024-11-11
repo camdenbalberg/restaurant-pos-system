@@ -8,7 +8,7 @@
         <button class="report-button" @click="handleReport('Sales-report')">Sales Report</button>
       </div>
       
-      <!-- Table for displaying the sales per hour -->
+      <!-- X-report Table -->
       <div v-if="hourlySales.length">
         <table class="report-table">
           <thead>
@@ -21,6 +21,23 @@
             <tr v-for="entry in hourlySales" :key="entry.hour">
               <td>{{ entry.hour }}:00</td>
               <td>{{ entry.count }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Z-report Table -->
+      <div v-if="hourlyIncome.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Hour</th>
+              <th>Sales Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in hourlyIncome" :key="entry.hour">
+              <td>{{ entry.hour }}:00</td>
+              <td>{{ entry.amount }}</td>
             </tr>
           </tbody>
         </table>
@@ -42,7 +59,8 @@ export default {
       transactions: [],
       loading: true,
       menuItems: {},
-      hourlySales: [], // Store sales count per hour
+      hourlySales: [], 
+      hourlyIncome: [],
     };
   },
   mounted() {
@@ -54,8 +72,8 @@ export default {
       try {
         console.log("Fetching transactions...");
         this.transactions = await fetchTransactions(); // Call the shared fetchTransactions function
-        this.calculateSalesPerHour(); // Calculate sales per hour after loading transactions
-        
+        // this.calculateSalesPerHour(); // Calculate sales per hour after loading transactions
+        // this.calculateIncomePerHour();
       } catch (error) {
         console.error('Error fetching transactions:', error);
       }
@@ -73,7 +91,7 @@ export default {
       }
     },
 
-    calculateSalesPerHour() {
+    calculateSalesPerHour() {// X-report
       const salesCount = Array(12).fill(0); // 12 hours from 10 AM to 9 PM
 
       this.transactions.forEach(transaction => {
@@ -97,15 +115,44 @@ export default {
       }));
     },
 
+    calculateIncomePerHour() { //Z-report
+      const incomeCount = Array(12).fill(0);
+
+      this.transactions.forEach(transaction => {
+        // Extract the hour part from "HH:MM" format
+        const [hourString] = transaction.formatted_transaction_time .split(":");
+        const hour = parseInt(hourString, 10); // Convert to integer
+
+        if (!isNaN(hour) && hour >= 10 && hour <= 21) {
+          // Map hour to index (10AM = 0, 11AM = 1, ..., 9PM = 11)
+          const hourIndex = hour - 10;
+          incomeCount[hourIndex] += transaction.total_price;
+        } else {
+          console.error("Invalid or out-of-range hour for formatted_transaction_time :", transaction.formatted_transaction_time );
+        }
+      });
+
+      this.hourlyIncome = incomeCount.map((amount, index) => ({
+        hour: 10 + index,
+        amount,
+      }));
+    },
+
     async handleReport(reportType) {
-      // Handle the report generation
+      await this.loadTransactions(); // Load the latest transactions each time a report is requested
+      this.hourlySales = [];
+      this.hourlyIncome = [];
+
       switch (reportType) {
         case 'X-report':
           console.log('Generating X-report...');
-          await this.loadTransactions(); // Re-fetch transactions and calculate sales per hour
+          // await this.loadTransactions(); // Re-fetch transactions and calculate sales per hour
+          this.calculateSalesPerHour();
           break;
         case 'Z-report':
           console.log('Generating Z-report...');
+          // await this.loadTransactions();
+          this.calculateIncomePerHour();
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');
