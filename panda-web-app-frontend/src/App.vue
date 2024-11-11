@@ -14,8 +14,7 @@
       <div class="scaffold-item">
         <div id="time">
           <div v-show="time" id="clock">{{ time }}</div>
-          <div id="uptime">running 12:34:56</div>
-          <!-- TODO: Add uptime here -->
+          <div id="uptime">running {{ uptime }}</div>
         </div>
 
         <div id="weather">
@@ -39,12 +38,15 @@
     data() {
       return {
         time: "",
+        startTime: new Date(),
+        uptime: "0:0:0",
       };
     },
 
     mounted() {
       setInterval(() => {
         this.time = this.getTime();
+        this.uptime = this.getUptime();
       }, 1 * 1000);
     
       this.getWeather();  // get weather
@@ -86,6 +88,15 @@
         var date = new Date().toDateString();
         var time = new Date().toLocaleTimeString('en-US', { hour12: false });
         return date + " -> " + time;
+      },
+
+      getUptime() {
+        var currentTime = new Date();
+        var diffTime = Math.abs(currentTime - this.startTime);
+        var diffHours = Math.floor(diffTime / (60 * 60 * 1000)); 
+        var diffMinutes = Math.floor(diffTime / (60 * 1000)); 
+        var diffSeconds = Math.floor(diffTime / (1000)); 
+        return diffHours + ":" + diffMinutes + ":" + diffSeconds;
       },
 
       goHome() {
