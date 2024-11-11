@@ -78,7 +78,9 @@
       },
 
       getTime() {
-        return new Date().toLocaleTimeString();
+        var date = new Date().toDateString();
+        var time = new Date().toLocaleTimeString('en-US', { hour12: false });
+        return date + " -> " + time;
       },
 
       goHome() {
@@ -89,6 +91,41 @@
 </script>
 
 <style scoped>
+  .scaffold {
+    width: 100%;
+    height: 70px;
+    position: sticky;
+    top: 0;
+
+    background: var(--surfaceColor);
+    backdrop-filter: blur(1000px);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+
+  .scaffold-item {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    padding-left: 50px;
+    padding-right: 50px;
+    /* background: rgba(--accentColorWeak); */
+
+    color: --var(--textColor);
+    text-decoration: none;
+  }
+
+  #home-button {
+    background: rgba(--accentColorWeak);
+  }
+
+  #scaffold-logo {
+    height: 90%;
+  }
+
   #clock {
     margin-right: 30px;
   }
