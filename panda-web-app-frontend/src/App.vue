@@ -88,7 +88,9 @@
   }
 </script>
 
-<style>
-
+<style scoped>
+  #clock {
+    margin-right: 30px;
+  }
 </style>
 
