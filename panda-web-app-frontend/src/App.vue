@@ -39,7 +39,7 @@
       return {
         time: "",
         startTime: new Date(),
-        uptime: "0:0:0",
+        uptime: "00:00:00",
       };
     },
 
@@ -94,8 +94,14 @@
         var currentTime = new Date();
         var diffTime = Math.abs(currentTime - this.startTime);
         var diffHours = Math.floor(diffTime / (60 * 60 * 1000)); 
-        var diffMinutes = Math.floor(diffTime / (60 * 1000)); 
-        var diffSeconds = Math.floor(diffTime / (1000)); 
+        var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60; 
+        var diffSeconds = Math.floor(diffTime / (1000)) % 60; 
+        if (diffHours == 0) {
+          diffHours = "00";
+        }
+        if (diffMinutes == 0) {
+          diffMinutes = "00";
+        }
         return diffHours + ":" + diffMinutes + ":" + diffSeconds;
       },
 
