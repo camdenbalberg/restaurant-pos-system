@@ -61,6 +61,7 @@ export default {
       menuItems: {},
       hourlySales: [], 
       hourlyIncome: [],
+      zReportGenerated: false,
     };
   },
   mounted() {
@@ -72,8 +73,6 @@ export default {
       try {
         console.log("Fetching transactions...");
         this.transactions = await fetchTransactions(); // Call the shared fetchTransactions function
-        // this.calculateSalesPerHour(); // Calculate sales per hour after loading transactions
-        // this.calculateIncomePerHour();
       } catch (error) {
         console.error('Error fetching transactions:', error);
       }
@@ -146,13 +145,17 @@ export default {
       switch (reportType) {
         case 'X-report':
           console.log('Generating X-report...');
-          // await this.loadTransactions(); // Re-fetch transactions and calculate sales per hour
           this.calculateSalesPerHour();
           break;
         case 'Z-report':
-          console.log('Generating Z-report...');
-          // await this.loadTransactions();
-          this.calculateIncomePerHour();
+        if (this.zReportGenerated) {
+            alert('Z-report has already been generated today.');
+            this.hourlyIncome = []; // Clear the table if Z-report has been generated
+          } else {
+            console.log('Generating Z-report...');
+            this.calculateIncomePerHour();
+            this.zReportGenerated = true; // Set the flag after first generation
+          }
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');

@@ -15,7 +15,6 @@ export const fetchTransactions = async () => {
     await Promise.all(transactions.map(async (transaction) => {
       const saleItemsResponse = await axios.get(`/api/v1/sale_items/by_transaction_id/${transaction.transaction_id}`);
       transaction.sale_items = saleItemsResponse.data;
-      console.log(transaction.formatted_transaction_time);
     }));
 
     return transactions;
