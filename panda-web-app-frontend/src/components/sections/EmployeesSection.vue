@@ -177,7 +177,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api';
 
 export default {
   name: 'EmployeesSection',
@@ -205,7 +205,7 @@ export default {
   methods: {
     async fetchEmployees() {
       try {
-        const response = await axios.get('/api/v1/employees');
+        const response = await api.get('/employees');
         this.employees = response.data;
       } catch (error) {
         console.error('Error fetching employees:', error);
@@ -236,7 +236,7 @@ export default {
 
     async handleDelete() {
       try {
-        await axios.delete(`/api/v1/employees/${this.deleteEmployee.employee_id}`);
+        await api.delete(`/employees/${this.deleteEmployee.employee_id}`);
         this.employees = this.employees.filter(
           emp => emp.employee_id !== this.deleteEmployee.employee_id
         );
@@ -252,8 +252,8 @@ export default {
       try {
         if (this.editingEmployee) {
           // Update existing employee
-          await axios.post(
-            `/api/v1/employees/${this.editingEmployee.employee_id}`,
+          await api.post(
+            `/employees/add_employee/${this.editingEmployee.employee_id}`,
             this.formData
           );
           const index = this.employees.findIndex(
@@ -262,7 +262,7 @@ export default {
           this.employees[index] = { ...this.formData, employee_id: this.editingEmployee.employee_id };
         } else {
           // Add new employee
-          const response = await axios.post('/api/v1/employees', this.formData);
+          const response = await api.post('/employees/add_employee', this.formData);
           this.employees.push(response.data);
         }
         this.closeForm();

@@ -8,6 +8,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :employees, only: [ :index, :show ]
+      post '/employees/add_employee', to: 'employees#add_employee'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
       resources :employees, only: [ :index, :show ] do
         collection do
           get "by_password/:password", to: "employees#by_password"
