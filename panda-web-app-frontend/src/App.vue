@@ -12,8 +12,8 @@
       
       <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
       <div class="scaffold-item">
-        <div id="clock">
-          <div v-show="time">{{ time }}</div>
+        <div id="time">
+          <div v-show="time" id="clock">{{ time }}</div>
           <div id="uptime">running 12:34:56</div>
           <!-- TODO: Add uptime here -->
         </div>
@@ -96,6 +96,17 @@
 </script>
 
 <style scoped>
+  :root {
+    --accentColor: #dc8a78;
+    --accentColorIntense: #db5132;
+    --accentColorWeak: #edbeb4;
+    --surfaceColor: #ccd0da;
+    --backgroundColor: #eff1f5;
+    --borderColor: #dce0e8;
+    --textColor: #4c4f69;
+    --subTextColor: #5c5f77;
+  }
+
   .scaffold {
     width: 100%;
     height: 70px;
@@ -131,12 +142,17 @@
     height: 90%;
   }
 
-  #clock {
+  #time {
     margin-right: 30px;
+    text-align: left;
+  }
+
+  #clock {
+    font-size: 24px;
   }
 
   #uptime {
-    color: var(--accentColor);
+    color: var(--accentColorIntense);
   }
 </style>
 
