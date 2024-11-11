@@ -1,5 +1,9 @@
 <!-- src/App.vue -->
 <template>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+
   <div id="app">
     <div class="scaffold">
       <RouterLink to="/">
@@ -10,6 +14,7 @@
       <div class="scaffold-item">
         <div id="clock">
           <div v-show="time">{{ time }}</div>
+          <div id="uptime">running 12:34:56</div>
           <!-- TODO: Add uptime here -->
         </div>
 
@@ -114,7 +119,7 @@
     padding-right: 50px;
     /* background: rgba(--accentColorWeak); */
 
-    color: --var(--textColor);
+    color: var(--textColor);
     text-decoration: none;
   }
 
@@ -128,6 +133,10 @@
 
   #clock {
     margin-right: 30px;
+  }
+
+  #uptime {
+    color: var(--accentColor);
   }
 </style>
 
