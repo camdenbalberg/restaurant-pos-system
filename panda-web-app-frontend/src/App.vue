@@ -96,12 +96,18 @@
         var diffHours = Math.floor(diffTime / (60 * 60 * 1000)); 
         var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60; 
         var diffSeconds = Math.floor(diffTime / (1000)) % 60; 
-        if (diffHours == 0) {
-          diffHours = "00";
+
+        // Ensure number is always 2 digits
+        if (diffHours < 10) {
+          diffHours = "0" + diffHours;
         }
-        if (diffMinutes == 0) {
-          diffMinutes = "00";
+        if (diffMinutes < 10) {
+          diffMinutes = "0" + diffMinutes;
         }
+        if (diffSeconds < 10) {
+          diffSeconds = "0" + diffSeconds;
+        }
+
         return diffHours + ":" + diffMinutes + ":" + diffSeconds;
       },
 
@@ -122,6 +128,9 @@
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
     --subTextColor: #5c5f77;
+
+    font-family: "Dongle", arial;
+    font-size: 40px;
   }
 
   .scaffold {
@@ -136,7 +145,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
   }
 
   .scaffold-item {
