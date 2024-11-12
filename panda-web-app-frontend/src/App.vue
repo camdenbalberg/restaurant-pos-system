@@ -133,6 +133,8 @@
         }
 
       }
+
+
     }
   }
 </script>
@@ -200,7 +202,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: 0px;
+    align-items: flex-start;
   }
 
   #clock {
