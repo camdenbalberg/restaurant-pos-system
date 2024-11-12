@@ -17,7 +17,7 @@
           <div id="uptime">running {{ uptime }}</div>
         </div>
 
-        <div id="weather">
+        <div id="weather" @click="weatherClicked">
           Loading weather...
         </div>
       </div>
@@ -40,6 +40,9 @@
         time: "",
         startTime: new Date(),
         uptime: "00:00:00",
+        weatherC: 9999,
+        weatherUnitsCelcius: true,
+        weatherDescription: "",
       };
     },
 
@@ -72,10 +75,10 @@
                 return response.json();
             })
             .then(data => {
-                const temperature = data.main.temp;
-                const weatherDescription = data.weather[0].description;
+                this.weatherC = data.main.temp;
+                this.weatherDescription = data.weather[0].description;
                 document.getElementById('weather').innerText = 
-                    `Temperature: ${temperature}°C\nCondition: ${weatherDescription}`;
+                    `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
@@ -114,6 +117,22 @@
       goHome() {
         return this.$router.push('/');
       },
+
+      weatherClicked() {
+        if (this.weatherUnitsCelcius) {
+          // Switch to F
+          this.weatherUnitsCelcius = false;
+          var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
+          document.getElementById('weather').innerText = 
+            `Temperature: ${weatherF}°F\nCondition: ${this.weatherDescription}`;
+        } else {
+          // Switch to C
+          this.weatherUnitsCelcius = true;
+          document.getElementById('weather').innerText = 
+            `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+        }
+
+      }
     }
   }
 </script>
@@ -187,5 +206,29 @@
     font-size: 30px;
     padding: 0px;
   }
+
+  /* Weather */
+
+  #weather {
+    /* background-color: var(--surfaceColor); */
+    scale: 1;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    transition: scale 0.5s ease;
+    transition: background-color 0.25s ease;
+  }
+
+  #weather:hover {
+    background-color: var(--accentColorWeak);
+    scale: 1;
+  }
+
+  #weather:active {
+    scale: 1;
+    background-color: var(--accentColor);
+}
 </style>
 
