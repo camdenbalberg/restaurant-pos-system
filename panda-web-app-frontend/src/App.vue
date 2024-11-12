@@ -147,6 +147,7 @@
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
     --subTextColor: #5c5f77;
+    --transparent: #00000000;
   }
 
   .scaffold {
@@ -186,7 +187,7 @@
   }
 
   #home-button {
-    background: rgba(--accentColorWeak);
+    background: rgba(--transparent);
   }
 
   #scaffold-logo {
