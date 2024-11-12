@@ -128,9 +128,6 @@
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
     --subTextColor: #5c5f77;
-
-    font-family: "Dongle", arial;
-    font-size: 40px;
   }
 
   .scaffold {
@@ -145,6 +142,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    font-family: "Dongle", arial;
+    font-size: 30px;
+    line-height: 22px;
   }
 
   .scaffold-item {
@@ -170,7 +171,6 @@
   #time {
     margin-right: 40px;
     text-align: left;
-    font-family: "Dongle", arial;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -179,14 +179,12 @@
 
   #clock {
     font-size: 40px;
-    margin: -15px;
     padding: 0px;
   }
 
   #uptime {
     color: var(--accentColorIntense);
     font-size: 30px;
-    margin: -15px;
     padding: 0px;
   }
 </style>
