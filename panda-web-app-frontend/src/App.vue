@@ -11,13 +11,13 @@
       </RouterLink>
       
       <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
-      <div class="scaffold-item">
-        <div id="time">
+      <div class="right-side">
+        <div class="scaffold-item" id="time">
           <div v-show="time" id="clock">{{ time }}</div>
           <div id="uptime">running {{ uptime }}</div>
         </div>
 
-        <div id="weather" @click="weatherClicked">
+        <div class="scaffold-item" id="weather" @click="weatherClicked">
           Loading weather...
         </div>
       </div>
@@ -177,6 +177,12 @@
 
     color: var(--textColor);
     text-decoration: none;
+  }
+
+  .right-side {
+    height: 70px;
+    display: flex;
+    align-items: center;
   }
 
   #home-button {
