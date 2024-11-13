@@ -13,9 +13,9 @@
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
-          <div class="scaffold-item" id="time" @click="flashScaffolding">
+          <div class="scaffold-item" id="time" @click="timeClicked">
             <div v-show="time" id="clock">{{ time }}</div>
-            <div id="uptime">running {{ uptime }}</div>
+            <div id="uptime" v-show="timeConfig">running {{ uptime }}</div>
           </div>
 
           <div class="scaffold-item" id="weather" @click="weatherClicked">
@@ -44,8 +44,9 @@
         time: "",
         startTime: new Date(),
         uptime: "00:00:00",
+        timeConfig: 0,
         weatherC: 9999,
-        weatherUnits: 0,  // 0F, 1C, 2K
+        weatherConfig: 0,  // 0F, 1C, 2K
         weatherDescription: "",
       };
     },
@@ -128,7 +129,7 @@
       },
 
       weatherClicked() {
-        switch (this.weatherUnits) {
+        switch (this.weatherConfig) {
           case 0:
             // Switch to F
             var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
@@ -143,15 +144,19 @@
             break;
           case 2:
             // Switch to C
-            this.weatherUnitsCelcius = true;
+            this.weatherConfigCelcius = true;
             document.getElementById('weather').innerText = 
               `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
             break;
           default:
             console.log("You should not see this");
         }
-        this.weatherUnits = (this.weatherUnits + 1) % 3
+        this.weatherConfig = (this.weatherConfig + 1) % 3
       },
+
+      timeClicked() {
+        this.timeConfig = (this.timeConfig + 1) % 2
+      }
     }
   }
 </script>
@@ -260,6 +265,20 @@
   #weather:active {
     scale: 1;
     background-color: var(--accentColor);
-}
+  }
+
+  #time {
+    border-radius: 5px;
+    transition: scale 0.5s ease;
+    transition: background-color 0.25s ease;
+  }
+
+  #time:hover {
+    background-color: var(--accentColorWeak);
+  }
+
+  #time:active {
+    background-color: var(--accentColor);
+  }
 </style>
 
