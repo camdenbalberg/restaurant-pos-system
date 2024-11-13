@@ -2,7 +2,7 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
-      <div class="date-filter">
+      <div v-if="showDateFilter" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
@@ -11,9 +11,14 @@
       <div class="report-buttons">
         <button class="report-button" @click="handleReport('X-report')">X-report</button>
         <button class="report-button" @click="handleReport('Z-report')">Z-report</button>
-        <button class="report-button" @click="handleReport('Sales-report')">Sales Report</button>
+        <button v-if="!showDateFilter" class="report-button" @click="handleSalesReport">Sales report</button>
+        <button v-if="showDateFilter" class="report-button" @click="handleReport('Sales-report')">Press again</button>
       </div>
       
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
+
       <!-- X-report Table -->
       <div v-if="hourlySales.length">
         <table class="report-table">
@@ -31,6 +36,7 @@
           </tbody>
         </table>
       </div>
+
       <!-- Z-report Table -->
       <div v-if="hourlyIncome.length">
         <table class="report-table">
@@ -48,6 +54,7 @@
           </tbody>
         </table>
       </div>
+
       <!-- Sales Report Table -->
       <div v-if="itemSales.length">
         <table class="report-table">
@@ -81,7 +88,7 @@ export default {
   data() {
     return {
       transactions: [],
-      loading: true,
+      loading: false,
       menuItems: {},
       hourlySales: [], 
       hourlyIncome: [],
@@ -89,6 +96,7 @@ export default {
       zReportGenerated: false,
       startDate: null,
       endDate: null,
+      showDateFilter: false,
     };
   },
   mounted() {
@@ -139,6 +147,7 @@ export default {
         hour: 10 + index, // Convert index back to actual hour (10:00 - 21:00)
         count,
       }));
+      this.loading = false;
     },
 
     calculateIncomePerHour() { //Z-report
@@ -162,6 +171,8 @@ export default {
         hour: 10 + index,
         amount,
       }));
+      this.loading = false;
+      this.showDateFilter = false;
     },
 
     async calculateMenuItemsPerHour() { //Sales report
@@ -169,7 +180,7 @@ export default {
         alert("Please select both start and end dates.");
         return;
       }
-
+      this.loading = true;
       console.log("Fetching transactions by date range...");
 
       const startDate = new Date(this.startDate);
@@ -191,8 +202,13 @@ export default {
               const transactions = await fetchTransactionsForDate(date);
               return transactions.length ? transactions : null; // Return null if no transactions for that date
             } catch (error) {
-              console.error(`Error fetching transactions for ${date}:`, error);
-              return null; // Skip this date in case of an error
+              if (error.response && error.response.status === 406) {
+                console.warn(`No transactions for date ${date} (406 Not Acceptable)`);
+                return null; // Ignore this date if a 406 error occurs
+              } else {
+                console.error(`Error fetching transactions for ${date}:`, error);
+                return null; // Skip this date in case of an error
+              }
             }
           })
         );
@@ -202,11 +218,9 @@ export default {
 
         // Count sale items by menu_id across all transactions in the range
         allTransactions.forEach(transaction => {
-          console.log(transaction.transaction_id);
           transaction.sale_items.forEach(saleItem => {
             const menuId = saleItem.menu_id;
             const quantity = saleItem.quantity;
-            console.log(menuId + " : " + quantity);
             if (menuItemCounts[menuId]) {
               menuItemCounts[menuId] += quantity;
             } else {
@@ -221,16 +235,25 @@ export default {
           amount: menuItemCounts[menuId]
         }));
         
-        console.log("Menu items counted successfully.");
       } catch (error) {
         console.error('Error fetching transactions by date range:', error);
+      } finally { 
+        this.loading = false;
       }
     },
 
+    async handleSalesReport() {
+      // Show the date filter section only when 'Sales Report' is clicked
+      this.showDateFilter = true;
+      // this.handleReport('Sales-report');
+    },
+
     async handleReport(reportType) {
+      this.loading = true;
       await this.loadTransactions(); // Load the latest transactions each time a report is requested
       this.hourlySales = [];
       this.hourlyIncome = [];
+      this.itemSales = [];
 
       switch (reportType) {
         case 'X-report':
@@ -255,6 +278,7 @@ export default {
           console.log('Unknown report type');
           break;
       }
+      
     }
   }
 };
@@ -283,5 +307,12 @@ export default {
 
 .report-table th {
   background-color: #f4f4f4;
+}
+
+.loading-spinner {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
 }
 </style>
