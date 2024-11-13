@@ -1,51 +1,18 @@
 <template>
   <div class="container">
     <div @click="showKart" class="kart">
-      Kart
+      <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
     <div :class="['button-container', { 'no-scroll': popupType }]">
-      <button @click="showPopup('Bowl', ['entree', 'side'])">
-        <picture>
-          <source srcset="../assets/menu/bowl.avif" type="image/avif">
-          <img src="../assets/menu/bowl.avif" alt="bowl">
-        </picture>
-        Bowl
-      </button>
-      <button @click="showPopup('Plate', ['entree', 'entree', 'side'])">
-        <picture>
-          <source srcset="../assets/menu/plate.avif" type="image/avif">
-          <img src="../assets/menu/plate.avif" alt="bowl">
-        </picture>
-        Plate
-      </button>
-      <button @click="showPopup('Bigger Plate', ['entree', 'entree', 'entree', 'side'])">
-        <picture>
-          <source srcset="../assets/menu/biggerPlate.avif" type="image/avif">
-          <img src="../assets/menu/biggerPlate.avif" alt="bowl">
-        </picture>
-        Bigger Plate
-      </button>
-      <button @click="showPopup('Appetizer', ['appetizer'])">
-        <picture>
-          <source srcset="../assets/menu/bowl.avif" type="image/avif">
-          <img src="../assets/menu/bowl.avif" alt="bowl">
-        </picture>
-        Appetizer
-      </button>
-      <button @click="showPopup('A La Carte', ['entree', 'side'])">
-        <picture>
-          <source srcset="../assets/menu/aLaCarte.avif" type="image/avif">
-          <img src="../assets/menu/aLaCarte.avif" alt="bowl">
-        </picture>
-        A La Carte
-      </button>
-      <button @click="showPopup('Drinks', ['drink1', 'drink2'])">
-        <picture>
-          <source srcset="../assets/menu/drinks.avif" type="image/avif">
-          <img src="../assets/menu/drinks.avif" alt="bowl">
-        </picture>
-        Drink
-      </button>
+      <div v-for="meal in filteredMenuItems" :key="meal">
+        <button @click="handleShowPopup(meal)">
+          <picture>
+            <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
+            <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
+          </picture>
+          {{ meal.menu_name }}
+        </button>
+      </div>
     </div>
     <!--delete popup when dynamically made-->
     <Popup v-if="popupType" :menu_item="popupType" :cat="popupItems" @close="closePopup" @add-to-kart="addToKart($event)"/>
@@ -61,13 +28,12 @@
 //delete popup when dynamically made
 import Popup from '../components/Popup.vue'; // Adjust path if necessary
 import Kart from '../components/Kart.vue'; // Adjust path if necessary
-import Meals from '../components/Meals.vue'; // Adjust path if necessary
+import api from '@/api';
 
 export default {
   name: 'Customer',
   components: {
     Popup,
-    Meals,
     Kart,
   },
   data() {
@@ -76,9 +42,40 @@ export default {
       popupItems: [],
       kartVisible: false,
       orderedItems: [],
+      menuItems: [],
+      categories: [],
     };
   },
+  mounted() {
+    this.fetchMenuItems();
+  },
+  computed: {
+  filteredMenuItems() {
+        return this.menuItems.filter(item => item.category === 'meal');
+    },
+  },
   methods: {
+    async handleShowPopup(meal) {
+      try {
+        const inv_ids = await this.getEntreesSides(meal);
+        this.categories = [];
+        for(let inv_id of inv_ids){
+          if(inv_id.inv_id === 55){
+            for(let i = 0; i < inv_id.quantity; i++){
+              this.categories.push('side');
+            }
+          } else if(inv_id.inv_id === 54){
+            for(let i = 0; i < inv_id.quantity; i++){
+              this.categories.push('entree'); 
+            }
+          }
+        }
+        console.log(this.categories);
+        this.showPopup(meal, this.categories);
+      } catch (error) {
+        console.error('Error showing popup:', error);
+      }
+    },
     showPopup(type, items) {
       this.popupType = type;
       this.popupItems = items;
@@ -97,14 +94,38 @@ export default {
       this.orderedItems = [];
     },
     addToKart(items) {
-      //Doesn't quite work because meal is just a string and not a menu_item at the moment
       console.log('Adding to kart:', items);
+      //create a list of items to be added to the kart
       let newItems = [];
       newItems.push(items[0]);
       for(let i = 1; i < items.length; i++){
-        newItems.push(items[i].menu_name);
+        newItems.push(items[i]);
       }
       this.orderedItems.push(newItems);
+    },
+    async fetchMenuItems() {
+      try {
+          // Example usage of env var
+          console.log(import.meta.env.VITE_API_BACKEND_URL);
+          const response = await api.get('/menu_items');
+          this.menuItems = response.data;
+      } catch (error) {
+          console.error('Error fetching menu items:', error);
+      } finally {
+          this.loading = false;
+      }
+    },
+    async getEntreesSides(meal) {
+        //get all items corresponding to the meal and put in a list
+        console.log(meal);
+        //gets the recipe for the meal
+        const response = await api.get(`/recipes/${meal.menu_id}`);
+        console.log(response.data);
+        let entreesSides = response.data;
+        //filter so only contains entrees and sides
+        entreesSides = entreesSides.filter(item => item.inv_id === 55 || item.inv_id === 54);
+        console.log(entreesSides);
+        return entreesSides;
     },
   },
 };
@@ -153,6 +174,13 @@ export default {
 .kart:active {
   scale: 1;
   background-color: var(--accentColor);
+}
+
+.kart-picture {
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
 }
 
 .circle:hover {

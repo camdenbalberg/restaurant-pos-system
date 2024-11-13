@@ -15,12 +15,13 @@
 </template>
 
 <script>
-import MenuItem from './MealItems.vue'; // Adjust path if necessary
+import axios from 'axios';
+import MealItem from './MealItems.vue'; // Adjust path if necessary
 
 export default {
   name: 'Kart',
   components: {
-    MenuItem,
+    MealItem,
   },
   props: {
     orderedItems: {
@@ -32,10 +33,43 @@ export default {
     },
   },
   methods: {
-    completeTransaction() {
-      console.log('Transaction complete:', this.orderedItems);
-      this.$emit('close');
-      this.$emit('empty-kart');
+    async completeTransaction() {
+      try{
+        console.log('Transaction complete:', this.orderedItems);
+        //track the total cost of transaction
+        let cost = 0;
+        //add all sale items for transaction
+        for (const item of this.orderedItems) {
+          for (let i = 1; i < item.length; i++) {
+              console.log('Added Sale Item:', item[i]);
+              console.log('Menu ID:', item[i].menu_id);
+              console.log('Price:', item[i].price);
+              const response = await axios.post('/api/v1/sale_items/add_sale_item', {
+                menu_id: Number(item[i].menu_id),
+                quantity: 1,
+                price: parseFloat(item[i].price),
+              });
+              cost += parseFloat(item[i].price);
+            }
+        }
+
+        //add the transaction
+        const now = new Date();
+        const currentDate = now.toLocaleDateString();
+        const currentTime = now.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        const response = await axios.post('/api/v1/transactions/add_transaction', {
+          date: currentDate,
+          time: currentTime,
+          total_cost: cost,
+        });
+
+        //clear the cart
+        this.$emit('close');
+        this.$emit('empty-kart');
+      }
+      catch (error) {
+        console.error('Error completing transaction:', error);
+      }
     },
   }
 };

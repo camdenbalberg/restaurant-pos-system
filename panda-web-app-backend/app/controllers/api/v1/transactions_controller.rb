@@ -1,6 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
-  skip_before_action :verify_authenticity_token, only: [:toggle_completed]
+  skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
   
   def index
     @transactions = Transaction.all
@@ -65,5 +65,31 @@ class Api::V1::TransactionsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Transaction not found" }, status: :not_found
+  end
+
+  def add_transaction
+    transaction_date = params[:transaction_date]
+    transaction_time = params[:transaction_time]
+    total_price = params[:total_price]
+
+      # Check if all required parameters are present
+    if transaction_date.nil? || transaction_time.nil? || total_price.nil? || is_expense.nil?
+      render json: { error: 'Missing parameters: transaction_date, transaction_time, total_price, is_expense' }, status: :unprocessable_entity
+      return
+    end
+
+    highest_transaction_id = SaleItem.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
+    Rails.logger.info "#{highest_transaction_id}"
+    new_transaction_id = highest_transaction_id + 1
+
+    Rails.logger.info "Received parameters: transaction_date = #{transaction_date}, transaction_time = #{transaction_time}, total_price = #{total_price}, is_expense = #{is_expense}"
+    balance = Transaction.find(params[:highest_transaction_id]).current_balance + total_price;
+    # Create new SaleItem instance
+    new_transaction = SaleItem.new(transaction_id: new_transaction_id, transaction_date: transaction_date, transaction_time: transaction_time, total_price: total_price, is_expense: is_expense, current_balance: balance,employee_id: 0, completed: false)
+    if sale_item.save
+      render json: sale_item, status: :created
+    else
+      render json: { error: 'Failed to create menu item' }, status: :unprocessable_entity
+    end
   end
 end

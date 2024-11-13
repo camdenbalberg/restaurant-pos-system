@@ -62,6 +62,20 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      resources :sale_items, only: [ :index, :show ]
+      post '/sale_items/add_sale_item', to: 'sale_items#add_sale_item'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :transactions, only: [ :index, :show ]
+      post '/transactions/add_transaction', to: 'transactions#add_transaction'
+    end
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

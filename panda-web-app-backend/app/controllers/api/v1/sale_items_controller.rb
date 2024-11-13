@@ -1,4 +1,5 @@
 class Api::V1::SaleItemsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:add_sale_item]
     def index
         @saleitems = SaleItem.all
         render json: @saleitems
@@ -32,4 +33,29 @@ class Api::V1::SaleItemsController < ApplicationController
     rescue ActiveRecord::RecordNotFound
         render json: { error: "No history or records of transactions for this employee"}, status: :not_found
     end
+
+    def add_sale_item
+        menu_id = params[:menu_id]
+        quantity = params[:quantity]
+        price = params[:price]
+
+          # Check if all required parameters are present
+        if menu_id.nil? || quantity.nil? || price.nil?
+          render json: { error: 'Missing parameters: menuId, quantity, or price' }, status: :unprocessable_entity
+          return
+        end
+
+        highest_sale_id = SaleItem.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
+        Rails.logger.info "#{highest_transaction_id}"
+        new_transaction_id = highest_transaction_id + 1
+
+        Rails.logger.info "Received parameters: menuName = #{menu_id}, category = #{quantity}, price = #{price}"
+        # Create new SaleItem instance
+        sale_item = SaleItem.new(transaction_id: new_transaction_id, menu_id: menu_id, quantity: quantity, price: price)
+        if sale_item.save
+          render json: sale_item, status: :created
+        else
+          render json: { error: 'Failed to create menu item' }, status: :unprocessable_entity
+        end
+      end
   end
