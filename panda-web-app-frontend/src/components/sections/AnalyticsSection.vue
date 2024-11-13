@@ -2,12 +2,23 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
+      <div v-if="showDateFilter" class="date-filter">
+        <label>Start Date:</label>
+        <input type="date" v-model="startDate" />
+        <label>End Date:</label>
+        <input type="date" v-model="endDate" />
+      </div>
       <div class="report-buttons">
         <button class="report-button" @click="handleReport('X-report')">X-report</button>
         <button class="report-button" @click="handleReport('Z-report')">Z-report</button>
-        <button class="report-button" @click="handleReport('Sales-report')">Sales Report</button>
+        <button v-if="!showDateFilter" class="report-button" @click="handleSalesReport">Sales report</button>
+        <button v-if="showDateFilter" class="report-button" @click="handleReport('Sales-report')">Press again</button>
       </div>
       
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
+
       <!-- X-report Table -->
       <div v-if="hourlySales.length">
         <table class="report-table">
@@ -25,6 +36,7 @@
           </tbody>
         </table>
       </div>
+
       <!-- Z-report Table -->
       <div v-if="hourlyIncome.length">
         <table class="report-table">
@@ -42,6 +54,24 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Sales Report Table -->
+      <div v-if="itemSales.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Menu Item</th>
+              <th>Sale Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in itemSales" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +80,7 @@
 import api from '@/api';
 import axios from 'axios';
 import { fetchTransactions } from '../../api/transactionService';
+import { fetchTransactionsForDate } from '../../api/transactionService';
 import { fetchMenuItems } from '../../api/menuService';
 
 export default {
@@ -57,11 +88,15 @@ export default {
   data() {
     return {
       transactions: [],
-      loading: true,
+      loading: false,
       menuItems: {},
       hourlySales: [], 
       hourlyIncome: [],
+      itemSales: [],
       zReportGenerated: false,
+      startDate: null,
+      endDate: null,
+      showDateFilter: false,
     };
   },
   mounted() {
@@ -112,6 +147,7 @@ export default {
         hour: 10 + index, // Convert index back to actual hour (10:00 - 21:00)
         count,
       }));
+      this.loading = false;
     },
 
     calculateIncomePerHour() { //Z-report
@@ -135,12 +171,89 @@ export default {
         hour: 10 + index,
         amount,
       }));
+      this.loading = false;
+      this.showDateFilter = false;
+    },
+
+    async calculateMenuItemsPerHour() { //Sales report
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+      console.log("Fetching transactions by date range...");
+
+      const startDate = new Date(this.startDate);
+      const endDate = new Date(this.endDate);
+      const menuItemCounts = {};
+
+      // Generate an array of dates in YYYY-MM-DD format between start and end date
+      const datesInRange = [];
+      let currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        datesInRange.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      try {
+        const transactionsByDate = await Promise.all(
+          datesInRange.map(async date => {
+            try {
+              const transactions = await fetchTransactionsForDate(date);
+              return transactions.length ? transactions : null; // Return null if no transactions for that date
+            } catch (error) {
+              if (error.response && error.response.status === 406) {
+                console.warn(`No transactions for date ${date} (406 Not Acceptable)`);
+                return null; // Ignore this date if a 406 error occurs
+              } else {
+                console.error(`Error fetching transactions for ${date}:`, error);
+                return null; // Skip this date in case of an error
+              }
+            }
+          })
+        );
+
+        // Convert the array from something like "[[],[],[]]" to "[_,_,_]"
+        const allTransactions = transactionsByDate.flat().filter(Boolean);
+
+        // Count sale items by menu_id across all transactions in the range
+        allTransactions.forEach(transaction => {
+          transaction.sale_items.forEach(saleItem => {
+            const menuId = saleItem.menu_id;
+            const quantity = saleItem.quantity;
+            if (menuItemCounts[menuId]) {
+              menuItemCounts[menuId] += quantity;
+            } else {
+              menuItemCounts[menuId] = quantity;
+            }
+          });
+        });
+
+        // Transform the counts into an array for display
+        this.itemSales = Object.keys(menuItemCounts).map(menuId => ({
+          id: this.menuItems[menuId] || menuId, // Get the name if available, otherwise use the ID
+          amount: menuItemCounts[menuId]
+        }));
+        
+      } catch (error) {
+        console.error('Error fetching transactions by date range:', error);
+      } finally { 
+        this.loading = false;
+      }
+    },
+
+    async handleSalesReport() {
+      // Show the date filter section only when 'Sales Report' is clicked
+      this.showDateFilter = true;
+      // this.handleReport('Sales-report');
     },
 
     async handleReport(reportType) {
+      this.loading = true;
       await this.loadTransactions(); // Load the latest transactions each time a report is requested
       this.hourlySales = [];
       this.hourlyIncome = [];
+      this.itemSales = [];
 
       switch (reportType) {
         case 'X-report':
@@ -159,11 +272,13 @@ export default {
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');
+          this.calculateMenuItemsPerHour();
           break;
         default:
           console.log('Unknown report type');
           break;
       }
+      
     }
   }
 };
@@ -192,5 +307,12 @@ export default {
 
 .report-table th {
   background-color: #f4f4f4;
+}
+
+.loading-spinner {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
 }
 </style>

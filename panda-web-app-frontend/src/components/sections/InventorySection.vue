@@ -2,17 +2,45 @@
   <div class="inventory-section">
     <h2>Inventory Management</h2>
     <div class="inventory-content">
-      <div class="inventory-stats">
+      <div v-if="inventoryCount.length" class="inventory-stats">
         <div class="stat-card">
           <h4>Total Items</h4>
-          <p>150</p>
+          <p>{{ inventory_items.length }}</p>
         </div>
         <div class="stat-card">
           <h4>Low Stock Items</h4>
-          <p>12</p>
+          <p>{{ inventoryCount.filter(item => item.needsRestock === 'Yes').length }}</p>
         </div>
       </div>
       <button @click="addMenuItem">Add menu item</button>
+      <button @click="generateInventoryReport">Inventory Report</button>
+
+      <!-- Loading Spinner -->
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
+      
+      <!-- Inventory stock report Table -->
+      <div v-if="inventoryCount.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Item ID</th>
+              <th>Name</th>
+              <th>Stock</th>
+              <th>Needs Restock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in inventoryCount" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.name }}</td>
+              <td>{{ entry.count }}</td>
+              <td>{{ entry.needsRestock }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -20,10 +48,61 @@
   
 <script>
 import axios from 'axios';
+import { fetchInventoryItems } from '../../api/inventoryService';
 
   export default {
     name: 'InventorySection',
+    data() {
+      return {
+        inventory_items: [],
+        inventoryCount: [],
+        loading: false,
+      };
+    },
+    mounted() {
+      this.loadInventory_Items();
+    },
     methods: {
+      async loadInventory_Items() {
+        try {
+          console.log("Fetching inventory items...");
+          const data = await fetchInventoryItems();
+          
+          if (Array.isArray(data) && data.length > 0) {
+            this.inventory_items = data;
+          } else {
+            console.error("Inventory items data is empty or not in expected format.");
+          }
+        } catch (error) {
+          console.error('Error loading inventory items:', error);
+        }
+      },
+
+    async generateInventoryReport() {
+      this.loading = true;
+      await this.loadInventory_Items();
+      if (this.inventory_items.length === 0) {
+        console.warn("No inventory items available for generating report.");
+        return;
+      }
+
+      console.log("Generating inventory report");
+
+      setTimeout(() => {
+        this.inventoryCount = this.inventory_items.map((inventory_item) => {
+          const needsRestock = inventory_item.stock < inventory_item.base_stock;
+          return {
+            id: inventory_item.inv_id,
+            name: inventory_item.inv_name,
+            count: inventory_item.stock,
+            needsRestock: needsRestock ? 'Yes' : 'No'
+          };
+        });
+        this.loading = false; // Stop loading spinner after processing
+        console.log("Inventory report generated.");
+      }, 1000);
+    },
+
       async addMenuItem() {
         const menuName = prompt("Enter menu name:");
         const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
@@ -157,5 +236,28 @@ import axios from 'axios';
     font-size: 1.5rem;
     font-weight: bold;
     color: #2c3e50;
+  }
+
+  .loading-spinner {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #2c3e50;
+  }
+
+  .report-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .report-table th {
+    background-color: #f4f4f4;
   }
   </style>
