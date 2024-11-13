@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import shared from '../shared'
+
 import api from '@/api';
 import axios from 'axios';
 import { fetchTransactions } from '../api/transactionService';
@@ -40,6 +42,11 @@ export default {
     this.loadTransctions();
     this.loadMenuItems();
   },
+
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
+
   methods: {
     async loadTransctions() {
       try {
@@ -56,6 +63,7 @@ export default {
         const menuData = await fetchMenuItems();  // Fetch menu items from API
         this.menuItems = menuData.reduce((acc, item) => {
           acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
+          this.flashScaffolding();
           return acc;
         }, {});
       } catch (error) {

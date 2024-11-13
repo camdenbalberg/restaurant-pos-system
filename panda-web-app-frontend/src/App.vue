@@ -5,20 +5,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
   <div id="app">
-    <div class="scaffold">
-      <RouterLink to="/">
-        <button class="scaffold-item" id="home-button">Home</button>
-      </RouterLink>
-      
-      <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
-      <div class="right-side">
-        <div class="scaffold-item" id="time">
-          <div v-show="time" id="clock">{{ time }}</div>
-          <div id="uptime">running {{ uptime }}</div>
-        </div>
+    <div class="scaffold-overlay">
+      <div class="scaffold">
+        <RouterLink to="/">
+          <button class="scaffold-item" id="home-button">Home</button>
+        </RouterLink>
+        
+        <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
+        <div class="right-side">
+          <div class="scaffold-item" id="time" @click="flashScaffolding">
+            <div v-show="time" id="clock">{{ time }}</div>
+            <div id="uptime">running {{ uptime }}</div>
+          </div>
 
-        <div class="scaffold-item" id="weather" @click="weatherClicked">
-          Loading weather...
+          <div class="scaffold-item" id="weather" @click="weatherClicked">
+            Loading weather...
+          </div>
         </div>
       </div>
     </div>
@@ -30,6 +32,8 @@
 
 
 <script>
+  import shared from './shared'
+
   export default {
     name: 'App',
     components: {
@@ -60,6 +64,10 @@
       }, 24 * 60 * 60 * 1000);  // 24 hours in a day, 60 minutes in an hour, 60 seconds in a minute, 1000 ms in a second
     },
 
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
+    },
+
     methods: {
       async getWeather() {
         //weather script, API connection presently nonfunctional
@@ -79,6 +87,7 @@
                 this.weatherDescription = data.weather[0].description;
                 document.getElementById('weather').innerText = 
                     `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+                this.flashScaffolding();
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
@@ -131,10 +140,7 @@
           document.getElementById('weather').innerText = 
             `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
         }
-
-      }
-
-
+      },
     }
   }
 </script>
@@ -152,12 +158,17 @@
     --transparent: #00000000;
   }
 
-  .scaffold {
+  .scaffold-overlay {
     width: 100%;
     height: 70px;
     position: sticky;
     top: 0;
+    background: var(--accentColorIntense);
+  }
 
+  .scaffold {
+    width: 100%;
+    height: 100%;
     background: var(--surfaceColor);
     backdrop-filter: blur(1000px);
 
@@ -189,7 +200,7 @@
   }
 
   #home-button {
-    background: rgba(--transparent);
+    background-color: var(--transparent);
   }
 
   #scaffold-logo {
