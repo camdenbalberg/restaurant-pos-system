@@ -11,9 +11,14 @@
               <div class = "contents-box">
                 <p>Contents:</p>
                 <ul>
-                    <li v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
-                        {{ getMenuName(saleItem.menu_id) }} * {{ saleItem.quantity }}
-                    </li>
+                  <table>
+                    <tbody>
+                      <tr v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
+                        <td>{{ getMenuName(saleItem.menu_id) }}</td>
+                        <td>{{ saleItem.quantity }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </ul>
               </div>
               <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
@@ -99,10 +104,6 @@ export default {
 </script>
 
 <style>
-.contents-box {
-  background-color: #e2e2e2;
-}
-
 .order-list {
     background-color: white;
     border-radius: 8px;
@@ -126,4 +127,30 @@ export default {
 .order-box:hover {
     transform: scale(1.05); /* scaling effect on hover */
 }
+
+.contents-box {
+    background-color: #f5f5f5; /* lighter background for contrast */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: #333; /* darker text for better readability */
+    font-size: 0.95em;
+}
+
+.contents-box p {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+  }
+
+  table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
 </style>
