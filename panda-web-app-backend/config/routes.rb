@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :employees, only: [ :index, :show ]
       post '/employees/add_employee', to: 'employees#add_employee'
+      delete '/employees/delete_employee/:id', to: 'employees#delete_employee'
+      put '/employees/edit_employee/:id', to: 'employees#edit_employee'
     end
   end
 
