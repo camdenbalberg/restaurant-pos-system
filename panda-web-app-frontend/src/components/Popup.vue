@@ -1,10 +1,10 @@
 <template>
     <div class="popup">
-      <p>{{ menu_item }}</p>
+      <p>{{ menu_item.menu_name }}</p>
       <ul>
         <!--loop through all categories passed into popup-->
         <li v-for="(item, index) in cat" :key="item">
-          <MenuItem :category="item" @selected="currentItems(index, $event)" />
+          <MealItems :category="item" @selected="currentItems(index, $event)" />
         </li>
       </ul>
       <button @click="$emit('close')">Close</button>
@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import MenuItem from './MealItems.vue'; // Adjust path if necessary
+import MealItems from './MealItems.vue'; // Adjust path if necessary
 
 export default {
   name: 'Popup',
   components: {
-    MenuItem,
+    MealItems,
   },
   data() {
     return {
@@ -27,7 +27,7 @@ export default {
   },
   props: {
     menu_item: {
-      type: String,
+      type: Object,
       required: true,
     },
     cat:{
@@ -43,7 +43,9 @@ export default {
   },
   methods: {
     initializeSelectedItems() {
+      //initialize selected_items array with number of entrees and sides
       this.selected_items = new Array(this.cat.length).fill(null);
+      console.log(this.cat);
     },
     addToKart() {
       const allItemsSelected = this.selected_items.every(item => item !== null);
@@ -51,15 +53,15 @@ export default {
         this.selected_items.unshift(this.menu_item);
         console.log('Emitting add-to-kart:', this.selected_items);
         this.$emit('add-to-kart', this.selected_items);
+        this.$emit('close');
       } else {
         console.log('Please select all items before adding to the cart.');
       }
-      this.$emit('close');
     },
     currentItems(index, item) {
       console.log('Selected Item:', item);
       console.log('Selected Index:', index);
-      //make it name instead of being menuItem so it dislpays for now
+      //puts respective entree or side in the selected_items array
       this.selected_items[index] = item;
     },
   },
