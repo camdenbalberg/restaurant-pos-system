@@ -217,6 +217,17 @@
 
   #home-button {
     background-color: var(--transparent);
+    scale: 1;
+  }
+
+  #home-button:hover {
+    background-color: var(--accentColorWeak);
+    scale: 1;
+  }
+
+  #home-button:active {
+    scale: 1;
+    background-color: var(--accentColor);
   }
 
   #scaffold-logo {
