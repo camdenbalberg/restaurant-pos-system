@@ -32,6 +32,8 @@
 
 
 <script>
+  import shared from './shared'
+
   export default {
     name: 'App',
     components: {
@@ -45,7 +47,6 @@
         weatherC: 9999,
         weatherUnitsCelcius: true,
         weatherDescription: "",
-        lock: false,
       };
     },
 
@@ -61,6 +62,10 @@
         console.log("Updating weather");
         this.getWeather();
       }, 24 * 60 * 60 * 1000);  // 24 hours in a day, 60 minutes in an hour, 60 seconds in a minute, 1000 ms in a second
+    },
+
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
     },
 
     methods: {
@@ -136,23 +141,6 @@
             `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
         }
       },
-
-      flashScaffolding() {
-        if (!this.lock) {
-          this.lock = true;
-          var opacity = 0;
-          var scaffold = document.getElementsByClassName("scaffold")[0];
-          var intervalId = setInterval(function() {
-            if (opacity >= 1) {
-              clearInterval(intervalId);
-            }
-            scaffold.style.background = "rgba(204, 208, 218, " + opacity + ")";
-            opacity += 0.01;
-          }, 5)
-          this.lock = false;
-        }
-      }
-
     }
   }
 </script>
