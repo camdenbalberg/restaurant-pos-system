@@ -23,7 +23,12 @@
 </template>
 
 <script>
+import shared from '../shared'
+
+import api from '@/api';
 import axios from 'axios';
+import { fetchTransactions } from '../api/transactionService';
+import { fetchMenuItems } from '../api/menuService';
 
 export default {
   data() {
@@ -34,49 +39,40 @@ export default {
     };
   },
   mounted() {
-    this.fetchTransactions();
-    this.fetchMenuItems();
+    this.loadTransctions();
+    this.loadMenuItems();
   },
-  name: 'Transactions',
+
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
+
   methods: {
-    async fetchTransactions() {
+    async loadTransctions() {
       try {
-        console.log(import.meta.env.VITE_API_BACKEND_URL);
-        // Current date is cast in YYYY-MM-DD format
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0]; 
-        const response = await axios.get(`/api/v1/transactions/by_date/${formattedDate}`);
-        // const response = await axios.get(`/api/v1/transactions/by_date/2023-10-24`); //temporary hardcoded value for testing
-        this.transactions = response.data;
-
-        // Fetch sale items for each transaction
-        await Promise.all(this.transactions.map(async (transaction) => {
-          const saleItemsResponse = await axios.get(`/api/v1/sale_items/by_transaction_id/${transaction.transaction_id}`);
-          transaction.sale_items = saleItemsResponse.data;
-        }));
-
+        this.transactions = await fetchTransactions();
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        console.error('Error loading transactions:', error);
       } finally {
         this.loading = false;
       }
     },
-    
-    async fetchMenuItems() {
+
+    async loadMenuItems() {
       try {
-        const response = await axios.get(`/api/v1/menu_items`);
-        this.menuItems = response.data.reduce((acc, item) => {
-          console.log(item.menu_id + " : " + item.menu_name);
+        const menuData = await fetchMenuItems();  // Fetch menu items from API
+        this.menuItems = menuData.reduce((acc, item) => {
           acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
+          this.flashScaffolding();
           return acc;
         }, {});
       } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error loading menu items:', error);
       }
     },
 
     getMenuName(menuId) {
-      console.log(menuId);
+      // console.log(menuId);
       return this.menuItems[menuId] || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
     },
 
@@ -85,16 +81,11 @@ export default {
       //process on the backend
       try {
             // Make a PATCH request to the Rails backend to toggle the completed status
-            console.log("Passed 68 " + transactionId + "\n");
-            const response = await axios.patch(`/api/v1/transactions/${transactionId}/toggle_completed`, {}, {
-              headers:{
-                'Content-Type': 'application/json',
-              }
-            });
+            const response = await api.patch(`/transactions/${transactionId}/toggle_completed`);
 
             if (response.status === 200) {
                 // Optionally, you can fetch the updated transactions list again
-                await this.fetchTransactions(); // or just update the local state if needed
+                await this.loadTransctions(); // or just update the local state if needed
             }
         } catch (error) {
             console.error('Error bumping order:', error);

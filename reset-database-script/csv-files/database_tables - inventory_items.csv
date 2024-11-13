@@ -1,0 +1,57 @@
+inv_id,inv_name,stock,base_stock
+0,Chicken,933,20
+1,Beef,779,20
+2,White Rice,384,20
+3,Plates,679,20
+4,Bowls,221,20
+5,Cups,558,20
+6,Utensils,114,20
+7,Napkins,871,20
+8,Soy Sauce Packet,377,20
+9,Hot Sauce Packet,600,20
+10,Hot Mustard Sauce Packet,304,20
+11,Teriyaki Sauce Packet,141,20
+12,Dr. Pepper,211,20
+13,Sweet Tea,189,20
+14,Pepsi,901,20
+15,Diet Pepsi,214,20
+16,Mountian Dew,854,20
+17,Lipton Brisk Raspberry Iced Tea,355,20
+18,Sierra Mist,402,20
+19,Tropicana Lemonade,585,20
+20,Aquafina,183,20
+21,Gatorade Lemon Lime,651,20
+22,Chicken Egg Roll,505,20
+23,Veggie Spring Roll,77,20
+24,Cream Cheese Rangoon,840,20
+25,Broccoli,86,20
+26,Chow Mein,541,20
+27,Mushrooms,116,20
+28,Egg,972,20
+29,Shrimp,372,20
+30,Apple Pie Roll,538,20
+31,Fortune Cookie,408,20
+32,Carrots,633,20
+33,Peas,629,20
+34,Sesame Oil,458,20
+35,Lettuce,631,20
+36,Onion,885,20
+37,Noodles,388,20
+38,To-Go Box,627,20
+39,Blazing Bourbon Sauce,833,20
+40,Bell Peppers,208,20
+41,Orange Sauce,489,20
+42,Walnut,249,20
+43,Honey Sauce,825,20
+44,Peanuts,150,20
+45,Kung Pao Sauce,926,20
+46,Chilis,407,20
+47,Green Beans,728,20
+48,Beijing Beef Sauce,977,20
+49,Zuchinni,943,20
+50,Pineapple,879,20
+51,Sweetfire Sauce,998,20
+52,String Bean Sauce,617,20
+53,Cellary,829,20
+54,Entree,1000,0
+55,Side,1000,0

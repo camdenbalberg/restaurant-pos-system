@@ -1,5 +1,7 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
+  skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
+  
   def index
     @transactions = Transaction.all
     render json: @transactions
@@ -52,6 +54,7 @@ class Api::V1::TransactionsController < ApplicationController
   
   def toggle_completed
     @transaction = Transaction.find(params[:id])
+    Rails.logger.info("help :  #{@transaction}")
     # @transaction = Transaction.where(transaction_id: id)
     @transaction.completed = !@transaction.completed # Toggle the completed status
     if @transaction.save
@@ -62,5 +65,36 @@ class Api::V1::TransactionsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Transaction not found" }, status: :not_found
+  end
+
+  def add_transaction
+    transaction_params = params.require(:transaction).permit(:date, :time, :total_cost, :expense)
+
+    transaction_date = transaction_params[:date]
+    transaction_time = transaction_params[:time]
+    total_price = transaction_params[:total_cost]
+    is_expense = transaction_params[:expense]
+
+      # Check if all required parameters are present
+    if transaction_date.nil? || transaction_time.nil? || total_price.nil? || is_expense.nil?
+      render json: { error: 'Missing parameters: transaction_date, transaction_time, total_price, is_expense' }, status: :unprocessable_entity
+      return
+    end
+
+    highest_transaction_id = Transaction.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
+    Rails.logger.info "#{highest_transaction_id}"
+    new_transaction_id = highest_transaction_id + 1
+
+    Rails.logger.info "Received parameters: transaction_date = #{transaction_date}, transaction_time = #{transaction_time}, total_price = #{total_price}, is_expense = #{is_expense}"
+    balance = Transaction.find_by(transaction_id: highest_transaction_id).current_balance + total_price;
+    # Create new TransactionItem instance
+    new_transaction = Transaction.new(transaction_id: new_transaction_id, transaction_date: transaction_date, transaction_time: transaction_time, total_price: total_price, is_expense: is_expense, current_balance: balance,employee_id: 0, completed: false)
+    if new_transaction.save
+      Rails.logger.info "Transaction created successfully: #{new_transaction.inspect}"
+      render json: new_transaction, status: :created
+    else
+      Rails.logger.error "Failed to create transaction: #{new_transaction.errors.full_messages.join(', ')}"
+      render json: { error: 'Failed to create transaction', details: new_transaction.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 end

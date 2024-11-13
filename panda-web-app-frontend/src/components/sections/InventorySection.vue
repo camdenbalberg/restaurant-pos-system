@@ -1,26 +1,208 @@
 <template>
-    <div class="inventory-section">
-      <h2>Inventory Management</h2>
-      <div class="inventory-content">
-        <div class="inventory-stats">
-          <div class="stat-card">
-            <h4>Total Items</h4>
-            <p>150</p>
-          </div>
-          <div class="stat-card">
-            <h4>Low Stock Items</h4>
-            <p>12</p>
-          </div>
+  <div class="inventory-section">
+    <h2>Inventory Management</h2>
+    <div class="inventory-content">
+      <div v-if="inventoryCount.length" class="inventory-stats">
+        <div class="stat-card">
+          <h4>Total Items</h4>
+          <p>{{ inventory_items.length }}</p>
+        </div>
+        <div class="stat-card">
+          <h4>Low Stock Items</h4>
+          <p>{{ inventoryCount.filter(item => item.needsRestock === 'Yes').length }}</p>
         </div>
       </div>
+      <button @click="addMenuItem">Add menu item</button>
+      <button @click="generateInventoryReport">Inventory Report</button>
+
+      <!-- Loading Spinner -->
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
+      
+      <!-- Inventory stock report Table -->
+      <div v-if="inventoryCount.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Item ID</th>
+              <th>Name</th>
+              <th>Stock</th>
+              <th>Needs Restock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in inventoryCount" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.name }}</td>
+              <td>{{ entry.count }}</td>
+              <td>{{ entry.needsRestock }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </template>
+  </div>
+</template>
+
   
-  <script>
+<script>
+import axios from 'axios';
+import { fetchInventoryItems } from '../../api/inventoryService';
+
   export default {
-    name: 'InventorySection'
-  }
-  </script>
+    name: 'InventorySection',
+    data() {
+      return {
+        inventory_items: [],
+        inventoryCount: [],
+        loading: false,
+      };
+    },
+    mounted() {
+      this.loadInventory_Items();
+    },
+    methods: {
+      async loadInventory_Items() {
+        try {
+          console.log("Fetching inventory items...");
+          const data = await fetchInventoryItems();
+          
+          if (Array.isArray(data) && data.length > 0) {
+            this.inventory_items = data;
+          } else {
+            console.error("Inventory items data is empty or not in expected format.");
+          }
+        } catch (error) {
+          console.error('Error loading inventory items:', error);
+        }
+      },
+
+    async generateInventoryReport() {
+      this.loading = true;
+      await this.loadInventory_Items();
+      if (this.inventory_items.length === 0) {
+        console.warn("No inventory items available for generating report.");
+        return;
+      }
+
+      console.log("Generating inventory report");
+
+      setTimeout(() => {
+        this.inventoryCount = this.inventory_items.map((inventory_item) => {
+          const needsRestock = inventory_item.stock < inventory_item.base_stock;
+          return {
+            id: inventory_item.inv_id,
+            name: inventory_item.inv_name,
+            count: inventory_item.stock,
+            needsRestock: needsRestock ? 'Yes' : 'No'
+          };
+        });
+        this.loading = false; // Stop loading spinner after processing
+        console.log("Inventory report generated.");
+      }, 1000);
+    },
+
+      async addMenuItem() {
+        const menuName = prompt("Enter menu name:");
+        const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
+        const price = prompt("Enter price:");
+        const recipeInput = prompt("Enter recipe (comma-separated integers):");
+        const quantityInput = prompt("For the recipe items you gave list their quantities (comma-separated integers):");
+        
+        // Validate inputs
+        const error = this.validateInputs(menuName, category, price, recipeInput, quantityInput);
+        if (error) {
+          alert(error);
+          return;
+        }
+        
+        const priceNum = parseFloat(price);
+        const recipe = recipeInput.split(',').map(id => id.trim());
+        const quantities = quantityInput.split(',').map(id => id.trim());
+
+        const data = {
+          menu_name: menuName,
+          price: priceNum,
+          category: category
+        };
+
+        try {
+          // Make the request to add the menu item
+          const response = await axios.post('/api/v1/menu_items/add_menu_item', data);
+          console.log('Menu item added:', response.data);
+
+          // If the menu item is successfully added, then add the recipe
+          this.addRecipe(response.data.menu_id, recipe, quantities);
+
+          // Alert the user of success
+          alert(`Added ${category} ${menuName} with price $${price} and recipe ingredients: ${recipe.join(', ')}`);
+        } catch (error) {
+          console.error('Error adding menu item:', error.response ? error.response.data : error.message);
+          alert('Failed to add menu item.');
+        }
+      },
+
+      async addRecipe(menuId, recipe, quantities) {
+        const data = {
+          menu_id: menuId,
+          recipe: recipe,
+          quantities: quantities
+        };
+        console.log("Starting add recipe: ", data);
+        try {
+          const response = await axios.post('/api/v1/recipes/add_recipe', data);
+
+          console.log("Recipe added successfully:", response.data);
+          alert('Recipe added successfully.');
+          
+        } catch (error) {
+          console.error('Error adding recipe:', error.response ? error.response.data : error.message);
+          alert('Failed to add recipe.');
+        }
+      },
+
+      validateInputs(menuName, category, price, recipeInput, quantityInput) {
+        if (!menuName || !category || !price || !recipeInput || !quantityInput) {
+          return "Please fill out all fields.";
+        }
+
+        // Category validation: Check if category is one of the allowed options
+        const validCategories = ['meal', 'entree', 'side', 'drink', 'appetizer'];
+        if (!validCategories.includes(category.toLowerCase())) {
+          return "Invalid category. Please select one from: meal, entree, side, drink, appetizer.";
+        }
+
+        // Price validation: Ensure price is a valid number and >= 0
+        const priceNum = parseFloat(price);
+        if (isNaN(priceNum) || priceNum < 0) {
+          return "Price must be a number greater than or equal to 0.";
+        }
+
+        // Recipe input validation: Ensure the recipe is a comma-separated list of integers
+        const recipe = recipeInput.split(',').map(id => id.trim());
+        if (recipe.some(id => isNaN(parseInt(id)))) {
+          return "Recipe input must be a list of integers.";
+        }
+
+        // Quantity input validation: Ensure quantities are a comma-separated list of integers
+        const quantities = quantityInput.split(',').map(id => id.trim());
+        if (quantities.some(qty => isNaN(parseInt(qty)))) {
+          return "Quantity input must be a list of integers.";
+        }
+
+        // Ensure the number of quantities matches the number of recipes
+        if (recipe.length !== quantities.length) {
+          return "The number of quantities must match the number of recipes.";
+        }
+
+        // All checks passed, return null indicating no error
+        return null;
+      }
+    }
+  };
+</script>
+
   
   <style scoped>
   .inventory-section {
@@ -54,5 +236,28 @@
     font-size: 1.5rem;
     font-weight: bold;
     color: #2c3e50;
+  }
+
+  .loading-spinner {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #2c3e50;
+  }
+
+  .report-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .report-table th {
+    background-color: #f4f4f4;
   }
   </style>
