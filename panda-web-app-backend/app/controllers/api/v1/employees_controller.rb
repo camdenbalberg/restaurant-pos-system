@@ -27,4 +27,73 @@ class Api::V1::EmployeesController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Employee with this id not found" }, status: :not_found
   end
+
+  def by_password
+    pwd = params[:password]
+    @employees = Employee.where(password: pwd)
+    if @employees.any?
+      render json: @employees
+    end
+
+  rescue ActiveRecord::RecordNotFound
+      render json: { error: "No employees found for this password"}, status: :not_found
+  end
+
+
+  def by_employee_id
+    usr = params[:employee_id]
+    @employees = Employee.where(employee_id: usr)
+    if @employees.any?
+      render json: @employees
+    end
+
+  rescue ActiveRecord::RecordNotFound
+      render json: { error: "No employees found for this username"}, status: :not_found
+  end
+
+  # POST /api/v1/employees/add_employee
+  def add_employee
+    # validates :employee_id, presence: true
+    # validates :first_name, presence: true
+    # validates :last_name, presence: true
+    # validates :email, presence: true
+    # validates :is_manager, presence: true
+    # validates :hiring_date, presence: true
+    # validates :phone_number, presence: true
+    # validates :password, presence: true
+    # validates :is_working, presence: true
+
+    first_name = params[:first_name]
+    last_name = params[:last_name]
+    email = params[:email]
+    is_manager = params[:is_manager]
+    hiring_date = params[:hiring_date]
+    phone_number = params[:phone_number]
+    password = params[:password]
+    is_working = params[:is_working]
+
+
+
+      # Check if all required parameters are present
+    if first_name.nil? || last_name.nil? || email.nil? || is_manager.nil? || hiring_date.nil? || phone_number.nil? || password.nil? || is_working.nil?
+      render json: { error: 'Missing parameters' }, status: :unprocessable_entity
+      return
+    end
+
+    highest_employee_id = Employee.maximum(:employee_id) || 0  # Returns 0 if no menu_items exist
+    Rails.logger.info "#{highest_employee_id}"
+    new_employee_id = highest_employee_id + 1
+
+    Rails.logger.info "Received parameters"
+    # Create new MenuItem instance
+    employee = Employee.new(employee_id: new_employee_id, first_name: first_name, last_name: last_name, email: email, is_manager: is_manager, hiring_date: hiring_date, phone_number: phone_number, password: password, is_working: is_working)
+    if employee.save
+      render json: employee, status: :created
+    else
+      render json: { error: 'Failed to create employee' }, status: :unprocessable_entity
+    end
+  end
+
 end
+
+

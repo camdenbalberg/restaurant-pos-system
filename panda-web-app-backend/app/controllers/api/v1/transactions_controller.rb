@@ -1,5 +1,7 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
+  skip_before_action :verify_authenticity_token, only: [:toggle_completed]
+  
   def index
     @transactions = Transaction.all
     render json: @transactions
@@ -52,6 +54,7 @@ class Api::V1::TransactionsController < ApplicationController
   
   def toggle_completed
     @transaction = Transaction.find(params[:id])
+    Rails.logger.info("help :  #{@transaction}")
     # @transaction = Transaction.where(transaction_id: id)
     @transaction.completed = !@transaction.completed # Toggle the completed status
     if @transaction.save

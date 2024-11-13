@@ -33,65 +33,65 @@ import { fetchTransactions } from '../api/transactionService';
 import { fetchMenuItems } from '../api/menuService';
 
 export default {
-data() {
-  return {
-    transactions: [],
-    loading: true,
-    menuItems: {},
-  };
-},
-mounted() {
-  this.loadTransctions();
-  this.loadMenuItems();
-},
-
-created() {
-  this.flashScaffolding = shared.flashScaffolding
-},
-
-methods: {
-  async loadTransctions() {
-    try {
-      this.transactions = await fetchTransactions();
-    } catch (error) {
-      console.error('Error loading transactions:', error);
-    } finally {
-      this.loading = false;
-    }
+  data() {
+    return {
+      transactions: [],
+      loading: true,
+      menuItems: {},
+    };
+  },
+  mounted() {
+    this.loadTransctions();
+    this.loadMenuItems();
   },
 
-  async loadMenuItems() {
-    try {
-      const menuData = await fetchMenuItems();  // Fetch menu items from API
-      this.menuItems = menuData.reduce((acc, item) => {
-        acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
-        this.flashScaffolding();
-        return acc;
-      }, {});
-    } catch (error) {
-      console.error('Error loading menu items:', error);
-    }
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
   },
 
-  getMenuName(menuId) {
-    // console.log(menuId);
-    return this.menuItems[menuId] || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
-  },
-
-  async bumpOrder(transactionId) {
-    this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
-    //process on the backend
-    try {
-          // Make a PATCH request to the Rails backend to toggle the completed status
-          const response = await api.patch(`/transactions/${transactionId}/toggle_completed`);
-
-          if (response.status === 200) {
-              // Optionally, you can fetch the updated transactions list again
-              await this.loadTransctions(); // or just update the local state if needed
-          }
+  methods: {
+    async loadTransctions() {
+      try {
+        this.transactions = await fetchTransactions();
       } catch (error) {
-          console.error('Error bumping order:', error);
+        console.error('Error loading transactions:', error);
+      } finally {
+        this.loading = false;
       }
+    },
+
+    async loadMenuItems() {
+      try {
+        const menuData = await fetchMenuItems();  // Fetch menu items from API
+        this.menuItems = menuData.reduce((acc, item) => {
+          acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
+          this.flashScaffolding();
+          return acc;
+        }, {});
+      } catch (error) {
+        console.error('Error loading menu items:', error);
+      }
+    },
+
+    getMenuName(menuId) {
+      // console.log(menuId);
+      return this.menuItems[menuId] || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
+    },
+
+    async bumpOrder(transactionId) {
+      this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
+      //process on the backend
+      try {
+            // Make a PATCH request to the Rails backend to toggle the completed status
+            const response = await api.patch(`/transactions/${transactionId}/toggle_completed`);
+
+            if (response.status === 200) {
+                // Optionally, you can fetch the updated transactions list again
+                await this.loadTransctions(); // or just update the local state if needed
+            }
+        } catch (error) {
+            console.error('Error bumping order:', error);
+        }
 
   }
 },

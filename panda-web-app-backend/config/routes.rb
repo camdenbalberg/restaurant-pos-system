@@ -3,12 +3,25 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :menu_items, only: [ :index, :show ]
+      post '/menu_items/add_menu_item', to: 'menu_items#add_menu_item'
     end
   end
 
   namespace :api do
     namespace :v1 do
       resources :employees, only: [ :index, :show ]
+      post '/employees/add_employee', to: 'employees#add_employee'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :employees, only: [ :index, :show ] do
+        collection do
+          get "by_password/:password", to: "employees#by_password"
+          get "by_employee_id/:employee_id", to: "employees#by_employee_id"
+        end
+      end
     end
   end
 
@@ -35,6 +48,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :recipes, only: [ :index, :show ]
+      post '/recipes/add_recipe', to: 'recipes#add_recipe'
     end
   end
 

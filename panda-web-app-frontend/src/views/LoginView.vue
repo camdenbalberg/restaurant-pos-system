@@ -1,7 +1,6 @@
 <!-- src/views/Login.vue -->
 <template>
   <div>
-    <h1>Login View</h1>
     <LoginComponents />
   </div>
 </template>
