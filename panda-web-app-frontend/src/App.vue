@@ -11,13 +11,13 @@
       </RouterLink>
       
       <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
-      <div class="scaffold-item">
-        <div id="time">
+      <div class="right-side">
+        <div class="scaffold-item" id="time">
           <div v-show="time" id="clock">{{ time }}</div>
           <div id="uptime">running {{ uptime }}</div>
         </div>
 
-        <div id="weather">
+        <div class="scaffold-item" id="weather" @click="weatherClicked">
           Loading weather...
         </div>
       </div>
@@ -40,6 +40,9 @@
         time: "",
         startTime: new Date(),
         uptime: "00:00:00",
+        weatherC: 9999,
+        weatherUnitsCelcius: true,
+        weatherDescription: "",
       };
     },
 
@@ -72,10 +75,10 @@
                 return response.json();
             })
             .then(data => {
-                const temperature = data.main.temp;
-                const weatherDescription = data.weather[0].description;
+                this.weatherC = data.main.temp;
+                this.weatherDescription = data.weather[0].description;
                 document.getElementById('weather').innerText = 
-                    `Temperature: ${temperature}°C\nCondition: ${weatherDescription}`;
+                    `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
@@ -96,18 +99,42 @@
         var diffHours = Math.floor(diffTime / (60 * 60 * 1000)); 
         var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60; 
         var diffSeconds = Math.floor(diffTime / (1000)) % 60; 
-        if (diffHours == 0) {
-          diffHours = "00";
+
+        // Ensure number is always 2 digits
+        if (diffHours < 10) {
+          diffHours = "0" + diffHours;
         }
-        if (diffMinutes == 0) {
-          diffMinutes = "00";
+        if (diffMinutes < 10) {
+          diffMinutes = "0" + diffMinutes;
         }
+        if (diffSeconds < 10) {
+          diffSeconds = "0" + diffSeconds;
+        }
+
         return diffHours + ":" + diffMinutes + ":" + diffSeconds;
       },
 
       goHome() {
         return this.$router.push('/');
       },
+
+      weatherClicked() {
+        if (this.weatherUnitsCelcius) {
+          // Switch to F
+          this.weatherUnitsCelcius = false;
+          var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
+          document.getElementById('weather').innerText = 
+            `Temperature: ${weatherF}°F\nCondition: ${this.weatherDescription}`;
+        } else {
+          // Switch to C
+          this.weatherUnitsCelcius = true;
+          document.getElementById('weather').innerText = 
+            `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+        }
+
+      }
+
+
     }
   }
 </script>
@@ -122,6 +149,7 @@
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
     --subTextColor: #5c5f77;
+    --transparent: #00000000;
   }
 
   .scaffold {
@@ -137,6 +165,9 @@
     justify-content: space-between;
     align-items: center;
 
+    font-family: "Dongle", arial;
+    font-size: 30px;
+    line-height: 22px;
   }
 
   .scaffold-item {
@@ -151,8 +182,14 @@
     text-decoration: none;
   }
 
+  .right-side {
+    height: 70px;
+    display: flex;
+    align-items: center;
+  }
+
   #home-button {
-    background: rgba(--accentColorWeak);
+    background: rgba(--transparent);
   }
 
   #scaffold-logo {
@@ -162,24 +199,45 @@
   #time {
     margin-right: 40px;
     text-align: left;
-    font-family: "Dongle", arial;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: 0px;
+    align-items: flex-start;
   }
 
   #clock {
     font-size: 40px;
-    margin: -15px;
     padding: 0px;
   }
 
   #uptime {
     color: var(--accentColorIntense);
     font-size: 30px;
-    margin: -15px;
     padding: 0px;
   }
+
+  /* Weather */
+
+  #weather {
+    /* background-color: var(--surfaceColor); */
+    scale: 1;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    transition: scale 0.5s ease;
+    transition: background-color 0.25s ease;
+  }
+
+  #weather:hover {
+    background-color: var(--accentColorWeak);
+    scale: 1;
+  }
+
+  #weather:active {
+    scale: 1;
+    background-color: var(--accentColor);
+}
 </style>
 
