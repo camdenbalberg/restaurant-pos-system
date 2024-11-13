@@ -2,6 +2,12 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
+      <div class="date-filter">
+        <label>Start Date:</label>
+        <input type="date" v-model="startDate" />
+        <label>End Date:</label>
+        <input type="date" v-model="endDate" />
+      </div>
       <div class="report-buttons">
         <button class="report-button" @click="handleReport('X-report')">X-report</button>
         <button class="report-button" @click="handleReport('Z-report')">Z-report</button>
@@ -42,6 +48,23 @@
           </tbody>
         </table>
       </div>
+      <!-- Sales Report Table -->
+      <div v-if="itemSales.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Menu Item</th>
+              <th>Sale Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in itemSales" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +73,7 @@
 import api from '@/api';
 import axios from 'axios';
 import { fetchTransactions } from '../../api/transactionService';
+import { fetchTransactionsForDate } from '../../api/transactionService';
 import { fetchMenuItems } from '../../api/menuService';
 
 export default {
@@ -61,7 +85,10 @@ export default {
       menuItems: {},
       hourlySales: [], 
       hourlyIncome: [],
+      itemSales: [],
       zReportGenerated: false,
+      startDate: null,
+      endDate: null,
     };
   },
   mounted() {
@@ -137,6 +164,60 @@ export default {
       }));
     },
 
+    async calculateMenuItemsPerHour() { //Sales report
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+
+      console.log("Fetching transactions by date range...");
+
+      const startDate = new Date(this.startDate);
+      const endDate = new Date(this.endDate);
+      const menuItemCounts = {};
+
+      // Generate an array of dates in YYYY-MM-DD format between start and end date
+      const datesInRange = [];
+      let currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        datesInRange.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      try {
+        const transactionsByDate = await Promise.all(
+          datesInRange.map(date => fetchTransactionsForDate(date))
+        );
+
+        // Convert the array from something like "[[],[],[]]" to "[_,_,_]"
+        const allTransactions = transactionsByDate.flat();
+
+        // Count sale items by menu_id across all transactions in the range
+        allTransactions.forEach(transaction => {
+          transaction.sale_items.forEach(saleItem => {
+            const menuId = saleItem.menu_id;
+            const quantity = saleItem.quantity;
+
+            if (menuItemCounts[menuId]) {
+              menuItemCounts[menuId] += quantity;
+            } else {
+              menuItemCounts[menuId] = quantity;
+            }
+          });
+        });
+
+        // Transform the counts into an array for display
+        this.itemSales = Object.keys(menuItemCounts).map(menuId => ({
+          id: this.menuItems[menuId] || menuId, // Get the name if available, otherwise use the ID
+          amount: menuItemCounts[menuId]
+        }));
+        
+        console.log("Menu items counted successfully.");
+      } catch (error) {
+        console.error('Error fetching transactions by date range:', error);
+      }
+    },
+
     async handleReport(reportType) {
       await this.loadTransactions(); // Load the latest transactions each time a report is requested
       this.hourlySales = [];
@@ -159,6 +240,7 @@ export default {
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');
+          this.calculateMenuItemsPerHour();
           break;
         default:
           console.log('Unknown report type');
