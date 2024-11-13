@@ -236,7 +236,7 @@ export default {
 
     async handleDelete() {
       try {
-        await api.delete(`/employees/${this.deleteEmployee.employee_id}`);
+        await api.delete(`/employees/delete_employee/${this.deleteEmployee.employee_id}`);
         this.employees = this.employees.filter(
           emp => emp.employee_id !== this.deleteEmployee.employee_id
         );
@@ -252,8 +252,8 @@ export default {
       try {
         if (this.editingEmployee) {
           // Update existing employee
-          await api.post(
-            `/employees/add_employee/${this.editingEmployee.employee_id}`,
+          const response = await api.put(
+            `/employees/edit_employee/${this.editingEmployee.employee_id}`,
             this.formData
           );
           const index = this.employees.findIndex(
