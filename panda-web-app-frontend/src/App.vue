@@ -5,20 +5,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
   <div id="app">
-    <div class="scaffold">
-      <RouterLink to="/">
-        <button class="scaffold-item" id="home-button">Home</button>
-      </RouterLink>
-      
-      <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
-      <div class="right-side">
-        <div class="scaffold-item" id="time">
-          <div v-show="time" id="clock">{{ time }}</div>
-          <div id="uptime">running {{ uptime }}</div>
-        </div>
+    <div class="scaffold-overlay">
+      <div class="scaffold">
+        <RouterLink to="/">
+          <button class="scaffold-item" id="home-button">Home</button>
+        </RouterLink>
+        
+        <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
+        <div class="right-side">
+          <div class="scaffold-item" id="time" @click="flashScaffolding">
+            <div v-show="time" id="clock">{{ time }}</div>
+            <div id="uptime">running {{ uptime }}</div>
+          </div>
 
-        <div class="scaffold-item" id="weather" @click="weatherClicked">
-          Loading weather...
+          <div class="scaffold-item" id="weather" @click="weatherClicked">
+            Loading weather...
+          </div>
         </div>
       </div>
     </div>
@@ -43,6 +45,7 @@
         weatherC: 9999,
         weatherUnitsCelcius: true,
         weatherDescription: "",
+        lock: false,
       };
     },
 
@@ -79,6 +82,7 @@
                 this.weatherDescription = data.weather[0].description;
                 document.getElementById('weather').innerText = 
                     `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+                this.flashScaffolding();
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
@@ -131,9 +135,23 @@
           document.getElementById('weather').innerText = 
             `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
         }
+      },
 
+      flashScaffolding() {
+        if (!this.lock) {
+          this.lock = true;
+          var opacity = 0;
+          var scaffold = document.getElementsByClassName("scaffold")[0];
+          var intervalId = setInterval(function() {
+            if (opacity >= 1) {
+              clearInterval(intervalId);
+            }
+            scaffold.style.background = "rgba(204, 208, 218, " + opacity + ")";
+            opacity += 0.01;
+          }, 5)
+          this.lock = false;
+        }
       }
-
 
     }
   }
@@ -152,12 +170,17 @@
     --transparent: #00000000;
   }
 
-  .scaffold {
+  .scaffold-overlay {
     width: 100%;
     height: 70px;
     position: sticky;
     top: 0;
+    background: var(--accentColorIntense);
+  }
 
+  .scaffold {
+    width: 100%;
+    height: 100%;
     background: var(--surfaceColor);
     backdrop-filter: blur(1000px);
 
@@ -189,7 +212,7 @@
   }
 
   #home-button {
-    background: rgba(--transparent);
+    background-color: var(--transparent);
   }
 
   #scaffold-logo {
