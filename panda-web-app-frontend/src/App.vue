@@ -45,7 +45,7 @@
         startTime: new Date(),
         uptime: "00:00:00",
         weatherC: 9999,
-        weatherUnitsCelcius: true,
+        weatherUnits: 0,  // 0F, 1C, 2K
         weatherDescription: "",
       };
     },
@@ -128,18 +128,29 @@
       },
 
       weatherClicked() {
-        if (this.weatherUnitsCelcius) {
-          // Switch to F
-          this.weatherUnitsCelcius = false;
-          var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
-          document.getElementById('weather').innerText = 
-            `Temperature: ${weatherF}°F\nCondition: ${this.weatherDescription}`;
-        } else {
-          // Switch to C
-          this.weatherUnitsCelcius = true;
-          document.getElementById('weather').innerText = 
-            `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+        switch (this.weatherUnits) {
+          case 0:
+            // Switch to F
+            var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
+            document.getElementById('weather').innerText = 
+              `Temperature: ${weatherF}°F\nCondition: ${this.weatherDescription}`;
+            break;
+          case 1:
+            // Switch to K
+            var weatherK = (this.weatherC + 273.15).toFixed(2);
+            document.getElementById('weather').innerText = 
+              `Temperature: ${weatherK}°K\nCondition: ${this.weatherDescription}`;
+            break;
+          case 2:
+            // Switch to C
+            this.weatherUnitsCelcius = true;
+            document.getElementById('weather').innerText = 
+              `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
+            break;
+          default:
+            console.log("You should not see this");
         }
+        this.weatherUnits = (this.weatherUnits + 1) % 3
       },
     }
   }
