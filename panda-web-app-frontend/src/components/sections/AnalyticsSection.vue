@@ -186,18 +186,27 @@ export default {
 
       try {
         const transactionsByDate = await Promise.all(
-          datesInRange.map(date => fetchTransactionsForDate(date))
+          datesInRange.map(async date => {
+            try {
+              const transactions = await fetchTransactionsForDate(date);
+              return transactions.length ? transactions : null; // Return null if no transactions for that date
+            } catch (error) {
+              console.error(`Error fetching transactions for ${date}:`, error);
+              return null; // Skip this date in case of an error
+            }
+          })
         );
 
         // Convert the array from something like "[[],[],[]]" to "[_,_,_]"
-        const allTransactions = transactionsByDate.flat();
+        const allTransactions = transactionsByDate.flat().filter(Boolean);
 
         // Count sale items by menu_id across all transactions in the range
         allTransactions.forEach(transaction => {
+          console.log(transaction.transaction_id);
           transaction.sale_items.forEach(saleItem => {
             const menuId = saleItem.menu_id;
             const quantity = saleItem.quantity;
-
+            console.log(menuId + " : " + quantity);
             if (menuItemCounts[menuId]) {
               menuItemCounts[menuId] += quantity;
             } else {
