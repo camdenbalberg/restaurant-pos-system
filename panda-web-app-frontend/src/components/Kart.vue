@@ -40,7 +40,7 @@ export default {
         let cost = 0;
         //add all sale items for transaction
         for (const item of this.orderedItems) {
-          for (let i = 1; i < item.length; i++) {
+          for (let i = 0; i < item.length; i++) {
               console.log('Added Sale Item:', item[i]);
               console.log('Menu ID:', item[i].menu_id);
               console.log('Price:', item[i].price);
@@ -55,12 +55,15 @@ export default {
 
         //add the transaction
         const now = new Date();
-        const currentDate = now.toLocaleDateString();
-        const currentTime = now.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        const currentDate = now.toISOString().split('T')[0];
+        const currentTime = now.toTimeString().split(' ')[0];
         const response = await axios.post('/api/v1/transactions/add_transaction', {
-          date: currentDate,
-          time: currentTime,
-          total_cost: cost,
+          transaction: {
+            date: currentDate,
+            time: currentTime,
+            total_cost: cost,
+            expense: false,
+          }
         });
 
         //clear the cart

@@ -38,7 +38,7 @@ class Api::V1::SaleItemsController < ApplicationController
         menu_id = params[:menu_id]
         quantity = params[:quantity]
         price = params[:price]
-
+        Rails.logger.info "#{menu_id} : #{quantity} : #{price}"
           # Check if all required parameters are present
         if menu_id.nil? || quantity.nil? || price.nil?
           render json: { error: 'Missing parameters: menuId, quantity, or price' }, status: :unprocessable_entity
@@ -46,12 +46,12 @@ class Api::V1::SaleItemsController < ApplicationController
         end
 
         highest_sale_id = SaleItem.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
-        Rails.logger.info "#{highest_transaction_id}"
-        new_transaction_id = highest_transaction_id + 1
+        Rails.logger.info "#{highest_sale_id}"
+        new_sale_id = highest_sale_id + 1
 
         Rails.logger.info "Received parameters: menuName = #{menu_id}, category = #{quantity}, price = #{price}"
         # Create new SaleItem instance
-        sale_item = SaleItem.new(transaction_id: new_transaction_id, menu_id: menu_id, quantity: quantity, price: price)
+        sale_item = SaleItem.new(transaction_id: new_sale_id, menu_id: menu_id, quantity: quantity, price: price)
         if sale_item.save
           render json: sale_item, status: :created
         else
