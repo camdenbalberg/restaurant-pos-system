@@ -16,8 +16,7 @@
             <div class="menu-items grid gap-4">
               <div v-for="item in category.items" :key="item.menu_id" class="menu-item">
                 <h3>{{ item.menu_name }}</h3>
-                <p>Price: ${{ item.price }}</p>
-                <p>Category: {{ item.category }}</p>
+                <p v-if="item.price > 0">Price: ${{ item.price }}</p>
               </div>
             </div>
           </div>
@@ -168,6 +167,10 @@ export default {
   padding: 15px;
   background-color: #f9f9f9;
 }
+.menu-item h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
 .carousel-indicators button {
   width: 8px;
@@ -181,5 +184,20 @@ export default {
   font-size: 1.5em;
   color: #333;
   cursor: pointer;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5em;
+  color: #333;
+}
+
+h2 {
+  font-size: 1.8rem; 
+  font-weight: bold;
+  margin-bottom: 1em;
+  color: #444;
 }
 </style>
