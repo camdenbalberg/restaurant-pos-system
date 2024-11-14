@@ -163,7 +163,11 @@ import { fetchMenuItems } from '../../api/menuService';
       
       async removeMenuItem() {
         const menuName = prompt("Enter menu name:");
-        console.log(this.menuItems[menuName] + " : " + menuName);
+        // console.log(this.menuItems[menuName] + " : " + menuName);
+        if(!this.menuItems[menuName]) {
+          alert("Menu item not found");
+          return;
+        }
 
         try {
           // Make a request to remove the menu item from the backend (example endpoint)
