@@ -85,7 +85,11 @@ tags
 # Persistent undo
 [._]*.un~
 
+
+nginx.conf
+docker-compose.yml
+panda-web-app-backend/config/initializers/cors.rb
+panda-web-app-frontend/vite.config.js
+
 # Other
 test.html
-
-

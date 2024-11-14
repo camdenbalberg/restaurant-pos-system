@@ -1,4 +1,5 @@
 export default {
+  // https://stackoverflow.com/questions/35045119/how-can-i-share-a-method-between-components-in-vue-js
   flashScaffolding: function () {
     var opacity = 0;
     var scaffold = document.getElementsByClassName("scaffold")[0];
