@@ -7,6 +7,7 @@ import LoginView from "@/views/LoginView.vue";
 import CustomerView from "@/views/CustomerView.vue"; // Create this component
 import ManagerView from "@/views/ManagerView.vue"; // Create this component
 import CashierView from '@/views/CashierView.vue';
+import MenuBoardView from "../views/MenuBoardView.vue";
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     path: "/manager",
     name: "manager",
     component: ManagerView,
+  },
+  {
+    path: "/menu_board",
+    name: "menu-board",
+    component: MenuBoardView,
   },
 ];
 
