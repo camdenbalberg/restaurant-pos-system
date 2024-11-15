@@ -12,18 +12,18 @@
         <!-- Loop through categories in pairs of two -->
         <div v-for="(pair, index) in categoryPairs" :key="index" class="carousel-slide flex-shrink-0 min-w-full flex">
           <div v-for="category in pair" :key="category.name" class="menu-category w-1/2 px-2">
+            <img :src="category.image" :alt="`${category.name} image`" class="category-image mb-4 w-full h-48 object-cover rounded-lg" />
             <h2>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) }}</h2>
             <div class="menu-items grid gap-4">
               <div v-for="item in category.items" :key="item.menu_id" class="menu-item">
                 <h3>{{ item.menu_name }}</h3>
-                <p v-if="item.price > 0">Price: ${{ item.price }}</p>
+                <p v-if="item.price > 0">Price: ${{ item.price.toFixed(2) }}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Slider indicators (optional) -->
       <div class="carousel-indicators absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-3">
         <button v-for="(pair, index) in categoryPairs" :key="index" @click="setCarouselIndex(index)" 
                 :class="['w-3 h-3 rounded-full', { 'bg-blue-600': carouselIndex === index, 'bg-gray-300': carouselIndex !== index }]" 
@@ -57,7 +57,11 @@ export default {
   },
   computed: {
     categoryPairs() {
-      const categories = Object.entries(this.menuItems).map(([name, items]) => ({ name, items }));
+      const categories = Object.entries(this.menuItems).map(([name, items]) => ({ 
+      name,
+      items,
+      image: this.getCategoryImage(name),
+     }));
       const pairs = [];
       for (let i = 0; i < categories.length; i += 2) {
         pairs.push(categories.slice(i, i + 2));
@@ -94,6 +98,18 @@ export default {
       } finally {
         this.loading = false; 
       }
+    },
+
+    getCategoryImage(categoryName) {
+      const images = {
+        entree: '../../src/assets/entreeImages.png',
+        meal: '../../src/assets/mealImages.png',
+        side: '../../src/assets/sideImages.png',
+        appetizer: '../../src/assets/appetizerImages.png',
+        drink: '../../src/assets/drinkImages.png'
+      };
+      console.log(images[categoryName.toLowerCase()]);
+      return images[categoryName.toLowerCase()] || '../assets/biglogo.png';
     },
 
     // Next slide method
@@ -136,6 +152,14 @@ export default {
 
 .menu-category-carousel {
   position: relative;
+}
+
+.category-image {
+  width: 100%;
+  height: 12rem; /* Adjust to set the space above category items */
+  object-fit: cover; /* Fill the container fully */
+  border-radius: 0.5rem; /* Keep the rounded corners if desired */
+  margin-bottom: 1rem;
 }
 
 .carousel-inner {
