@@ -1,5 +1,10 @@
 class Api::V1::EmployeesController < ApplicationController
   # Query database for items and rendering it as json
+
+  skip_before_action :verify_authenticity_token, only: [:add_employee]
+  skip_before_action :verify_authenticity_token, only: [:delete_employee]
+  skip_before_action :verify_authenticity_token, only: [:edit_employee]
+
   def index
     @employees = Employee.all
     render json: @employees
@@ -92,6 +97,59 @@ class Api::V1::EmployeesController < ApplicationController
     else
       render json: { error: 'Failed to create employee' }, status: :unprocessable_entity
     end
+  end
+
+  # DELETE /api/v1/employees/delete_employee
+  def delete_employee
+    @employee = Employee.find(params[:id])
+    if @employee.destroy
+      render json: { success: 'Employee deleted' }, status: :ok
+    else
+      render json: { error: 'Failed to delete employee' }, status: :unprocessable_entity
+    end
+  end
+
+  def edit_employee
+    @employee = Employee.find(params[:id])
+    
+    # Extract parameters
+    first_name = params[:first_name]
+    last_name = params[:last_name]
+    email = params[:email]
+    is_manager = params[:is_manager]
+    hiring_date = params[:hiring_date]
+    phone_number = params[:phone_number]
+    password = params[:password]
+    is_working = params[:is_working]
+  
+    # Check if required parameters are present
+    if first_name.nil? || last_name.nil? || email.nil? || is_manager.nil? || 
+       hiring_date.nil? || phone_number.nil? || is_working.nil?
+      render json: { error: 'Missing parameters' }, status: :unprocessable_entity
+      return
+    end
+  
+    # Only update password if it's provided (not empty)
+    update_params = {
+      first_name: first_name,
+      last_name: last_name,
+      email: email,
+      is_manager: is_manager,
+      hiring_date: hiring_date,
+      phone_number: phone_number,
+      is_working: is_working
+    }
+    
+    # Only include password in update if it's not empty
+    update_params[:password] = password if password.present?
+  
+    if @employee.update(update_params)
+      render json: @employee, status: :ok
+    else
+      render json: { error: 'Failed to update employee' }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Employee not found" }, status: :not_found
   end
 
 end

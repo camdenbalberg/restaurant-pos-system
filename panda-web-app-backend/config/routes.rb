@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :employees, only: [ :index, :show ]
       post '/employees/add_employee', to: 'employees#add_employee'
+      delete '/employees/delete_employee/:id', to: 'employees#delete_employee'
+      put '/employees/edit_employee/:id', to: 'employees#edit_employee'
     end
   end
 
@@ -59,6 +61,20 @@ Rails.application.routes.draw do
           get "by_transaction_id/:id", to: "sale_items#by_transaction_id"
         end
       end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :sale_items, only: [ :index, :show ]
+      post '/sale_items/add_sale_item', to: 'sale_items#add_sale_item'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :transactions, only: [ :index, :show ]
+      post '/transactions/add_transaction', to: 'transactions#add_transaction'
     end
   end
 

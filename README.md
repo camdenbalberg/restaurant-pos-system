@@ -1,6 +1,6 @@
 # 12 Team 12 Systems
 
-![12 Team 12 Logo](assets/biglogo.png)
+![12 Team 12 Logo](panda-web-app-frontend/src/assets/biglogo.png)
 
 This is a very serious project regarding sugar chicken.
 
