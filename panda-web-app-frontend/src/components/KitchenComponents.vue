@@ -128,6 +128,17 @@ export default {
     transform: scale(1.05); /* scaling effect on hover */
 }
 
+.order-box button {
+  color: white;
+  background-color: darkgreen;
+  padding: 0.25em;
+  margin-top: 15px; /* Add margin to create space between the button and contents */
+}
+
+.order-box button:hover {
+  background-color: rgb(57, 149, 57);
+}
+
 .contents-box {
     background-color: #f5f5f5; /* lighter background for contrast */
     padding: 10px;
@@ -135,6 +146,7 @@ export default {
     margin-top: 10px;
     color: #333; /* darker text for better readability */
     font-size: 0.95em;
+    padding-bottom: 0.25em;
 }
 
 .contents-box p {
