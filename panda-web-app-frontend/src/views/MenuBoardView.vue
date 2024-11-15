@@ -13,7 +13,7 @@
         <div v-for="(pair, index) in categoryPairs" :key="index" class="carousel-slide flex-shrink-0 min-w-full flex">
           <div v-for="category in pair" :key="category.name" class="menu-category w-1/2 px-2">
             <img :src="category.image" :alt="`${category.name} image`" class="category-image mb-4 w-full h-48 object-cover rounded-lg" />
-            <h2>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) }}</h2>
+            <h2>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's'}}</h2>
             <div class="menu-items grid gap-4">
               <div v-for="item in category.items" :key="item.menu_id" class="menu-item">
                 <h3>{{ item.menu_name }}</h3>
@@ -32,10 +32,10 @@
       </div>
 
       <!-- Slider controls -->
-      <button @click="prevSlide" class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full px-4 -translate-y-1/2 cursor-pointer" aria-label="Previous slide">
+      <button @click="prevSlide" class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Previous slide">
         <span class="carousel-control-prev">&lt;</span>
       </button>
-      <button @click="nextSlide" class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full px-4 -translate-y-1/2 cursor-pointer" aria-label="Next slide">
+      <button @click="nextSlide" class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Next slide">
         <span class="carousel-control-next">&gt;</span>
       </button>
     </div>
@@ -147,7 +147,7 @@ export default {
 
 <style scoped>
 .menu-board {
-  padding: 1.5em;
+  padding: .75em;
 }
 
 .menu-category-carousel {
@@ -156,9 +156,10 @@ export default {
 
 .category-image {
   width: 100%;
-  height: 12rem; /* Adjust to set the space above category items */
-  object-fit: cover; /* Fill the container fully */
-  border-radius: 0.5rem; /* Keep the rounded corners if desired */
+  height: 16rem; /* Increase the height to cover more of the image */
+  object-fit: cover; /* Ensures the image covers the container */
+  object-position: center; /* Centers the image within the container */
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
 }
 
@@ -208,20 +209,33 @@ export default {
   font-size: 1.5em;
   color: #333;
   cursor: pointer;
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%);
+  z-index: 30;
+  padding: 0; /* Remove padding to make flush */
+  height: 100%; /* Full height for easy clicking */
+  width: 10px; /* Set width of the clickable area */
 }
 
+.carousel-control-prev {
+  left: 0; /* Flush with the left side */
+}
+
+.carousel-control-next {
+  right: 0; /* Flush with the right side */
+}
 h1 {
   font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 1.5em;
+  margin-bottom: .25em;
   color: #333;
 }
 
 h2 {
   font-size: 1.8rem; 
   font-weight: bold;
-  margin-bottom: 1em;
+  margin-bottom: .5em;
   color: #444;
 }
 </style>
