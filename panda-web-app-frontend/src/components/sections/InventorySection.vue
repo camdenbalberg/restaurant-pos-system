@@ -13,6 +13,7 @@
         </div>
       </div>
       <button @click="addMenuItem">Add menu item</button>
+      <button @click="removeMenuItem">Remove menu item</button>
       <button @click="generateInventoryReport">Inventory Report</button>
 
       <!-- Loading Spinner -->
@@ -49,6 +50,7 @@
 <script>
 import axios from 'axios';
 import { fetchInventoryItems } from '../../api/inventoryService';
+import { fetchMenuItems } from '../../api/menuService';
 
   export default {
     name: 'InventorySection',
@@ -57,10 +59,12 @@ import { fetchInventoryItems } from '../../api/inventoryService';
         inventory_items: [],
         inventoryCount: [],
         loading: false,
+        menuItems: {},
       };
     },
     mounted() {
       this.loadInventory_Items();
+      this.loadMenuItems();
     },
     methods: {
       async loadInventory_Items() {
@@ -75,6 +79,20 @@ import { fetchInventoryItems } from '../../api/inventoryService';
           }
         } catch (error) {
           console.error('Error loading inventory items:', error);
+        }
+      },
+
+      async loadMenuItems() {
+        console.log("Loading menu items...");
+        try {
+          const menuData = await fetchMenuItems();  // Fetch menu items from API
+          this.menuItems = menuData.reduce((acc, item) => {
+            acc[item.menu_name] = item.menu_id; // Create a mapping from menu_id to menu_name
+            console.log(item.menu_name + " : " + item.menu_id);
+            return acc;
+          }, {});
+        } catch (error) {
+          console.error('Error loading menu items:', error);
         }
       },
 
@@ -140,6 +158,29 @@ import { fetchInventoryItems } from '../../api/inventoryService';
         } catch (error) {
           console.error('Error adding menu item:', error.response ? error.response.data : error.message);
           alert('Failed to add menu item.');
+        }
+      },
+      
+      async removeMenuItem() {
+        const menuName = prompt("Enter menu name:");
+        // console.log(this.menuItems[menuName] + " : " + menuName);
+        if(!this.menuItems[menuName]) {
+          alert("Menu item not found");
+          return;
+        }
+
+        try {
+          // Make a request to remove the menu item from the backend (example endpoint)
+          const response = await axios.delete(`/api/v1/menu_items/${this.menuItems[menuName]}`);
+
+          if (response.status === 200) {
+            // Successfully removed, now delete it locally from menuItems
+            delete this.menuItems[menuName];
+            alert(`Menu item "${menuName}" removed successfully.`);
+          }
+        } catch (error) {
+          console.error("Error removing menu item:", error);
+          alert("Failed to remove menu item.");
         }
       },
 
