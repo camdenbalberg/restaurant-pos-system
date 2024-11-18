@@ -10,6 +10,9 @@
         <RouterLink to="/">
           <button class="scaffold-item" id="home-button">Home</button>
         </RouterLink>
+        <div class="scaffold=item" id="language" @click="languageClicked">
+          <button>Color Blind Mode</button>
+        </div>
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
