@@ -3,9 +3,9 @@
     <div @click="showKart" class="kart">
       <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
-    <div :class="['button-container', { 'no-scroll': popupType }]">
+    <div :class="['button-container', { 'no-scroll': mealType }]">
       <div v-for="meal in filteredMenuItems" :key="meal">
-        <button @click="handleShowPopup(meal)">
+        <button @click="handleShowMeal(meal)">
           <picture>
             <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
             <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
@@ -13,11 +13,25 @@
           {{ meal.menu_name }}
         </button>
       </div>
+      <button @click="handleShowMeal('drink')">
+        <picture>
+          <source :srcset="`../../src/assets/menu/drinks.avif`" type="image/avif">
+          <img :src="`../../src/assets/menu/drinks.avif`" alt="drinks">
+        </picture>
+        Drinks
+      </button>
+      <button @click="handleShowMeal('appetizer')">
+        <picture>
+          <source :srcset="`../../src/assets/menu/appetizers.avif`" type="image/avif">
+          <img :src="`../../src/assets/menu/appetizers.avif`" alt="appetizers">
+        </picture>
+        Appetizers
+      </button>
     </div>
     <!--delete popup when dynamically made-->
-    <Popup v-if="popupType" :menu_item="popupType" :cat="popupItems" @close="closePopup" @add-to-kart="addToKart($event)"/>
+    <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
-
+    <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -26,63 +40,90 @@
 
 <script>
 //delete popup when dynamically made
-import Popup from '../components/Popup.vue'; // Adjust path if necessary
+import MealPopup from '../components/MealPopup.vue'; // Adjust path if necessary
 import Kart from '../components/Kart.vue'; // Adjust path if necessary
 import api from '@/api';
+import AppOrDrinkPopup from '../components/AppOrDrinkPopup.vue';
 
 export default {
   name: 'Customer',
   components: {
-    Popup,
+    MealPopup,
     Kart,
+    AppOrDrinkPopup,
   },
   data() {
     return {
-      popupType: null,
-      popupItems: [],
+      mealType: null,
+      mealItems: [],
+      appOrDrinkType: null,
+      appOrDrinkItems: [],
       kartVisible: false,
       orderedItems: [],
       menuItems: [],
       categories: [],
+      drinks: [],
+      appetizers: [],
     };
   },
   mounted() {
     this.fetchMenuItems();
   },
   computed: {
-  filteredMenuItems() {
-        return this.menuItems.filter(item => item.category === 'meal');
+    filteredMenuItems() {
+      return this.menuItems.filter(item => item.category === 'meal');
     },
   },
   methods: {
-    async handleShowPopup(meal) {
+    async handleShowMeal(meal) {
       try {
-        const inv_ids = await this.getEntreesSides(meal);
         this.categories = [];
-        for(let inv_id of inv_ids){
-          if(inv_id.inv_id === 55){
-            for(let i = 0; i < inv_id.quantity; i++){
-              this.categories.push('side');
-            }
-          } else if(inv_id.inv_id === 54){
-            for(let i = 0; i < inv_id.quantity; i++){
-              this.categories.push('entree'); 
+        if(typeof meal === 'string' && meal === 'drink'){
+          console.log('Drinks');
+          this.categories.push('drink');
+          this.showAppOrDrink(meal, this.categories);
+          return;
+        } else if(typeof meal === 'string' && meal === 'appetizer'){
+          console.log('Appetizers');
+          this.categories.push('appetizer');
+          this.showAppOrDrink(meal, this.categories);
+          return;
+        }
+        else{
+          const inv_ids = await this.getEntreesSides(meal);
+          for(let inv_id of inv_ids){
+            if(inv_id.inv_id === 55){
+              for(let i = 0; i < inv_id.quantity; i++){
+                this.categories.push('side');
+              }
+            } else if(inv_id.inv_id === 54){
+              for(let i = 0; i < inv_id.quantity; i++){
+                this.categories.push('entree'); 
+              }
             }
           }
+          console.log(this.categories);
+          this.showMeal(meal, this.categories);
         }
-        console.log(this.categories);
-        this.showPopup(meal, this.categories);
       } catch (error) {
         console.error('Error showing popup:', error);
       }
     },
-    showPopup(type, items) {
-      this.popupType = type;
-      this.popupItems = items;
+    showMeal(type, items) {
+      this.mealType = type;
+      this.mealItems = items;
     },
-    closePopup() {
-      this.popupType = null;
-      this.popupItems = [];
+    closeMeal() {
+      this.mealType = null;
+      this.mealItems = [];
+    },
+    showAppOrDrink(type, items) {
+      this.appOrDrinkType = type;
+      this.appOrDrinkItems = items;
+    },
+    closeAppOrDrink() {
+      this.appOrDrinkType = null;
+      this.appOrDrinkItems = [];
     },
     showKart() {
       this.kartVisible = true;
@@ -154,7 +195,7 @@ export default {
 
 .kart {
   position: absolute;
-  top: 10px; /* Adjust as needed */
+  bottom: 10px; /* Adjust as needed */
   right: 10px; /* Adjust as needed */
   width: 75px; /* Adjust as needed */
   height: 75px; /* Adjust as needed */

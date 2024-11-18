@@ -1,6 +1,6 @@
 <template>
     <div class="popup">
-      <p>{{ menu_item.menu_name }}</p>
+      <p>{{ menu_item }}</p>
       <ul>
         <!--loop through all categories passed into popup-->
         <li v-for="(item, index) in cat" :key="item">
@@ -16,7 +16,7 @@
 import MealItems from './MealItems.vue'; // Adjust path if necessary
 
 export default {
-  name: 'Popup',
+  name: 'MealPopup',
   components: {
     MealItems,
   },
@@ -27,7 +27,7 @@ export default {
   },
   props: {
     menu_item: {
-      type: Object,
+      type: String,
       required: true,
     },
     cat:{
@@ -35,7 +35,7 @@ export default {
       required: true,
       validator(value) {
         return value.every(item => typeof item === 'string');
-      },
+      }
     },
   },
   created() {
