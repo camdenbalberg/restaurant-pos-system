@@ -118,7 +118,7 @@
     text-align: left;
     margin-left: 0.5em;
     font-weight: 700;
-    font-size: 150%;
+    font-size: 135%;
   }
 
   .cashier-selection-list {
