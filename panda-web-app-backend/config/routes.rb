@@ -30,7 +30,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :inventory_items, only: [ :index, :show ]
+      resources :inventory_items do
+        collection do
+          post '/create', to: 'inventory_items#create'
+          put '/:id', to: 'inventory_items#update'
+          delete '/:id', to: 'inventory_items#destroy'
+        end
+      end
     end
   end
 
