@@ -1,18 +1,27 @@
 // src/router.js
+import store from '@/store';
 import { createRouter, createWebHistory } from "vue-router";
+import { authStatus } from "@/auth/index.js";
 import HomeView from "@/views/HomeView.vue"; // Create this component
 import AboutView from "@/views/AboutView.vue"; // Create this component
 import KitchenView from "../views/KitchenView.vue";
 import LoginView from "@/views/LoginView.vue";
-import CustomerView from "@/views/CustomerView.vue"; // Create this component
-import ManagerView from "@/views/ManagerView.vue"; // Create this component
-import CashierView from '@/views/CashierView.vue';
+import CashierView from "@/views/CashierView.vue";
+import CustomerView from "@/views/CustomerView.vue";
+import ManagerView from "@/views/ManagerView.vue";
+import GoogleAuth from "@/components/GoogleAuth.vue";
 
 const routes = [
+  {
+    path: "/auth/google/callback",
+    name: "auth",
+    component: GoogleAuth,
+  },
   {
     path: "/",
     name: "home",
     component: HomeView,
+    meta: { requiresAuth: true },
   },
   {
     path: "/about",
@@ -23,6 +32,7 @@ const routes = [
     path: "/kitchen",
     name: "kitchen",
     component: KitchenView,
+    meta: { requiresAuth: true },
   },
   {
     path: "/login",
@@ -33,16 +43,19 @@ const routes = [
     path: '/cashier',
     name: 'cashier',
     component: CashierView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/customer',
     name: 'customer',
     component: CustomerView,
+    meta: { requiresAuth: true },
   },
   {
     path: "/manager",
     name: "manager",
     component: ManagerView,
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -50,5 +63,18 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach( (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const isAuthenticated = store.getters.isAuthenticated;
+    if (isAuthenticated) {
+      next();
+    } else {
+      next({ name: 'login' });
+    }
+  } else {
+    next();
+  }
+})
 
 export default router;

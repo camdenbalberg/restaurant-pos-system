@@ -1,9 +1,17 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  namespace :api do
+    namespace :v1 do
+      get "/auth/:provider/callback", to: "sessions#omniauth"
+      get "/auth/failure", to: "sessions#failure"
+    end
+  end
+
   namespace :api do
     namespace :v1 do
       resources :menu_items, only: [ :index, :show ]
-      post '/menu_items/add_menu_item', to: 'menu_items#add_menu_item'
+      post "/menu_items/add_menu_item", to: "menu_items#add_menu_item"
     end
   end
 
@@ -41,7 +49,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :recipes, only: [ :index, :show ]
-      post '/recipes/add_recipe', to: 'recipes#add_recipe'
+      post "/recipes/add_recipe", to: "recipes#add_recipe"
     end
   end
 

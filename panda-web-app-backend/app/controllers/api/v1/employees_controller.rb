@@ -1,4 +1,6 @@
 class Api::V1::EmployeesController < ApplicationController
+  before_action :authenticat_user!
+
   # Query database for items and rendering it as json
   def index
     @employees = Employee.all
