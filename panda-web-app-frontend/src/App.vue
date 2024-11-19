@@ -12,8 +12,7 @@
       <div class="scaffold">
         <RouterLink to="/">
           <button class="scaffold-item" id="home-button">Home</button>
-        </RouterLink>
-        
+        </RouterLink>        
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
           <div class="scaffold-item" id="time" @click="timeClicked">

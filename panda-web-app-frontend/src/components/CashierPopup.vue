@@ -89,5 +89,7 @@ export default {
   .cancel-button, .submit-button {
     margin: 0.5em;
     padding: 0.5em 0.75em; 
+    color: #242528;
+    background-color: #C3C7D0;
   }
 </style>

@@ -70,8 +70,8 @@ export default {
     --surfaceColor: #ccd0da;
     --backgroundColor: #eff1f5;
     --borderColor: #dce0e8;
-    --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+    --textColor: #33353D;
+    --subTextColor: #33353D;
 
     color: var(--textColor);
   }
