@@ -111,7 +111,7 @@
       },
 
       checkout() {
-
+        
 
         this.deleteAllItems();
       },
@@ -219,6 +219,8 @@
   .order-item-delete {
     grid-row: 3;
     grid-column: 2 / 2;
+    color: #242528;
+    background-color: #C3C7D0;
   }
 
   .order-item-delete button {
@@ -241,6 +243,8 @@
 
   .order-checkout {
     padding: 1em;
+    color: #242528;
+    background-color: #C3C7D0;
   }
 
   .order-price {
