@@ -6,8 +6,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
+  <!-- <Translator /> -->
   <div id="app">
-    <!-- <Translator /> -->
     <div class="scaffold-overlay">
       <div class="scaffold">
         <RouterLink to="/">
