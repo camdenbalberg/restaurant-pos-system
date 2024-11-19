@@ -21,7 +21,7 @@ const routes = [
     path: "/",
     name: "home",
     component: HomeView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
   },
   {
     path: "/about",
@@ -32,7 +32,7 @@ const routes = [
     path: "/kitchen",
     name: "kitchen",
     component: KitchenView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
   },
   {
     path: "/login",
@@ -43,19 +43,19 @@ const routes = [
     path: '/cashier',
     name: 'cashier',
     component: CashierView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
   },
   {
     path: '/customer',
     name: 'customer',
     component: CustomerView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
   },
   {
     path: "/manager",
     name: "manager",
     component: ManagerView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
   },
   // Catch-all route for unhandled paths
   {
@@ -77,17 +77,13 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach( (to, from, next) => {
-//   if (to.meta.requiresAuth) {
-//     const isAuthenticated = store.getters.isAuthenticated;
-//     if (isAuthenticated) {
-//       next();
-//     } else {
-//       next({ name: 'login' });
-//     }
-//   } else {
-//     next();
-//   }
-// })
-
+router.beforeEach((to, from, next) => {
+  store.dispatch('checkAuth').then(() => {
+    if (to.meta.requiresAuth && !store.state.isAuthenticated) {
+      next('/login'); // Redirect unauthenticated users
+    } else {
+      next(); // Allow navigation
+    }
+  });
+});
 export default router;

@@ -22,9 +22,10 @@ class SessionsController < ApplicationController
 
     response.set_cookie('auth_token', {
                           value: token,
-                          httponly: true,
+                          httponly: false,
                           secure: Rails.env.production?,
-                          same_site: :strict
+                          same_site: :strict,
+                          path: '/'
                         })
 
     # render json: { token: token, user: user }

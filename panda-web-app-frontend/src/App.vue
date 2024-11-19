@@ -6,8 +6,19 @@
 </template>
 
 <script>
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
 export default {
   name: 'App',
+  methods: {
+    setup() {
+      const store = useStore();
+
+      onMounted(() => {
+        store.dispatch('checkAuth'); // Check auth on app load
+      });
+    },
+  }
 };
 </script>
 
