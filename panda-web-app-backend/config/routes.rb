@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :menu_items, only: [ :index, :show ]
       post '/menu_items/add_menu_item', to: 'menu_items#add_menu_item'
+      delete '/menu_items/:menu_id', to: 'menu_items#destroy'
     end
   end
 
@@ -29,7 +30,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :inventory_items, only: [ :index, :show ]
+      resources :inventory_items do
+        collection do
+          post '/create', to: 'inventory_items#create'
+          put '/:id', to: 'inventory_items#update'
+          delete '/:id', to: 'inventory_items#destroy'
+        end
+      end
     end
   end
 

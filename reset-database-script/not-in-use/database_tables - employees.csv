@@ -1,0 +1,7 @@
+employee_id,first_name,last_name,email,is_manager,hiring_date,phone_number,password,is_working
+0,Camden,Balberg,camdenbalberg@tamu.edu,TRUE,9/18/2024,7138163646,password,TRUE
+1,Steven,Lien,liensteven0@tamu.edu,TRUE,9/23/2024,5127742594,p4ssw0rd,TRUE
+2,Eduardo,Enriquez,airplane789@tamu.edu,FALSE,9/23/2024,9726740071,p455w0rd,TRUE
+3,Connor,Davis,coolestemployee@tamu.edu,FALSE,9/23/1970,8881234200,p455M0rd,TRUE
+4,Leonardo,Frias,leo@leonardo.leo,FALSE,5/23/1200,2222222222,p45sword,TRUE
+5,Nathan,Truong,nathantruong04@tamu.edu,FALSE,9/23/2024,1111111111,b455mord,TRUE

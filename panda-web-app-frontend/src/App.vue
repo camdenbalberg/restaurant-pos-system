@@ -1,3 +1,5 @@
+<!-- import { Translator } from 'vue-google-translate'; -->
+
 <!-- src/App.vue -->
 <template>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 
   <div id="app">
+    <!-- <Translator /> -->
     <div class="scaffold-overlay">
       <div class="scaffold">
         <RouterLink to="/">
@@ -40,6 +43,7 @@
   export default {
     name: 'App',
     components: {
+      // Translator
     },
 
     data() {
