@@ -1,39 +1,34 @@
-import { createStore } from 'vuex';
+import { createStore } from 'vuex'; // Use Vue 3's `createStore` from Vuex
+import { default as jwtDecode } from 'jwt-decode';
 
-const store = createStore({
+
+export default createStore({
   state: {
     user: null,
-    token: localStorage.getItem('token') || '',
+    token: null,
   },
   mutations: {
-    SET_USER(state, user) {
-      state.user = user;
-    },
-    SET_TOKEN(state, token) {
+    setToken(state, token) {
       state.token = token;
-      localStorage.setItem('token', token);
+      state.user = jwtDecode(token);
     },
-    LOGOUT(state) {
+    clearAuth(state) {
+      state.token = null;
       state.user = null;
-      state.token = '';
-      localStorage.removeItem('token');
     },
   },
   actions: {
-    setUser({ commit }, user) {
-      commit('SET_USER', user);
-    },
-    setToken({ commit }, token) {
-      commit('SET_TOKEN', token);
+    login({ commit }, token) {
+      commit('setToken', token);
+      document.cookie = `auth_token=${token};path=/`;
     },
     logout({ commit }) {
-      commit('LOGOUT');
+      commit('clearAuth');
+      document.cookie = 'auth_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     },
   },
   getters: {
     isAuthenticated: (state) => !!state.token,
-    currentUser: (state) => state.user,
+    user: (state) => state.user,
   },
 });
-
-export default store;

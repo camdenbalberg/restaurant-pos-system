@@ -16,7 +16,7 @@
     </div>
   </div>
   <div>
-    <button id="google-signin-btn" @click="signInWithGoogle">
+    <button id="google-signin-btn" @click="googleLogin">
       Sign in with Google
     </button>
     <LogoutButton />
@@ -26,6 +26,7 @@
 <script>
 import LogoutButton from "../components/LogoutButton.vue";
 import api from '@/api';
+import axios from 'axios'
 
 export default {
   data() {
@@ -39,8 +40,8 @@ export default {
     LogoutButton,
   },
   methods: {
-    signInWithGoogle() {
-      window.location = `http://localhost/api/v1/auth/:provider/callback`;
+    googleLogin() {
+      window.location.href = 'http://localhost/auth/google_oauth2';
     },
     async submitForm() {
       try {

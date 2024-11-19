@@ -16,15 +16,24 @@
 
          if (token) {
              try {
-                 const response = await api.get('/auth/:provider/callback', { headers: { Authorization: `Bearer ${token}` } });
-                 const { token: jwt, user } = response.data;
-                 this.setToken(jwt);
-                 this.setUser(user);
-                 this.$router.push( { name: 'home' } );
+                 // Directly save the token from the URL
+                 this.setToken(token);
+
+                 // Optionally, if user data is passed in the query params, save it too
+                 const user = JSON.parse(urlParams.get('user'));
+                 if (user) {
+                     this.setUser(user);
+                 }
+
+                 // Redirect the user to the home page
+                 this.$router.push({ name: 'home' });
              } catch (err) {
                  console.error("Failed to authenticate", err);
-                 this.$router.push( { name: 'login' } );
+                 this.$router.push({ name: 'login' });
              }
+         } else {
+             console.error("No token provided");
+             this.$router.push({ name: 'login' });
          }
      },
  };

@@ -21,8 +21,10 @@ gem "google-id-token"
 # Use postgresql as the database for Active Record
 gem 'pg', '1.5.9'
 
+gem "dotenv-rails"
 gem "omniauth"
 gem "omniauth-google-oauth2"
+gem "jwt_sessions"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
