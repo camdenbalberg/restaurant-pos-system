@@ -137,6 +137,7 @@ export default {
 
 .order-box button:hover {
   background-color: rgb(57, 149, 57);
+  color: black;
 }
 
 .contents-box {
@@ -152,6 +153,14 @@ export default {
 .contents-box p {
   font-weight: bold;
   margin-bottom: 5px;
+}
+
+.order-box p {
+  color: black;
+}
+
+.order-box h2 {
+  color: black;
 }
 
 table {
