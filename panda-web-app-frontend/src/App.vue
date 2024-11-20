@@ -10,6 +10,8 @@
         <RouterLink to="/">
           <button class="scaffold-item" id="home-button">Home</button>
         </RouterLink>
+
+        <div class="scaffold-item" id="google_translate_element"></div>
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
@@ -26,6 +28,7 @@
     </div>
 
     <router-view />
+
   </div>
 </template>
 
@@ -53,6 +56,7 @@
     },
 
     mounted() {
+      this.googleTranslateElementInit();
       setInterval(() => {
         this.time = this.getTime();
         this.uptime = this.getUptime();
@@ -156,8 +160,15 @@
       },
 
       timeClicked() {
-        this.timeConfig = (this.timeConfig + 1) % 2
-      }
+        this.timeConfig = (this.timeConfig + 1) % 2;
+      },
+
+      googleTranslateElementInit() {
+        window.google.translate.TranslateElement(
+          { pageLanguage: "en" },
+          "google_translate_element"
+        );
+      },
     }
   }
 </script>
