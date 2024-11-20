@@ -12,7 +12,11 @@ export default createStore({
     setAuthentication(state, status) {
       state.isAuthenticated = status;
     },
+    // setUser(state, user) {
+    //   state.user = user;
+    // },
     setUser(state, user) {
+      console.log('User being set in store:', user); // Debugging line
       state.user = user;
     },
   },
@@ -32,6 +36,15 @@ export default createStore({
         console.error('Authentication check failed:', error);
         commit('setAuthentication', false);
         commit('setUser', null);
+      }
+    },
+    async logout({ commit }) {
+      try {
+        await api.post('http://localhost/auth/logout'); // Make the logout request to the backend
+        commit('setAuthentication', false); // Clear authentication state
+        commit('setUser', null); // Clear user state
+      } catch (error) {
+        console.error('Logout failed:', error);
       }
     },
   },

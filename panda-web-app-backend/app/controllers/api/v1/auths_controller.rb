@@ -11,7 +11,7 @@ class Api::V1::AuthsController < ApplicationController
         Rails.logger.info "[AUTH CONTROL] Secret Key Base Used for Decoding: #{Rails.application.credentials.secret_key_base}"
         decoded = JWT.decode(token, Rails.application.credentials.secret_key_base, true, algorithm: 'HS256')[0]
         user = User.find(decoded['user_id'])
-        render json: { valid: true, user: { id: user.id, name: user.name, avatar_url: user.avatar_url } }, status: :ok
+        render json: { valid: true, user: { id: user.id, name: user.name, avatar_url: user.avatar_url, role: user.role } }, status: :ok
       rescue JWT::DecodeError => e
         Rails.logger.error "JWT decode error: #{e.message}" # Log decoding errors
         render json: { valid: false, error: 'Invalid token' }, status: :unauthorized

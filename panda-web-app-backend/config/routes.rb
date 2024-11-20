@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   get "auth/:provider/callback", to: "sessions#google_auth"
+  post "auth/login", to: "sessions#login_traditional"
   get "auth/:provider", to: redirect("/auth/google_oauth2")
   post "auth/failure", to: redirect("/login")
+  post "auth/logout", to: "sessions#logout"
 
   namespace :api do
     namespace :v1 do

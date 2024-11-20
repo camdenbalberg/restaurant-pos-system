@@ -23,14 +23,23 @@
           <RouterLink to="/about">
               <button class="home-item">About</button>
           </RouterLink>
-
-          <RouterLink to="/login">
-              <button class="home-item">Login</button>
-          </RouterLink>
         </li>
+      </ul>
+      <ul class="home-links">
+        <li><LogoutButton /></li>
       </ul>
     </div>
 </template>
+
+<script>
+import LogoutButton from "../components/LogoutButton.vue";
+
+ export default {
+  components: {
+    LogoutButton,
+  },
+ }
+</script>
 
 <style scoped>
   :root {

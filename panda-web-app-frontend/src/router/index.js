@@ -27,7 +27,7 @@ const routes = [
     path: "/kitchen",
     name: "kitchen",
     component: KitchenView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresEmployee: true },
   },
   {
     path: "/login",
@@ -38,7 +38,7 @@ const routes = [
     path: '/cashier',
     name: 'cashier',
     component: CashierView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresEmployee: true },
   },
   {
     path: '/customer',
@@ -50,7 +50,7 @@ const routes = [
     path: "/manager",
     name: "manager",
     component: ManagerView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresManager: true },
   },
   // Catch-all route for unhandled paths
   {
@@ -73,11 +73,23 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log('Navigating to:', to.name);
+  console.log('Requires Auth:', to.meta.requiresAuth);
+  console.log('Requires Manager:', to.meta.requiresManager);
   store.dispatch('checkAuth').then(() => {
+    console.log('User Role:', store.state.user?.role); // Log the user's role after authentication check
     if (to.meta.requiresAuth && !store.state.isAuthenticated) {
-      next('/login'); // Redirect unauthenticated users
+      // Redirect unauthenticated users to the login page
+      next('/login');
+    } else if (to.meta.requiresManager && store.state.user.role !== 'manager') {
+      // Redirect non-managers trying to access manager-only pages
+      next('/');
+    } else if (to.meta.requiresEmployee && store.state.user.role !== 'employee' && store.state.user.role !== 'manager') {
+      // Redirect non-staff trying to access staff-only pages
+      next('/');
     } else {
-      next(); // Allow navigation
+      // Allow navigation
+      next();
     }
   });
 });

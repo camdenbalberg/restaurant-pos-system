@@ -5,13 +5,19 @@
 </template>
 
 <script>
- import api from "@/api";
- import { mapActions } from 'vuex';
-
+ import { useStore } from 'vuex';
+ import { useRouter } from 'vue-router';
  export default {
-     name: 'LogoutButton',
-     methods: {
-         ...mapActions(['logout']),
-     },
- }
+   setup() {
+     const store = useStore();
+     const router = useRouter();
+
+     const logout = async () => {
+       await store.dispatch('logout'); // Call the logout action
+       router.push('/login'); // Redirect to the login page
+     };
+
+     return { logout };
+   },
+ };
 </script>

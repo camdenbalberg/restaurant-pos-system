@@ -19,12 +19,10 @@
     <button id="google-signin-btn" @click="googleLogin">
       Sign in with Google
     </button>
-    <LogoutButton />
   </div>
 </template>
 
 <script>
-import LogoutButton from "../components/LogoutButton.vue";
 import api from '@/api';
 
 export default {
@@ -35,39 +33,30 @@ export default {
       buttonText: 'Submit',
     }
   },
-  components: {
-    LogoutButton,
-  },
   methods: {
     googleLogin() {
       window.location.href = 'http://localhost/auth/google_oauth2';
     },
     async submitForm() {
       try {
-        this.buttonText = "Loading..."
-        console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response_pwd = await api.get(`/employees/by_password/${this.password}`);
-        this.employees_pwd = response_pwd.data;
-        const response_usr = await api.get(`/employees/by_employee_id/${this.username}`);
-        this.employees_usr = response_usr.data;
-        let found = false;
-        for (let i = 0; i < this.employees_pwd.length; i++) {
-          if (this.employees_pwd[i].email == this.employees_usr[0].email) {
-            console.log("Matching employee found");
-            found = true;
-            // https://router.vuejs.org/guide/essentials/navigation.html
-            return this.$router.push('/');
+        if (this.username && this.password) {
+          // Manual login flow
+          const response = await api.post('http://localhost/auth/login', {
+            username: this.username,
+            password: this.password,
+          });
+          if (response.data.success) {
+            console.log('Login successful:', response.data.user);
+            this.$router.push('/');
+          } else {
+            console.log('Invalid login:', response.data.error);
+            this.buttonText = "Submit\nInvalid";
           }
         }
-        if (!found) {
-          console.log("Invalid");
-        }
-
       } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error('Error logging in:', error);
       }
-      this.buttonText = "Submit\nInvalid"
-    }
+    },
   }
 };
 
