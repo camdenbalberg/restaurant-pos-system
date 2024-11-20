@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div @click="showKart" class="kart">
+    <div @click="showRec" class="kart">
       <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
     <div :class="['button-container', { 'no-scroll': mealType }]">
@@ -28,10 +28,10 @@
         Appetizers
       </button>
     </div>
-    <!--delete popup when dynamically made-->
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
+    <Recommendations v-if="recVisible" :orderedItemas="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -44,6 +44,7 @@ import MealPopup from '../components/MealPopup.vue'; // Adjust path if necessary
 import Kart from '../components/Kart.vue'; // Adjust path if necessary
 import api from '@/api';
 import AppOrDrinkPopup from '../components/AppOrDrinkPopup.vue';
+import Recommendations from '../components/Recommendations.vue';
 
 export default {
   name: 'Customer',
@@ -51,6 +52,7 @@ export default {
     MealPopup,
     Kart,
     AppOrDrinkPopup,
+    Recommendations,
   },
   data() {
     return {
@@ -64,6 +66,7 @@ export default {
       categories: [],
       drinks: [],
       appetizers: [],
+      recVisible: false,
     };
   },
   mounted() {
@@ -79,12 +82,11 @@ export default {
       try {
         this.categories = [];
         if(typeof meal === 'string' && meal === 'drink'){
-          console.log('Drinks');
           this.categories.push('drink');
+          console.log(this.categories);
           this.showAppOrDrink(meal, this.categories);
           return;
         } else if(typeof meal === 'string' && meal === 'appetizer'){
-          console.log('Appetizers');
           this.categories.push('appetizer');
           this.showAppOrDrink(meal, this.categories);
           return;
@@ -134,6 +136,13 @@ export default {
     emptyKart() {
       this.orderedItems = [];
     },
+    showRec(){
+      this.recVisible = true;
+    },
+    closeRec() {
+      this.recVisible = false;
+      this.showKart();
+    },
     addToKart(items) {
       console.log('Adding to kart:', items);
       //create a list of items to be added to the kart
@@ -177,6 +186,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
 }
 
 .button-container {
