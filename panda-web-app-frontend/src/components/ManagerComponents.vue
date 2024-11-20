@@ -11,14 +11,13 @@
               v-for="(item, index) in navItems" 
               :key="index"
               :class="['nav-button', { active: currentSection === item.name }]"
-              @click="setCurrentSection(item.name)"
-            >
+              @click="setCurrentSection(item.name)">
               {{ item.label }}
             </button>
+            
           </div>
         </div>
       </nav>
-  
       <!-- Content Section -->
       <div class="content-section">
         <transition name="fade" mode="out-in">
@@ -34,6 +33,24 @@
             </div>
           </keep-alive>
         </transition>
+
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+          <h3>Manage Images</h3>
+          <p>Add images for specific menu items by entering the menu ID.</p>
+
+          <!-- Menu ID Input -->
+          <label for="menu-id">Menu ID:</label>
+            <input 
+              type="number" 
+              id="menu-id" 
+              v-model="menuId" 
+              placeholder="Enter Menu ID" 
+            />
+
+          <!-- Image Upload -->
+          <ImageUpload :menuId="menuId" @imageUploaded="handleImageUpload" />
+        </div>
       </div>
     </div>
   </template>
@@ -41,6 +58,7 @@
   <script>
   import api from '@/api';
   // Import the InventorySection component
+  import ImageUpload from '../components/ImageUpload.vue';
   import InventorySection from './sections/InventorySection.vue';
   import EmployeesSection from './sections/EmployeesSection.vue';
   import ScreensSection from './sections/ScreensSection.vue';
@@ -49,10 +67,12 @@
   export default {
     // Register the component
     components: {
-      InventorySection
+      InventorySection,
+      ImageUpload
     },
     data() {
         return {
+          menuId: '',
         currentSection: '',
         navItems: [
           { 
@@ -93,7 +113,63 @@
     methods: {
       setCurrentSection(section) {
         this.currentSection = section;
-      }
+      },
+      async handleImageUpload({menuId, file}) {
+        if (!file) {
+          console.error('Missing file');
+          alert('Menu ID and Image are required!');
+          return;
+        }
+        if (!menuId) {
+          console.error('Missing menuId');
+          alert('Menu ID and Image are required!');
+          return;
+        }
+        
+
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          formData.append('menu_id', menuId);
+
+          const response = await api.patch(`menu_items/${menuId}/update_image`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            // params: { menu_id: menuId }, 
+          });
+
+          console.log('Image uploaded successfully:', response.data);
+          alert('Image uploaded successfully!');
+        } catch (error) {
+          if (error.response) {
+            // Backend returned an error
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data?.message || error.response.statusText;
+
+            console.error('Error uploading image:', errorMessage);
+
+            // Specific error handling based on status code or message
+            if (statusCode === 413 || errorMessage.includes('too large body')) {
+              alert('The uploaded image is too large. Please choose a smaller file.');
+            } else if (statusCode === 400) {
+              alert('Bad Request. Please check the menu ID and try again.');
+            } else if (statusCode === 404) {
+              alert('Menu ID not found. Please enter a valid menu ID.');
+            } else if (statusCode === 500) {
+              alert('Server error. Please try again later.');
+            } else {
+              alert(`An unexpected error occurred: ${errorMessage}`);
+            }
+          } else if (error.request) {
+            // Request was made but no response received
+            console.error('No response from server:', error.request);
+            alert('No response from the server. Please check your network connection.');
+          } else {
+            // Something else caused the error
+            console.error('Unexpected error:', error.message);
+            alert(`Unexpected error: ${error.message}`);
+          }
+        }
+      },
     }
   };
   </script>
@@ -104,7 +180,14 @@
     min-height: 100vh;
     background-color: #f5f5f5;
   }
-  
+ 
+  .inventory-section {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+ 
   .nav-bar {
     background-color: #2c3e50;
     padding: 1rem 0;
