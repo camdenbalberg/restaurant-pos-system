@@ -50,6 +50,7 @@ Rails.application.routes.draw do
         collection do
           get "by_date/:date", to: "transactions#by_date"
           get "by_employee/:employee", to: "transactions#by_employee"
+          get "by_date_range", to: "transactions#by_date_range"
         end
         member do
           patch :toggle_completed
@@ -70,6 +71,7 @@ Rails.application.routes.draw do
       resources :sale_items, only: [ :index, :show ] do
         collection do 
           get "by_transaction_id/:id", to: "sale_items#by_transaction_id"
+          post 'by_transaction_ids', to: 'sale_items#by_transaction_ids'
         end
       end
     end
