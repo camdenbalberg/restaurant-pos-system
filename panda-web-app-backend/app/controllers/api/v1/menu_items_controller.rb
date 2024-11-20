@@ -1,6 +1,10 @@
+require 'net/http'
+require 'uri'
+require 'json'
+
 class Api::V1::MenuItemsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, only: [:add_menu_item]
+  skip_before_action :verify_authenticity_token, only: [:add_menu_item, :destroy, :update_image]
       # Query database for items and rendering it as json
       def index
         if params[:category]
@@ -44,4 +48,92 @@ class Api::V1::MenuItemsController < ApplicationController
           render json: { error: 'Failed to create menu item' }, status: :unprocessable_entity
         end
       end
+
+      # DELETE /api/v1/menu_items/:menu_id
+      def destroy
+        menu_item = MenuItem.find_by(menu_id: params[:menu_id])
+
+        if menu_item.nil?
+          render json: { error: 'Menu item not found' }, status: :not_found
+        else
+          menu_item.destroy
+          render json: { message: 'Menu item successfully deleted' }, status: :ok
+        end
+      end
+
+      def upload_image_to_imgur(image)
+        client_id = ENV['IMGUR_CLIENT_ID']  # Fetch the client ID from the environment variable
+        client_secret = ENV['IMGUR_CLIENT_SECRET']  # Fetch the client secret (if needed)
+      
+        uri = URI('https://api.imgur.com/3/image')
+        request = Net::HTTP::Post.new(uri)
+        request['Authorization'] = "Client-ID #{client_id}"
+      
+        # Read the image content from the tempfile and encode it in base64
+        image_data = Base64.encode64(params[:image].read)
+      
+        # Pass the base64-encoded image data to Imgur
+        request.set_form_data({ 'image' => image_data })
+      
+        # Make the request
+        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+          http.request(request)
+        end
+      
+        # Parse and return the Imgur link if the request was successful
+        if response.is_a?(Net::HTTPSuccess)
+          JSON.parse(response.body)['data']['link']  # Return the image URL
+        else
+          Rails.logger.error "Imgur Upload Error: #{response.body}"
+          nil
+        end
+      end
+
+      
+      # PATCH /api/v1/menu_items/:menu_id/update_image
+      def update_image
+        menu_item = MenuItem.find_by(menu_id: params[:menu_id])
+        
+        if menu_item.nil?
+          render json: { error: 'Menu item not found' }, status: :not_found
+          return
+        end
+
+        # If an image file is provided, upload it to Imgur
+        if params[:image].present?
+          puts "Image: #{params[:image]}"  # Log the image parameter to ensure it's present
+          Rails.logger.info "Cleared here"
+          begin
+            imgur_link = upload_image_to_imgur(params[:image].tempfile)
+          rescue => e
+            Rails.logger.error "Image Upload Error: #{e.message}"
+            render json: { error: 'An unexpected error occurred during image upload' }, status: :unprocessable_entity
+            return
+          end
+          
+          Rails.logger.info "Image Details: #{params[:image].inspect}"
+          Rails.logger.info "Tempfile Path: #{params[:image].tempfile.path}" if params[:image].respond_to?(:tempfile)
+          Rails.logger.info "Cleared here 1 "
+          if imgur_link.nil?
+            render json: { error: 'Failed to upload image to Imgur' }, status: :unprocessable_entity
+            return
+          end
+          Rails.logger.info "Cleared here 2"
+          menu_item.image_url = imgur_link
+        elsif params[:image_url].present?
+          # If an image URL is provided, use it directly
+          menu_item.image_url = params[:image_url]
+        else
+          render json: { error: 'No image or image_url parameter provided' }, status: :unprocessable_entity
+          return
+        end
+
+        # Save the updated menu item
+        if menu_item.save
+          render json: { message: 'Image updated successfully', menu_item: menu_item }, status: :ok
+        else
+          render json: { error: 'Failed to update image', details: menu_item.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
 end

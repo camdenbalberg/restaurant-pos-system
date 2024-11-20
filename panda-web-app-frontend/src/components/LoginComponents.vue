@@ -91,15 +91,15 @@ export default {
 </script>
 
 <style scoped>
-:root {
-  --accentColor: #dc8a78;
-  --accentColorIntense: #db5132;
-  --accentColorWeak: #edbeb4;
-  --surfaceColor: #ccd0da;
-  --backgroundColor: #eff1f5;
-  --borderColor: #dce0e8;
-  --textColor: #4c4f69;
-  --subTextColor: #5c5f77;
+  :root {
+    --accentColor: #dc8a78;
+    --accentColorIntense: #db5132;
+    --accentColorWeak: #edbeb4;
+    --surfaceColor: #ccd0da;
+    --backgroundColor: #eff1f5;
+    --borderColor: #dce0e8;
+    --textColor: #33353D;
+    --subTextColor: #33353D;
 
   color: var(--textColor);
 }

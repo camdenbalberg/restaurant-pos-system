@@ -14,8 +14,22 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :menu_items, only: [ :index, :show ]
-      post "/menu_items/add_menu_item", to: "menu_items#add_menu_item"
+      resources :menu_items, only: [ :index, :show ] do
+        member do
+          patch :update_image
+        end
+      end
+      post '/menu_items/add_menu_item', to: 'menu_items#add_menu_item'
+      delete '/menu_items/:menu_id', to: 'menu_items#destroy'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :employees, only: [ :index, :show ]
+      post '/employees/add_employee', to: 'employees#add_employee'
+      delete '/employees/delete_employee/:id', to: 'employees#delete_employee'
+      put '/employees/edit_employee/:id', to: 'employees#edit_employee'
     end
   end
 
@@ -32,7 +46,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :inventory_items, only: [ :index, :show ]
+      resources :inventory_items do
+        collection do
+          post '/create', to: 'inventory_items#create'
+          put '/:id', to: 'inventory_items#update'
+          delete '/:id', to: 'inventory_items#destroy'
+        end
+      end
     end
   end
 
@@ -42,6 +62,7 @@ Rails.application.routes.draw do
         collection do
           get "by_date/:date", to: "transactions#by_date"
           get "by_employee/:employee", to: "transactions#by_employee"
+          get "by_date_range", to: "transactions#by_date_range"
         end
         member do
           patch :toggle_completed
@@ -60,10 +81,25 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :sale_items, only: [ :index, :show ] do
-        collection do 
+        collection do
           get "by_transaction_id/:id", to: "sale_items#by_transaction_id"
+          post 'by_transaction_ids', to: 'sale_items#by_transaction_ids'
         end
       end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :sale_items, only: [ :index, :show ]
+      post '/sale_items/add_sale_item', to: 'sale_items#add_sale_item'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :transactions, only: [ :index, :show ]
+      post '/transactions/add_transaction', to: 'transactions#add_transaction'
     end
   end
 

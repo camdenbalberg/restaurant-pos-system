@@ -6,10 +6,11 @@ import HomeView from "@/views/HomeView.vue"; // Create this component
 import AboutView from "@/views/AboutView.vue"; // Create this component
 import KitchenView from "../views/KitchenView.vue";
 import LoginView from "@/views/LoginView.vue";
-import CashierView from "@/views/CashierView.vue";
-import CustomerView from "@/views/CustomerView.vue";
 import ManagerView from "@/views/ManagerView.vue";
 import GoogleAuth from "@/components/GoogleAuth.vue";
+import CustomerView from "@/views/CustomerView.vue"; // Create this component
+import CashierView from '@/views/CashierView.vue';
+import MenuBoardView from "../views/MenuBoardView.vue";
 
 const routes = [
   {
@@ -64,6 +65,11 @@ const routes = [
         next({ name: 'login' }); // Adjust as needed
       }
     },
+  },
+  {
+    path: "/menu_board",
+    name: "menu-board",
+    component: MenuBoardView,
   },
 ];
 

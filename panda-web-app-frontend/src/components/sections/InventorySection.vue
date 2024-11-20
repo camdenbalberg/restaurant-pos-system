@@ -1,161 +1,573 @@
 <template>
   <div class="inventory-section">
-    <h2>Inventory Management</h2>
-    <div class="inventory-content">
-      <div class="inventory-stats">
-        <div class="stat-card">
-          <h4>Total Items</h4>
-          <p>150</p>
-        </div>
-        <div class="stat-card">
-          <h4>Low Stock Items</h4>
-          <p>12</p>
+    <div class="header-section">
+      <h2>Inventory Management</h2>
+      <button 
+        @click="showAddForm = true" 
+        class="add-button"
+      >
+        Add Inventory Item
+      </button>
+    </div>
+
+    <!-- Inventory Stats -->
+    <div class="inventory-stats">
+      <div class="stat-card">
+        <h4>Total Items</h4>
+        <p>{{ inventoryItems.length }}</p>
+      </div>
+      <div class="stat-card">
+        <h4>Low Stock Items</h4>
+        <p>{{ lowStockItems }}</p>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div v-if="loading" class="loading-spinner">
+      Loading...
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="table-container">
+      <table class="inventory-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Current Stock</th>
+            <th>Base Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in inventoryItems" :key="item.inv_id">
+            <td>{{ item.inv_name }}</td>
+            <td>{{ item.stock }}</td>
+            <td>{{ item.base_stock }}</td>
+            <td>
+              <span 
+                :class="['status-badge', 
+                  item.stock <= item.base_stock * 0.2 ? 'critical' :
+                  item.stock <= item.base_stock * 0.5 ? 'warning' : 'good'
+                ]"
+              >
+                {{ getStockStatus(item) }}
+              </span>
+            </td>
+            <td class="actions">
+              <button 
+                @click="editInventoryItem(item)"
+                class="action-button edit"
+              >
+                Edit
+              </button>
+              <button 
+                @click="confirmDelete(item)"
+                class="action-button delete"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" v-if="showAddForm || editingInventoryItem">
+      <div class="modal-content">
+        <h3>{{ editingInventoryItem ? 'Edit Inventory Item' : 'Add New Inventory Item' }}</h3>
+        <form @submit.prevent="handleSubmit">
+          <div class="form-group">
+            <label>Item Name:</label>
+            <input 
+              v-model="formData.inv_name" 
+              required
+              type="text"
+            >
+          </div>
+          <div class="form-group">
+            <label>Current Stock:</label>
+            <input 
+              v-model.number="formData.stock" 
+              required
+              type="number"
+              min="0"
+            >
+          </div>
+          <div class="form-group">
+            <label>Base Stock Level:</label>
+            <input 
+              v-model.number="formData.base_stock" 
+              required
+              type="number"
+              min="0"
+            >
+          </div>
+          <div class="form-actions">
+            <button 
+              type="button" 
+              @click="closeForm" 
+              class="cancel-button"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="submit-button"
+            >
+              {{ editingInventoryItem ? 'Update' : 'Add' }} Item
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" v-if="showDeleteConfirm">
+      <div class="modal-content">
+        <h3>Confirm Delete</h3>
+        <p>Are you sure you want to delete {{ deleteInventoryItem?.inv_name }}?</p>
+        <div class="form-actions">
+          <button 
+            @click="showDeleteConfirm = false" 
+            class="cancel-button"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="handleDelete" 
+            class="delete-button"
+          >
+            Delete
+          </button>
         </div>
       </div>
-      <button @click="addMenuItem">Add menu item</button>
     </div>
   </div>
 </template>
 
-  
 <script>
-import axios from 'axios';
+import api from '@/api';
 
-  export default {
-    name: 'InventorySection',
-    methods: {
-      async addMenuItem() {
-        const menuName = prompt("Enter menu name:");
-        const category = prompt("Enter category (meal, entree, side, drink, appetizer)");
-        const price = prompt("Enter price:");
-        const recipeInput = prompt("Enter recipe (comma-separated integers):");
-        const quantityInput = prompt("For the recipe items you gave list their quantities (comma-separated integers):");
-        
-        // Validate inputs
-        const error = this.validateInputs(menuName, category, price, recipeInput, quantityInput);
-        if (error) {
-          alert(error);
-          return;
-        }
-        
-        const priceNum = parseFloat(price);
-        const recipe = recipeInput.split(',').map(id => id.trim());
-        const quantities = quantityInput.split(',').map(id => id.trim());
-
-        const data = {
-          menu_name: menuName,
-          price: priceNum,
-          category: category
-        };
-
-        try {
-          // Make the request to add the menu item
-          const response = await axios.post('/api/v1/menu_items/add_menu_item', data);
-          console.log('Menu item added:', response.data);
-
-          // If the menu item is successfully added, then add the recipe
-          this.addRecipe(response.data.menu_id, recipe, quantities);
-
-          // Alert the user of success
-          alert(`Added ${category} ${menuName} with price $${price} and recipe ingredients: ${recipe.join(', ')}`);
-        } catch (error) {
-          console.error('Error adding menu item:', error.response ? error.response.data : error.message);
-          alert('Failed to add menu item.');
-        }
-      },
-
-      async addRecipe(menuId, recipe, quantities) {
-        const data = {
-          menu_id: menuId,
-          recipe: recipe,
-          quantities: quantities
-        };
-        console.log("Starting add recipe: ", data);
-        try {
-          const response = await axios.post('/api/v1/recipes/add_recipe', data);
-
-          console.log("Recipe added successfully:", response.data);
-          alert('Recipe added successfully.');
-          
-        } catch (error) {
-          console.error('Error adding recipe:', error.response ? error.response.data : error.message);
-          alert('Failed to add recipe.');
-        }
-      },
-
-      validateInputs(menuName, category, price, recipeInput, quantityInput) {
-        if (!menuName || !category || !price || !recipeInput || !quantityInput) {
-          return "Please fill out all fields.";
-        }
-
-        // Category validation: Check if category is one of the allowed options
-        const validCategories = ['meal', 'entree', 'side', 'drink', 'appetizer'];
-        if (!validCategories.includes(category.toLowerCase())) {
-          return "Invalid category. Please select one from: meal, entree, side, drink, appetizer.";
-        }
-
-        // Price validation: Ensure price is a valid number and >= 0
-        const priceNum = parseFloat(price);
-        if (isNaN(priceNum) || priceNum < 0) {
-          return "Price must be a number greater than or equal to 0.";
-        }
-
-        // Recipe input validation: Ensure the recipe is a comma-separated list of integers
-        const recipe = recipeInput.split(',').map(id => id.trim());
-        if (recipe.some(id => isNaN(parseInt(id)))) {
-          return "Recipe input must be a list of integers.";
-        }
-
-        // Quantity input validation: Ensure quantities are a comma-separated list of integers
-        const quantities = quantityInput.split(',').map(id => id.trim());
-        if (quantities.some(qty => isNaN(parseInt(qty)))) {
-          return "Quantity input must be a list of integers.";
-        }
-
-        // Ensure the number of quantities matches the number of recipes
-        if (recipe.length !== quantities.length) {
-          return "The number of quantities must match the number of recipes.";
-        }
-
-        // All checks passed, return null indicating no error
-        return null;
+export default {
+  name: 'InventorySection',
+  
+  data() {
+    return {
+      inventoryItems: [],
+      loading: false,
+      showAddForm: false,
+      editingInventoryItem: null,
+      showDeleteConfirm: false,
+      deleteInventoryItem: null,
+      formData: {
+        inv_name: '',
+        stock: 0,
+        base_stock: 0
       }
     }
-  };
+  },
+
+  computed: {
+    lowStockItems() {
+      return this.inventoryItems.filter(item => 
+        item.stock <= item.base_stock * 0.5
+      ).length;
+    }
+  },
+
+  methods: {
+    async fetchInventoryItems() {
+      this.loading = true;
+      try {
+        const response = await api.get('/inventory_items');
+        this.inventoryItems = response.data;
+      } catch (error) {
+        console.error('Error fetching inventory items:', error);
+        // Add error notification here
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    getStockStatus(item) {
+      if (item.stock <= item.base_stock * 0.2) return 'Critical';
+      if (item.stock <= item.base_stock * 0.5) return 'Low';
+      return 'Good';
+    },
+
+    editInventoryItem(item) {
+      this.editingInventoryItem = item;
+      this.formData = { ...item };
+      this.showAddForm = true;
+    },
+
+    confirmDelete(item) {
+      this.deleteInventoryItem = item;
+      this.showDeleteConfirm = true;
+    },
+
+    async handleDelete() {
+      try {
+        await api.delete(`/inventory_items/${this.deleteInventoryItem.inv_id}`);
+        this.inventoryItems = this.inventoryItems.filter(
+          item => item.inv_id !== this.deleteInventoryItem.inv_id
+        );
+        this.showDeleteConfirm = false;
+        this.deleteInventoryItem = null;
+      } catch (error) {
+        console.error('Error deleting inventory item:', error);
+        // Add error notification here
+      }
+    },
+
+    async handleSubmit() {
+      try {
+        if (this.editingInventoryItem) {
+          await api.put(
+            `/inventory_items/${this.editingInventoryItem.inv_id}`,
+            this.formData
+          );
+          const index = this.inventoryItems.findIndex(
+            item => item.inv_id === this.editingInventoryItem.inv_id
+          );
+          this.inventoryItems[index] = { ...this.formData };
+        } else {
+          const response = await api.post('/inventory_items/create', this.formData);
+          this.inventoryItems.push(response.data);
+        }
+        this.closeForm();
+      } catch (error) {
+        console.error('Error saving inventory item:', error);
+        // Add error notification here
+      }
+    },
+
+    closeForm() {
+      this.showAddForm = false;
+      this.editingInventoryItem = null;
+      this.formData = {
+        inv_name: '',
+        stock: 0,
+        base_stock: 0
+      };
+    }
+  },
+
+  created() {
+    this.fetchInventoryItems();
+  }
+}
 </script>
 
-  
-  <style scoped>
+<style scoped>
+.inventory-section {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.inventory-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-card h4 {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.stat-card p {
+  margin: 0.5rem 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.add-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.add-button:hover {
+  background-color: #43a047;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: white;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.inventory-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.inventory-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.good {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.warning {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.status-badge.critical {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.action-button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: opacity 0.2s ease;
+}
+
+.action-button.edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.action-button.edit:hover {
+  background-color: #1e88e5;
+}
+
+.action-button.delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background-color: #e53935;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33,150,243,0.1);
+}
+
+.form-group input:invalid {
+  border-color: #f44336;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-button,
+.cancel-button,
+.delete-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #43a047;
+}
+
+.cancel-button {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #757575;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #e53935;
+}
+
+@media (max-width: 768px) {
   .inventory-section {
-    padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .inventory-stats {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .stat-card {
-    background-color: #f8f9fa;
     padding: 1rem;
-    border-radius: 6px;
-    min-width: 150px;
-    text-align: center;
   }
-  
-  .stat-card h4 {
-    margin: 0;
-    color: #6c757d;
+
+  .inventory-stats {
+    flex-direction: column;
   }
-  
-  .stat-card p {
-    margin: 0.5rem 0 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #2c3e50;
+
+  .stat-card {
+    margin-bottom: 1rem;
   }
-  </style>
+
+  .modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .action-button {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-section {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .add-button {
+    width: 100%;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 0.75rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+}
+</style>

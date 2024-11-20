@@ -7,7 +7,7 @@
           <RouterLink to="/cashier">
               <button class="home-item">Cashier</button>
           </RouterLink>
-          
+
           <RouterLink to="/kitchen">
               <button class="home-item">Kitchen</button>
           </RouterLink>
@@ -19,10 +19,14 @@
           <RouterLink to="/manager">
               <button class="home-item">Manager</button>
           </RouterLink>
-          
+
           <RouterLink to="/about">
               <button class="home-item">About</button>
           </RouterLink>
+          <RouterLink to="/menu_board">
+              <button class="home-item">Menu Board</button>
+          </RouterLink>
+
         </li>
       </ul>
       <ul class="home-links">
@@ -50,7 +54,7 @@ import LogoutButton from "../components/LogoutButton.vue";
     --backgroundColor: #eff1f5;
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+    --subTextColor: #4c4f69;
 
     color: var(--textColor);
   }
@@ -80,4 +84,3 @@ import LogoutButton from "../components/LogoutButton.vue";
     padding-left: 100px;
   }
 </style>
-

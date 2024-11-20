@@ -86,3 +86,13 @@ tags
 [._]*.un~
 
 
+nginx.conf
+docker-compose.yml
+panda-web-app-backend/config/initializers/cors.rb
+panda-web-app-frontend/vite.config.js
+
+# Vscode
+panda-web-app-frontend/.vscode
+
+# Other
+test.html
