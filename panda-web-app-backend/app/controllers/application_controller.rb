@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-
+  Rails.logger.info "Rails Environment: #{Rails.env}"
 
   before_action :authenticate_user, :force_session
   # include JWTSessions::RailsAuthorization

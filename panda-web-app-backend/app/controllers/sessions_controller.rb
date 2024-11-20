@@ -17,16 +17,27 @@ class SessionsController < ApplicationController
       u.avatar_url = user_info['info']['image']
     end
 
-
-    token = JWT.encode({ user_id: user.id }, Rails.application.credentials.secret_key_base, 'HS256')
+    # Expire token after 2 hours
+    expire_at = 2.hours.from_now.to_i
+    token = JWT.encode({ user_id: user.id, expire: expire_at }, Rails.application.credentials.secret_key_base, 'HS256')
+    Rails.logger.info "[SESSIONS CONTROL] Current Environment: #{Rails.env}"
+    Rails.logger.info "[SESSIONS CONTROL] Secret Key Base Used for Decoding: #{Rails.application.credentials.secret_key_base}"
 
     response.set_cookie('auth_token', {
                           value: token,
-                          httponly: false,
+                          httponly: true,
                           secure: Rails.env.production?,
                           same_site: :strict,
                           path: '/'
                         })
+
+    response.set_cookie('user_info', {
+                          value: { name: user.name, avatar_url: user.avatar_url }.to_json,
+                          httponly: false,
+                          secure: Rails.env.production?,
+                          same_site: :strict,
+                          path: '/'
+                       })
 
     # render json: { token: token, user: user }
     redirect_to '/'

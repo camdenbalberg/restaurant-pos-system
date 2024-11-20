@@ -32,26 +32,6 @@
     </div>
 </template>
 
-<script>
-import { computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
-
-export default {
-  setup() {
-    const store = useStore();
-
-    const isAuthenticated = computed(() => store.state.isAuthenticated);
-    const user = computed(() => store.state.user);
-
-    onMounted(() => {
-      store.dispatch('checkAuth'); // Check authentication on component mount
-    });
-
-    return { isAuthenticated, user };
-  },
-};
-</script>
-
 <style scoped>
   :root {
     --accentColor: #dc8a78;

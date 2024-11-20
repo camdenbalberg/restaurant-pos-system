@@ -26,7 +26,6 @@
 <script>
 import LogoutButton from "../components/LogoutButton.vue";
 import api from '@/api';
-import axios from 'axios'
 
 export default {
   data() {

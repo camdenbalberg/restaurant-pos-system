@@ -13,11 +13,6 @@ import GoogleAuth from "@/components/GoogleAuth.vue";
 
 const routes = [
   {
-    path: "/login/google/callback",
-    name: "auth",
-    component: GoogleAuth,
-  },
-  {
     path: "/",
     name: "home",
     component: HomeView,
