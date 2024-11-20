@@ -1,11 +1,15 @@
 <template>
     <div class="popup">
-      <p>Kart</p>
+      <p>Cart</p>
       <ul>
         <li v-for="item in orderedItems" :key="item">
-          <div v-for="(i,index) in item" :key="i">
-            <!--for now check for first index since meal is a string-->
-            {{ i }}
+          <div v-for="(i,index) in item" :key="i" class="item">
+            <picture>
+              <source :srcset="`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
+              <img :src="`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
+            </picture>
+            <h2>{{ i.menu_name }}</h2>
+            <p>Price: ${{ i.price }}</p>
           </div>
         </li>
       </ul>
@@ -27,9 +31,6 @@ export default {
     orderedItems: {
       type: Array,
       required: true,
-      //validator(value) {
-      //  return value.every(item => typeof item === 'string');
-      //},
     },
   },
   methods: {
@@ -91,7 +92,7 @@ export default {
   border: 1px solid black;
   overflow-y:scroll;
 }
-.ul{
+li{
   display: flex;
   justify-content: space-around;
   align-items: center;

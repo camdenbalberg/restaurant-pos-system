@@ -16,7 +16,7 @@
 import MealItems from './MealItems.vue'; // Adjust path if necessary
 
 export default {
-  name: 'Popup',
+  name: 'MealPopup',
   components: {
     MealItems,
   },

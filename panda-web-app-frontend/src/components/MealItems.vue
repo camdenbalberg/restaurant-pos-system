@@ -13,7 +13,6 @@
           </picture>
           <h2>{{ item.menu_name }}</h2>
           <p>Price: ${{ item.price }}</p>
-          <p>Category: {{ item.category }}</p>
         </button>
       </li>
     </ul>
