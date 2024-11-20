@@ -56,7 +56,6 @@
     },
 
     mounted() {
-      this.googleTranslateElementInit();
       setInterval(() => {
         this.time = this.getTime();
         this.uptime = this.getUptime();
@@ -86,6 +85,8 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+
+                this.googleTranslateElementInit();  // Call translate
                 return response.json();
             })
             .then(data => {
@@ -94,10 +95,14 @@
                 document.getElementById('weather').innerText = 
                     `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
                 this.flashScaffolding();
+
+                this.googleTranslateElementInit();  // Call translate
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
                     'Failed to load weather data: ' + error;
+                
+                this.googleTranslateElementInit();  // Call translate
             });
         //end weather script
       },
