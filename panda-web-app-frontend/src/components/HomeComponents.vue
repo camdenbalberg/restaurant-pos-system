@@ -24,6 +24,10 @@
               <button class="home-item">About</button>
           </RouterLink>
 
+          <RouterLink to="/menu_board">
+              <button class="home-item">Menu Board</button>
+          </RouterLink>
+
           <RouterLink to="/login">
               <button class="home-item">Login</button>
           </RouterLink>
