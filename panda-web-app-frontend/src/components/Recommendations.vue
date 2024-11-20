@@ -18,7 +18,7 @@ import MealItem from './MealItems.vue'; // Adjust path if necessary
 export default {
     name: 'Recommendations',
     components: {
-        MealItems,
+        MealItem,
     },
     props: {
         orderedItems: {

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div @click="showRec" class="kart">
+    <div @click="showKart" class="kart">
       <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
     <div :class="['button-container', { 'no-scroll': mealType }]">
