@@ -1,6 +1,6 @@
 class Api::V1::MenuItemsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, only: [:add_menu_item]
+  skip_before_action :verify_authenticity_token, only: [:add_menu_item, :destroy]
       # Query database for items and rendering it as json
       def index
         if params[:category]
@@ -42,6 +42,18 @@ class Api::V1::MenuItemsController < ApplicationController
           render json: menu_item, status: :created
         else
           render json: { error: 'Failed to create menu item' }, status: :unprocessable_entity
+        end
+      end
+
+      # DELETE /api/v1/menu_items/:menu_id
+      def destroy
+        menu_item = MenuItem.find_by(menu_id: params[:menu_id])
+
+        if menu_item.nil?
+          render json: { error: 'Menu item not found' }, status: :not_found
+        else
+          menu_item.destroy
+          render json: { message: 'Menu item successfully deleted' }, status: :ok
         end
       end
 end

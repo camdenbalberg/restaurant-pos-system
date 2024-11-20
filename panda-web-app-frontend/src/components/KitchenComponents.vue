@@ -1,25 +1,32 @@
 <template>
-    <div class="kitchen-display">
-        <h1>Order List</h1>
-        <div v-if="loading">Loading...</div>
-        <ul v-if="!loading && transactions.length"></ul>
-        <div class="order-list">
-          <div v-for="item in transactions">
-              <div v-if="!item.completed" :key="item.transaction_id" class="order-box">
-                <h2>Order Number: #{{ item.transaction_id }}</h2>
-                <p>Time: {{ item.formatted_transaction_time }}</p>
+  <div class="kitchen-display">
+      <h1>Order List</h1>
+      <div v-if="loading">Loading...</div>
+      <ul v-if="!loading && transactions.length"></ul>
+      <div class="order-list">
+        <div v-for="item in transactions">
+            <div v-if="!item.completed" :key="item.transaction_id" class="order-box">
+              <h2>Order Number: #{{ item.transaction_id }}</h2>
+              <p>Time: {{ item.formatted_transaction_time }}</p>
+              <div class = "contents-box">
                 <p>Contents:</p>
                 <ul>
-                    <li v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
-                        {{ getMenuName(saleItem.menu_id) }} * {{ saleItem.quantity }}
-                    </li>
+                  <table>
+                    <tbody>
+                      <tr v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
+                        <td>{{ getMenuName(saleItem.menu_id) }}</td>
+                        <td>{{ saleItem.quantity }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </ul>
-                <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
               </div>
+              <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
             </div>
-        </div>
-      <div v-if="!loading && !transactions.length">No transactions available.</div>
-    </div>
+          </div>
+      </div>
+    <div v-if="!loading && !transactions.length">No transactions available.</div>
+  </div>
 </template>
 
 <script>
@@ -91,33 +98,80 @@ export default {
             console.error('Error bumping order:', error);
         }
 
-    }
-  },
+  }
+},
 };
 </script>
 
 <style>
-  .order-list {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px; /* space between boxes */
+.order-list {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* space between boxes */
+}
+
+.order-box {
+    background-color: #e2e2e2;
+    border-radius: 5px;
+    padding: 20px;
+    width: 250px; /* width of each box */
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.order-box:hover {
+    transform: scale(1.05); /* scaling effect on hover */
+}
+
+.order-box button {
+  color: white;
+  background-color: darkgreen;
+  padding: 0.25em;
+  margin-top: 15px; /* Add margin to create space between the button and contents */
+}
+
+.order-box button:hover {
+  background-color: rgb(57, 149, 57);
+  color: black;
+}
+
+.contents-box {
+    background-color: #f5f5f5; /* lighter background for contrast */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: #333; /* darker text for better readability */
+    font-size: 0.95em;
+    padding-bottom: 0.25em;
+}
+
+.contents-box p {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.order-box p {
+  color: black;
+}
+
+.order-box h2 {
+  color: black;
+}
+
+table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
   }
 
-  .order-box {
-      background-color: #e2e2e2;
-      border-radius: 5px;
-      padding: 20px;
-      width: 250px; /* width of each box */
-      text-align: center;
-      transition: transform 0.3s;
-  }
-
-  .order-box:hover {
-      transform: scale(1.05); /* scaling effect on hover */
+  table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
   }
 </style>
