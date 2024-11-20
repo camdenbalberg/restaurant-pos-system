@@ -46,6 +46,7 @@
   
 <script>
   import CashierMenuItems from '@/components/CashierMenuItems.vue';
+  import api from '@/api';
 
   export default {
     name: 'Cashier View',
@@ -110,8 +111,43 @@
         this.orderItems[orderItem.index].price = orderItem.items.reduce((total, item) => {return total += item.price}, 0) * newQuantity;
       },
 
-      checkout() {
+      async checkout() {
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0];
+        const currentTime = now.toTimeString().split(' ')[0].substring(0,5);
         
+        const transactionResponse = await api.post('transactions/add_transaction', {
+          transaction: {
+            date: currentDate,
+            time: currentTime,
+            total_cost: this.orderItems.reduce((total, item) => {return total += item.price}, 0),
+            expense: false,
+          }
+        });
+        console.log(transactionResponse);
+
+        // go through each order item
+        // look at the items inside each orderitem...
+        // collect their quantity into a map <menu_item, quantity>
+        const map = new Map();
+        this.orderItems.forEach((orderItem) => {
+          for (let item of orderItem.items) {
+            if (!map.has(item)) {
+              map.set(item, orderItem.quantity);
+            } else {
+              map.set(item, orderItem.quantity + map.get(item));
+            } 
+          }
+        });
+
+        map.forEach(async (value, key) => {
+          const saleItemResponse = await api.post('sale_items/add_sale_item', {
+            menu_id: key.menu_id,
+            quantity: value,
+            price: key.price * value,
+          });
+          console.log(saleItemResponse);
+        });
 
         this.deleteAllItems();
       },
@@ -143,7 +179,7 @@
 <style scoped>
   .cashier-view {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 70px);
     padding: 1em 2em;
   }
 
@@ -220,7 +256,6 @@
     grid-row: 3;
     grid-column: 2 / 2;
     color: #242528;
-    background-color: #C3C7D0;
   }
 
   .order-item-delete button {
