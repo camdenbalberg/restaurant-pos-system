@@ -1,8 +1,5 @@
 <template>
   <div class="container">
-    <div @click="showRec" class="kart">
-      <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
-    </div>
     <div :class="['button-container', { 'no-scroll': mealType }]">
       <div v-for="meal in filteredMenuItems" :key="meal">
         <button @click="handleShowMeal(meal)">
@@ -27,11 +24,14 @@
         </picture>
         Appetizers
       </button>
+      <button @click="showRec" class="kart">
+        <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
+      </button>
     </div>
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
-    <Recommendations v-if="recVisible" :orderedItems="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
+    <Recommendations v-if="recVisible" :menuItems="menuItems" :orderedItems="orderedItems" @close="closeRec" @add-to-kart="addToKart($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       mealType: null,
-      mealItems: [],
+      mealItems: [], //stores all the items in a meal i.e. sides and entrees
       appOrDrinkType: null,
       appOrDrinkItems: [],
       kartVisible: false,
@@ -152,6 +152,7 @@ export default {
         newItems.push(items[i]);
       }
       this.orderedItems.push(newItems);
+      console.log(this.orderedItems);
     },
     async fetchMenuItems() {
       try {
@@ -204,11 +205,8 @@ export default {
 }
 
 .kart {
-  position: absolute;
-  bottom: 10px; /* Adjust as needed */
-  right: 10px; /* Adjust as needed */
-  width: 75px; /* Adjust as needed */
-  height: 75px; /* Adjust as needed */
+  display: flex;
+  justify-content: center;
   border-radius: 50%;
   transition: scale 0.5s ease;
   transition: background-color 0.25s ease;

@@ -3,7 +3,7 @@
       <p>Cart</p>
       <ul>
         <li v-for="item in orderedItems" :key="item">
-          <div v-for="(i,index) in item" :key="i" class="item">
+          <div v-for="(i,index) in item" :key="index" class="item">
             <picture>
               <source :srcset="`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
               <img :src="`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
@@ -20,13 +20,9 @@
 
 <script>
 import axios from 'axios';
-import MealItem from './MealItems.vue'; // Adjust path if necessary
 
 export default {
   name: 'Kart',
-  components: {
-    MealItem,
-  },
   props: {
     orderedItems: {
       type: Array,
@@ -92,13 +88,22 @@ export default {
   border: 1px solid black;
   overflow-y:scroll;
 }
-li{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex: 1;
-  flex-wrap: wrap;
+.menu-items {
   padding: 20px;
-  overflow-y: auto; /* Ensure the container is scrollable */
+  max-width: 600px;
+  margin: auto;
+}
+.item {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
+}
+.popup button {
+  margin: 0.5em;
+  padding: 0.5em 0.75em; 
+  color: #242528;
+  background-color: #C3C7D0;
 }
 </style>
