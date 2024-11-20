@@ -1,6 +1,5 @@
 <template>
     <div class="popup">
-      <p>{{ menu_item }}</p>
       <ul>
         <!--loop through all categories passed into popup-->
         <li v-for="(item, index) in cat" :key="item">

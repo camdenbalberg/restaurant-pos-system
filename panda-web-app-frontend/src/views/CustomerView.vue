@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <div @click="showKart" class="kart">
+    <div @click="showRec" class="kart">
       <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
     <div :class="['button-container', { 'no-scroll': mealType }]">
       <div v-for="meal in filteredMenuItems" :key="meal">
         <button @click="handleShowMeal(meal)">
           <picture>
-            <source :srcset="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
-            <img :src="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
+            <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
+            <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
         </button>
@@ -31,7 +31,7 @@
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
-    <Recommendations v-if="recVisible" :orderedItemas="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
+    <Recommendations v-if="recVisible" :orderedItems="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
