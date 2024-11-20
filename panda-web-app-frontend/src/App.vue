@@ -10,6 +10,8 @@
         <RouterLink to="/">
           <button class="scaffold-item" id="home-button">Home</button>
         </RouterLink>
+
+        <div class="scaffold-item" id="google_translate_element"></div>
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
@@ -26,6 +28,7 @@
     </div>
 
     <router-view />
+
   </div>
 </template>
 
@@ -37,6 +40,7 @@
   export default {
     name: 'App',
     components: {
+
     },
 
     data() {
@@ -81,6 +85,8 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
+
+                this.googleTranslateElementInit();  // Call translate
                 return response.json();
             })
             .then(data => {
@@ -89,10 +95,14 @@
                 document.getElementById('weather').innerText = 
                     `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
                 this.flashScaffolding();
+
+                this.googleTranslateElementInit();  // Call translate
             })
             .catch(error => {
                 document.getElementById('weather').innerText = 
                     'Failed to load weather data: ' + error;
+                
+                this.googleTranslateElementInit();  // Call translate
             });
         //end weather script
       },
@@ -155,8 +165,15 @@
       },
 
       timeClicked() {
-        this.timeConfig = (this.timeConfig + 1) % 2
-      }
+        this.timeConfig = (this.timeConfig + 1) % 2;
+      },
+
+      googleTranslateElementInit() {
+        window.google.translate.TranslateElement(
+          { pageLanguage: "en" },
+          "google_translate_element"
+        );
+      },
     }
   }
 </script>

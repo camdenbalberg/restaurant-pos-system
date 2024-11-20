@@ -24,6 +24,10 @@
               <button class="home-item">About</button>
           </RouterLink>
 
+          <RouterLink to="/menu_board">
+              <button class="home-item">Menu Board</button>
+          </RouterLink>
+
           <RouterLink to="/login">
               <button class="home-item">Login</button>
           </RouterLink>
@@ -41,7 +45,7 @@
     --backgroundColor: #eff1f5;
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+    --subTextColor: #4c4f69;
 
     color: var(--textColor);
   }

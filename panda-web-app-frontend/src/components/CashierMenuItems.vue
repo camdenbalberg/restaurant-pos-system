@@ -8,7 +8,9 @@
         <div class="menu-category-title">Meals</div>
         <ul class="cashier-selection-list">
           <li v-for="item in meals">
-            <button @click="showPopup(item.menu_name, ['side', 'entree'])" class="menu-item" :id="item.menu_id">{{item.menu_name}}</button>
+            <button class="menu-item" :id="item.menu_id" @click="showPopup(item, ['side', 'entree'])">
+                {{item.menu_name}}
+            </button>
           </li>
         </ul>
       </div>
@@ -17,7 +19,9 @@
         <div class="menu-category-title">Appetizers</div>
         <ul class="cashier-selection-list">
           <li v-for="item in appetizers">
-            <button class="menu-item" :id="item.menu_id">{{item.menu_name}}</button>
+            <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+                {{item.menu_name}}
+            </button>
           </li>
         </ul>
       </div>
@@ -26,13 +30,20 @@
         <div class="menu-category-title">Drinks</div>
         <ul class="cashier-selection-list">
           <li v-for="item in drinks" :key="item.menu_id">
-            <button class="menu-item" :id="item.menu_id">{{item.menu_name}}</button>
+            <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+                {{item.menu_name}}
+            </button>
           </li>
         </ul>
       </div>
     </div>
 
-    <CashierPopup v-if="popup" :menu_item="selectedItem" :cat="mealItems" @close="closePopup" />
+    <CashierPopup v-if="popup" 
+      :menu_item="selectedItem"
+      :cat="mealItems" 
+      @cancel="closePopup"
+      @submitMeal="submitMeal($event)"
+    />
   </template>
   
   <script>
@@ -44,13 +55,12 @@
     components: {
       CashierPopup,
     },
+    emits: ['submitItem', 'submitMeal'],
     data() {
       return {
         loading: true,
         menuItems: [],
         meals: [],
-        // entrees: [],
-        // sides: [],
         appetizers: [],
         drinks: [],
 
@@ -71,8 +81,6 @@
           console.error('Error fetching menu items:', error);
         } finally {
           this.meals = this.menuItems.filter(item => item.category == "meal");
-          // this.entrees = this.menuItems.filter(item => item.category == "entree");
-          // this.sides = this.menuItems.filter(item => item.category == "side");
           this.appetizers = this.menuItems.filter(item => item.category == "appetizer");
           this.drinks = this.menuItems.filter(item => item.category == "drink");
 
@@ -91,6 +99,12 @@
         this.selectedItem = "";
         this.mealItems = [];
       },
+
+      submitMeal(meal) {
+        this.$emit("submitMeal", meal);
+
+        this.closePopup();
+      },
     },
   };
   </script>
@@ -104,7 +118,7 @@
     text-align: left;
     margin-left: 0.5em;
     font-weight: 700;
-    font-size: 150%;
+    font-size: 135%;
   }
 
   .cashier-selection-list {

@@ -1,12 +1,12 @@
+# inventory_items_controller.rb
 class Api::V1::InventoryItemsController < ApplicationController
-  # Show collection of available items in inventory
+  skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
+
   def index
     @inventory_items = InventoryItem.all
     render json: @inventory_items
   end
 
-  # GET /api/v1/employees_controller/id
-  # retrieve employee data with id
   def show
     @inventory_item = InventoryItem.find(params[:id])
 
@@ -21,6 +21,54 @@ class Api::V1::InventoryItemsController < ApplicationController
 
     render json: query_result
   rescue ActiveRecord::RecordNotFound
-    render json: { error: "Inventory with this id not found" }, status: :not_found
+    render json: { error: "Inventory item not found" }, status: :not_found
+  end
+
+  def create
+    highest_inv_id = InventoryItem.maximum(:inv_id) || 0
+    new_inv_id = highest_inv_id + 1
+
+    inventory_item = InventoryItem.new(
+      inv_id: new_inv_id,
+      inv_name: params[:inv_name],
+      stock: params[:stock],
+      base_stock: params[:base_stock]
+    )
+
+    if inventory_item.save
+      render json: inventory_item, status: :created
+    else
+      render json: { error: 'Failed to create inventory item' }, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    @inventory_item = InventoryItem.find(params[:id])
+    
+    if @inventory_item.update(inventory_params)
+      render json: @inventory_item, status: :ok
+    else
+      render json: { error: 'Failed to update inventory item' }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Inventory item not found" }, status: :not_found
+  end
+
+  def destroy
+    @inventory_item = InventoryItem.find(params[:id])
+    
+    if @inventory_item.destroy
+      render json: { success: 'Inventory item deleted' }, status: :ok
+    else
+      render json: { error: 'Failed to delete inventory item' }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Inventory item not found" }, status: :not_found
+  end
+
+  private
+
+  def inventory_params
+    params.permit(:inv_name, :stock, :base_stock)
   end
 end
