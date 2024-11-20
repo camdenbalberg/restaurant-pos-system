@@ -19,6 +19,8 @@
             <div v-show="time" id="clock">{{ time }}</div>
             <div id="uptime" v-show="timeConfig">running {{ uptime }}</div>
           </div>
+          
+          <div class="scaffold-item" id ="changeCity" @click="changeCityClicked"> Change City </div>
 
           <div class="scaffold-item" id="weather" @click="weatherClicked">
             Loading weather...
@@ -52,6 +54,7 @@
         weatherC: 9999,
         weatherConfig: 0,  // 0F, 1C, 2K
         weatherDescription: "",
+        currentCity: 'College Station',
       };
     },
 
@@ -77,7 +80,7 @@
       async getWeather() {
         //weather script, API connection presently nonfunctional
         const apiKey = '6fb6a81a74d923c021c776074b270bc9'; // Replace with your OpenWeather API key
-        const city = 'College Station'; // Change to your preferred city
+        const city = this.currentCity; // Change to your preferred city
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
         fetch(url)
@@ -99,10 +102,12 @@
                 this.googleTranslateElementInit();  // Call translate
             })
             .catch(error => {
-                document.getElementById('weather').innerText = 
-                    'Failed to load weather data: ' + error;
-                
+                // document.getElementById('weather').innerText = 
+                //     'Failed to load weather data: ' + error;
+                alert("Error loading city. Resetting to default city.");
+                this.currentCity = 'College Station';
                 this.googleTranslateElementInit();  // Call translate
+                this.getWeather();
             });
         //end weather script
       },
@@ -136,6 +141,15 @@
 
       goHome() {
         return this.$router.push('/');
+      },
+
+      changeCityClicked() {
+        const city = prompt("Enter a city name for weather updates:", this.currentCity);
+        if(city) {
+          this.currentCity = city;
+          this.getWeather();
+          console.log("Changed city to ", this.currentCity);
+        }
       },
 
       weatherClicked() {
@@ -293,6 +307,11 @@
   #weather:active {
     scale: 1;
     background-color: var(--accentColor);
+  }
+
+  #changeCity:hover {
+    background-color: var(--accentColorWeak);
+    scale: 1;
   }
 
   #time {
