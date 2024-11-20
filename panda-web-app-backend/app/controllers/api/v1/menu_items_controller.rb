@@ -70,7 +70,7 @@ class Api::V1::MenuItemsController < ApplicationController
         request['Authorization'] = "Client-ID #{client_id}"
       
         # Read the image content from the tempfile and encode it in base64
-        image_data = Base64.encode64(File.read(image.path))
+        image_data = Base64.encode64(params[:image].read)
       
         # Pass the base64-encoded image data to Imgur
         request.set_form_data({ 'image' => image_data })
@@ -84,6 +84,7 @@ class Api::V1::MenuItemsController < ApplicationController
         if response.is_a?(Net::HTTPSuccess)
           JSON.parse(response.body)['data']['link']  # Return the image URL
         else
+          Rails.logger.error "Imgur Upload Error: #{response.body}"
           nil
         end
       end
@@ -101,13 +102,23 @@ class Api::V1::MenuItemsController < ApplicationController
         # If an image file is provided, upload it to Imgur
         if params[:image].present?
           puts "Image: #{params[:image]}"  # Log the image parameter to ensure it's present
-          imgur_link = upload_image_to_imgur(params[:image].tempfile)
+          Rails.logger.info "Cleared here"
+          begin
+            imgur_link = upload_image_to_imgur(params[:image].tempfile)
+          rescue => e
+            Rails.logger.error "Image Upload Error: #{e.message}"
+            render json: { error: 'An unexpected error occurred during image upload' }, status: :unprocessable_entity
+            return
+          end
           
+          Rails.logger.info "Image Details: #{params[:image].inspect}"
+          Rails.logger.info "Tempfile Path: #{params[:image].tempfile.path}" if params[:image].respond_to?(:tempfile)
+          Rails.logger.info "Cleared here 1 "
           if imgur_link.nil?
             render json: { error: 'Failed to upload image to Imgur' }, status: :unprocessable_entity
             return
           end
-          Rails.logger.info "Cleared here"
+          Rails.logger.info "Cleared here 2"
           menu_item.image_url = imgur_link
         elsif params[:image_url].present?
           # If an image URL is provided, use it directly
