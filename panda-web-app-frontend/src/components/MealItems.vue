@@ -86,6 +86,7 @@ export default {
 }
 
 .category{
+  display: -webkit-box;
   border: 1px solid black;
   border-radius: 4px;
   overflow-y: scroll;
@@ -117,5 +118,8 @@ button:active {
 .active-button {
   background-color: red;
   color: white;
+}
+img{
+  margin:auto;
 }
 </style>

@@ -149,4 +149,7 @@ export default {
   color: #242528;
   background-color: #C3C7D0;
 }
+img{
+    margin:auto;
+}
 </style>

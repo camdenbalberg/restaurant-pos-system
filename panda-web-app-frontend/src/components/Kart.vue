@@ -13,6 +13,9 @@
           </div>
         </li>
       </ul>
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
       <button @click="$emit('close')">Close</button>
       <button @click="completeTransaction">Order</button>
     </div>
@@ -23,6 +26,11 @@ import axios from 'axios';
 
 export default {
   name: 'Kart',
+  data(){
+    return {
+      loading: false,
+    };
+  },
   props: {
     orderedItems: {
       type: Array,
@@ -36,6 +44,7 @@ export default {
         //track the total cost of transaction
         let cost = 0;
         //add all sale items for transaction
+        this.loading = true;
         for (const item of this.orderedItems) {
           for (let i = 0; i < item.length; i++) {
               console.log('Added Sale Item:', item[i]);
@@ -62,7 +71,7 @@ export default {
             expense: false,
           }
         });
-
+        this.loading = false;
         //clear the cart
         this.$emit('close');
         this.$emit('empty-kart');
@@ -89,9 +98,16 @@ export default {
   overflow-y:scroll;
 }
 .menu-items {
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
+  flex: 1 1 20%;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  max-width: 200px;
+  min-width: 100px;
 }
 .item {
   border: 1px solid #ccc;
@@ -105,5 +121,14 @@ export default {
   padding: 0.5em 0.75em; 
   color: #242528;
   background-color: #C3C7D0;
+}
+img{
+  margin:auto;
+}
+.loading-spinner {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
 }
 </style>
