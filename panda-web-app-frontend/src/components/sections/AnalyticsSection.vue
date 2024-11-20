@@ -12,7 +12,7 @@
         <button class="report-button" @click="handleReport('X-report')">X-report</button>
         <button class="report-button" @click="handleReport('Z-report')">Z-report</button>
         <button v-if="!showDateFilter" class="report-button" @click="handleSalesReport">Sales report</button>
-        <button v-if="showDateFilter" class="report-button" @click="handleReport('Sales-report')">Press again</button>
+        <button v-if="showDateFilter" class="report-button press-again" @click="handleReport('Sales-report')">Press again</button>
       </div>
       
       <div v-if="loading" class="loading-spinner">
@@ -176,6 +176,8 @@ export default {
     },
 
     async calculateMenuItemsPerHour() { //Sales report
+      this.validateDates();
+
       if (!this.startDate || !this.endDate) {
         alert("Please select both start and end dates.");
         return;
@@ -240,6 +242,19 @@ export default {
       } finally { 
         this.loading = false;
       }
+    },
+
+    validateDates() {
+        if (this.startDate && this.endDate) {
+          const start = new Date(this.startDate);
+          const end = new Date(this.endDate);
+          if (start > end) {
+            // Reverse the dates
+            const temp = this.startDate;
+            this.startDate = this.endDate;
+            this.endDate = temp;
+          }
+        }
     },
 
     async handleSalesReport() {
@@ -307,6 +322,40 @@ export default {
 
 .report-table th {
   background-color: #f4f4f4;
+}
+
+.report-buttons {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+.report-button {
+  color: black;
+  background-color: aliceblue;
+  border: 2px solid black;
+  width: 250px;
+  padding: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.report-button:hover {
+  background-color: #e0f7ff; 
+}
+
+.report-button.press-again {
+  background-color: #ffebcd; 
+  color: #333; 
+  font-weight: bold; 
+  border: 2px solid #cc9900; 
+}
+
+.report-button.special-button:hover {
+  background-color: #ffd700; /* Goldenrod for hover effect */
 }
 
 .loading-spinner {

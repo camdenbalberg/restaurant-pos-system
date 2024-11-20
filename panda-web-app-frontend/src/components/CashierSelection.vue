@@ -7,7 +7,7 @@
       <div class="cashier-selection-category">{{category}}</div>
       <ul class="cashier-selection-list">
         <li v-for="item in filteredMenuItems">
-          <button class="menu-item" :id="item.menu_id">{{item.menu_name}}</button>
+          <button class="menu-item" :id="item.menu_id" @click="$emit('selectItem', item)">{{item.menu_name}}</button>
         </li>
       </ul>
     </div>
@@ -24,6 +24,7 @@
         required: true,
       },
     },
+    emits: ["selectItem"],
     data() {
       return {
         items: [],

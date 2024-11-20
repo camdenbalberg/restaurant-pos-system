@@ -45,7 +45,7 @@
     --backgroundColor: #eff1f5;
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+    --subTextColor: #4c4f69;
 
     color: var(--textColor);
   }

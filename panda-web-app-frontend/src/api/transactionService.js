@@ -9,7 +9,7 @@ export const fetchTransactions = async () => {
     // const formattedDate = today.toISOString().split('T')[0];
 
     // Temporary hardcoded value for testing
-    const response = await api.get("/transactions/by_date/2023-12-25"); 
+    const response = await api.get("/transactions/by_date/2024-10-19"); 
     const transactions = response.data;
 
     // Fetch sale items for each transaction
