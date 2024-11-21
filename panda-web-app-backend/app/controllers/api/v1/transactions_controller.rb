@@ -1,6 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
-  skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
+  # skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
   
   def index
     @transactions = Transaction.all
