@@ -1,11 +1,5 @@
 class Api::V1::EmployeesController < ApplicationController
-  before_action :authenticat_user!
-
   # Query database for items and rendering it as json
-
-  skip_before_action :verify_authenticity_token, only: [:add_employee]
-  skip_before_action :verify_authenticity_token, only: [:delete_employee]
-  skip_before_action :verify_authenticity_token, only: [:edit_employee]
 
   def index
     @employees = Employee.all
