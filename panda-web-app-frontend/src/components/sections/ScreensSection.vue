@@ -33,21 +33,37 @@ export default {
         alert("Invalid PIN. Please enter a six-digit number.");
         return;
       }
-      this.loading = true;
       
-      switch (screenType) {
-        case 'Customer':
-          console.log('Locking Customer');
-          break;
-        case 'Cashier':
-          console.log('Locking Cashier')
-          break;
-        case 'Menu_Board':
-          console.log('Locking Menu Board');
-          break;
-        default:
-          console.log('Unknown screen type');
-          break;
+      try {
+        this.loading = true;
+        await api.lockScreen({
+          screen: {
+            screenType: screenType,
+            passkey: this.passkey,
+          },
+        });
+        
+        this.$emit('screen-locked', { screenType, passkey: this.passkey });
+        switch(screenType){
+          case 'Menu_Board':
+            this.$router.push('/menu_board');
+            break;
+          case 'Customer':
+            this.$router.push('/menu_board');
+            break;
+          case 'Cashier':
+            this.$router.push('/menu_board');
+            break;
+          default:
+            alert("Error while redirecting");
+            break;
+        }
+        // alert(`${screenType} screen locked successfully!`);
+      } catch (error) {
+        console.error("Error locking screen:", error);
+        alert("Failed to lock the screen.");
+      } finally {
+        this.loading = false;
       }
       
     }

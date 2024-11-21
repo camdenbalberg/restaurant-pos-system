@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 import store from '../store/';
 
 const api = axios.create({
@@ -6,15 +6,24 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// api.interceptors.request.use(
-//   (config) => {
-//     const token = store.state.token;
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
+api.lockScreen = async (payload) => {
+  try {
+    const response = await api.post('/lock_screen', payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error locking screen:", error);
+    throw error.response?.data || error;
+  }
+};
+
+api.unlockScreen = async (payload) => {
+  try {
+    const response = await api.post('/unlock_screen', payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error unlocking screen:", error);
+    throw error.response?.data || error;
+  }
+};
 
 export default api;
