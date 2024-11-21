@@ -45,17 +45,12 @@
 <script>
 import api from '@/api'
 import { fetchMenuItems } from '../api/menuService';
-import LockOverlay from '../components/LockOverlay.vue';
 
 export default {
-  components: {
-    LockOverlay,
-  },
   data() {
     return {
       isLocked: false,
       passkey: "",
-      lockPasskey: "",  // Passkey for locking/unlocking
       menuItems: {},
       loading: false,
       carouselIndex: 0, // Track current slide

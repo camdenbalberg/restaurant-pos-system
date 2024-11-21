@@ -49,10 +49,10 @@ export default {
             this.$router.push('/menu_board');
             break;
           case 'Customer':
-            this.$router.push('/menu_board');
+            this.$router.push('/customer');
             break;
           case 'Cashier':
-            this.$router.push('/menu_board');
+            this.$router.push('/cashier');
             break;
           default:
             alert("Error while redirecting");
