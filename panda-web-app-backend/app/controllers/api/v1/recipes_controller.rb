@@ -1,5 +1,5 @@
 class Api::V1::RecipesController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
+
 
   def index
     begin
