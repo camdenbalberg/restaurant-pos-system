@@ -1,6 +1,6 @@
 # inventory_items_controller.rb
 class Api::V1::InventoryItemsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
+  # skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
 
   def index
     @inventory_items = InventoryItem.all

@@ -1,5 +1,5 @@
 class Api::V1::SaleItemsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:add_sale_item]
+  # skip_before_action :verify_authenticity_token, only: [:add_sale_item, :by_transaction_ids]
     def index
         @saleitems = SaleItem.all
         render json: @saleitems
@@ -32,6 +32,12 @@ class Api::V1::SaleItemsController < ApplicationController
         end
     rescue ActiveRecord::RecordNotFound
         render json: { error: "No history or records of transactions for this employee"}, status: :not_found
+    end
+
+    def by_transaction_ids
+      transaction_ids = params[:transaction_ids]
+      @saleitems = SaleItem.where(transaction_id: transaction_ids)
+      render json: @saleitems
     end
 
     def add_sale_item

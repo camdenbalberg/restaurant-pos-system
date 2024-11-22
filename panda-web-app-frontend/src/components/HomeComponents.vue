@@ -4,33 +4,41 @@
       <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
       <ul class="home-links">
         <li>
-          <RouterLink to="/cashier">
-              <button class="home-item">Cashier</button>
-          </RouterLink>
-          
-          <RouterLink to="/kitchen">
-              <button class="home-item">Kitchen</button>
-          </RouterLink>
-
-          <RouterLink to="/customer">
-              <button class="home-item">Customer</button>
-          </RouterLink>
-
-          <RouterLink to="/manager">
-              <button class="home-item">Manager</button>
-          </RouterLink>
-          
-          <RouterLink to="/about">
-              <button class="home-item">About</button>
-          </RouterLink>
-
-          <RouterLink to="/login">
-              <button class="home-item">Login</button>
-          </RouterLink>
+          <button class="home-item" @click="travel('/cashier')">Cashier</button>
+          <button class="home-item" @click="travel('/kitchen')">Kitchen</button>
+          <button class="home-item" @click="travel('/customer')">Customer</button>
+          <button class="home-item" @click="travel('/manager')">Manager</button>
+          <button class="home-item" @click="travel('/about')">About</button>
+          <button class="home-item" @click="travel('/login')">Login</button>
         </li>
+      </ul>
+      <ul class="home-links">
+        <li><LogoutButton /></li>
       </ul>
     </div>
 </template>
+
+<script>
+  import LogoutButton from "../components/LogoutButton.vue";
+  export default {
+    data() {
+      return {
+      }
+    },
+    created() {
+
+    },
+    methods: {
+      async travel(destination) {
+        this.$backStack.push("/");
+        return this.$router.push(destination);
+      },
+    },
+    components: {
+      LogoutButton,
+    },
+  };
+</script>
 
 <style scoped>
   :root {
@@ -41,7 +49,7 @@
     --backgroundColor: #eff1f5;
     --borderColor: #dce0e8;
     --textColor: #4c4f69;
-    --subTextColor: #5c5f77;
+    --subTextColor: #4c4f69;
 
     color: var(--textColor);
   }
@@ -71,4 +79,3 @@
     padding-left: 100px;
   }
 </style>
-
