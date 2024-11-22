@@ -45,6 +45,8 @@ export default {
             console.log("Matching employee found");
             found = true;
             // https://router.vuejs.org/guide/essentials/navigation.html
+
+            this.$backStack.push(this.$route.name);
             return this.$router.push('/');
           }
         }
