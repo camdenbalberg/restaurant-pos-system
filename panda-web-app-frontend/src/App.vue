@@ -20,7 +20,7 @@
             <div v-show="time" id="clock">{{ time }}</div>
             <div id="uptime" v-show="timeConfig">running {{ uptime }}</div>
           </div>
-          
+
           <div class="scaffold-item" id ="changeCity" @click="changeCityClicked"> Change City </div>
 
           <div class="scaffold-item" id="weather" @click="weatherClicked">
@@ -63,7 +63,7 @@
         this.time = this.getTime();
         this.uptime = this.getUptime();
       }, 1 * 1000);
-    
+
       this.getWeather();  // get weather
       // update weather every 24 hours
       setInterval(() => {
@@ -76,7 +76,14 @@
       this.flashScaffolding = shared.flashScaffolding
     },
 
-    methods: {
+  methods: {
+    setup() {
+      const store = useStore();
+
+      onMounted(() => {
+        store.dispatch('checkAuth'); // Check auth on app load
+      });
+    },
       async getWeather() {
         //weather script, API connection presently nonfunctional
         const apiKey = '6fb6a81a74d923c021c776074b270bc9'; // Replace with your OpenWeather API key
@@ -95,14 +102,14 @@
             .then(data => {
                 this.weatherC = data.main.temp;
                 this.weatherDescription = data.weather[0].description;
-                document.getElementById('weather').innerText = 
+                document.getElementById('weather').innerText =
                     `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
                 this.flashScaffolding();
 
                 this.googleTranslateElementInit();  // Call translate
             })
             .catch(error => {
-                // document.getElementById('weather').innerText = 
+                // document.getElementById('weather').innerText =
                 //     'Failed to load weather data: ' + error;
                 alert("Error loading city. Resetting to default city.");
                 this.currentCity = 'College Station';
@@ -121,9 +128,9 @@
       getUptime() {
         var currentTime = new Date();
         var diffTime = Math.abs(currentTime - this.startTime);
-        var diffHours = Math.floor(diffTime / (60 * 60 * 1000)); 
-        var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60; 
-        var diffSeconds = Math.floor(diffTime / (1000)) % 60; 
+        var diffHours = Math.floor(diffTime / (60 * 60 * 1000));
+        var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60;
+        var diffSeconds = Math.floor(diffTime / (1000)) % 60;
 
         // Ensure number is always 2 digits
         if (diffHours < 10) {
@@ -163,19 +170,19 @@
           case 0:
             // Switch to F
             var weatherF = (this.weatherC * 1.8 + 32).toFixed(2);
-            document.getElementById('weather').innerText = 
+            document.getElementById('weather').innerText =
               `Temperature: ${weatherF}°F\nCondition: ${this.weatherDescription}`;
             break;
           case 1:
             // Switch to K
             var weatherK = (this.weatherC + 273.15).toFixed(2);
-            document.getElementById('weather').innerText = 
+            document.getElementById('weather').innerText =
               `Temperature: ${weatherK}°K\nCondition: ${this.weatherDescription}`;
             break;
           case 2:
             // Switch to C
             this.weatherConfigCelcius = true;
-            document.getElementById('weather').innerText = 
+            document.getElementById('weather').innerText =
               `Temperature: ${this.weatherC}°C\nCondition: ${this.weatherDescription}`;
             break;
           default:
@@ -338,4 +345,3 @@
     background-color: var(--accentColor);
   }
 </style>
-

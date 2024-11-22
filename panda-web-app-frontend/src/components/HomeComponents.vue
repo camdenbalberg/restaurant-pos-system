@@ -12,10 +12,14 @@
           <button class="home-item" @click="travel('/login')">Login</button>
         </li>
       </ul>
+      <ul class="home-links">
+        <li><LogoutButton /></li>
+      </ul>
     </div>
 </template>
 
 <script>
+  import LogoutButton from "../components/LogoutButton.vue";
   export default {
     data() {
       return {
@@ -29,6 +33,9 @@
         this.$backStack.push("/");
         return this.$router.push(destination);
       },
+    },
+    components: {
+      LogoutButton,
     },
   };
 </script>
@@ -72,4 +79,3 @@
     padding-left: 100px;
   }
 </style>
-
