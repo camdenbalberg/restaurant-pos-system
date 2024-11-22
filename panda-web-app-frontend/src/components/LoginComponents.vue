@@ -75,6 +75,7 @@ export default {
           });
           if (response.data.success) {
             console.log('Login successful:', response.data.user);
+            this.$backStack.push(this.$route.name);
             this.$router.push('/');
           } else {
             console.log('Invalid login:', response.data.error);

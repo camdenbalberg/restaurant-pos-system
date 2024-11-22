@@ -7,12 +7,13 @@
   <div id="app">
     <div class="scaffold-overlay">
       <div class="scaffold">
-        <RouterLink to="/">
-          <button class="scaffold-item" id="home-button">Home</button>
-        </RouterLink>
+
+        <button class="scaffold-item" id="home-button" @click="goHome">Home</button>
 
         <div class="scaffold-item" id="google_translate_element"></div>
 
+        <button class="scaffold-item" id="back-button" @click="goBack">Back</button>
+        
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
           <div class="scaffold-item" id="time" @click="timeClicked">
@@ -37,11 +38,13 @@
 
 
 <script>
-import shared from './shared'
-import { onMounted } from 'vue';
-import { useStore } from 'vuex';
-export default {
-  name: 'App',
+  import shared from './shared'
+
+  export default {
+    name: 'App',
+    components: {
+    },
+
     data() {
       return {
         time: "",
@@ -144,6 +147,12 @@ export default {
       },
 
       goHome() {
+        if (this.$route.name == "/home") {
+          this.$backStack.push("/");
+        } else {
+          this.$backStack.push(this.$route.name);
+        }
+        
         return this.$router.push('/');
       },
 
@@ -192,8 +201,12 @@ export default {
           "google_translate_element"
         );
       },
+
+      goBack() {
+        return this.$router.push(this.$backStack.pop());
+      }
     }
-};
+  }
 </script>
 
 <style scoped>

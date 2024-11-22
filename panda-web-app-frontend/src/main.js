@@ -5,9 +5,7 @@ import App from './App.vue';
 import router from '@/router';
 import store from './store';
 
-const app = createApp(App);
+const pandaApp = createApp(App).use(router).use(store);
+pandaApp.config.globalProperties.$backStack = [];
+pandaApp.mount("#app");
 
-app.use(router);
-// createApp(App).use(router).mount('#app');
-app.use(store);
-app.mount('#app');
