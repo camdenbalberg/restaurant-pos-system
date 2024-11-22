@@ -7,11 +7,12 @@
   <div id="app">
     <div class="scaffold-overlay">
       <div class="scaffold">
-        <RouterLink to="/">
-          <button class="scaffold-item" id="home-button">Home</button>
-        </RouterLink>
+
+        <button class="scaffold-item" id="home-button" @click="goHome">Home</button>
 
         <div class="scaffold-item" id="google_translate_element"></div>
+
+        <button class="scaffold-item" id="back-button" @click="goBack">Back</button>
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
@@ -42,7 +43,6 @@
   export default {
     name: 'App',
     components: {
-
     },
 
     data() {
@@ -140,6 +140,12 @@
       },
 
       goHome() {
+        if (this.$route.name == "/home") {
+          this.$backStack.push("/");
+        } else {
+          this.$backStack.push(this.$route.name);
+        }
+        
         return this.$router.push('/');
       },
 
@@ -188,6 +194,10 @@
           "google_translate_element"
         );
       },
+
+      goBack() {
+        return this.$router.push(this.$backStack.pop());
+      }
     }
   }
 </script>
