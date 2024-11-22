@@ -8,12 +8,11 @@
         <button :class="{ 'active-button': activeButtonIndex === index }"
         @click="handleButtonClick(index, item)">
           <picture>
-            <source :srcset="`../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
-            <img :src="`../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
+            <source :srcset="item.image_url || `../../src/assets/menu/${item.menu_id}.avif`" type="image/avif">
+            <img :src="item.image_url || `../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
           </picture>
           <h2>{{ item.menu_name }}</h2>
           <p>Price: ${{ item.price }}</p>
-          <p>Category: {{ item.category }}</p>
         </button>
       </li>
     </ul>

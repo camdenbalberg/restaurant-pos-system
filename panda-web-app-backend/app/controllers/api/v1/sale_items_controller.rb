@@ -34,6 +34,12 @@ class Api::V1::SaleItemsController < ApplicationController
         render json: { error: "No history or records of transactions for this employee"}, status: :not_found
     end
 
+    def by_transaction_ids
+      transaction_ids = params[:transaction_ids]
+      @saleitems = SaleItem.where(transaction_id: transaction_ids)
+      render json: @saleitems
+    end
+
     def add_sale_item
         menu_id = params[:menu_id]
         quantity = params[:quantity]

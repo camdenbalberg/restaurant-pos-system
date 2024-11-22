@@ -1,6 +1,8 @@
 class Api::V1::RecipesController < ApplicationController
 
 
+  # skip_before_action :verify_authenticity_token, only: [:add_recipe]
+  # Query database for items and rendering it as json
   def index
     begin
       @recipes = Recipe.joins(:menu_item, :inventory_item)

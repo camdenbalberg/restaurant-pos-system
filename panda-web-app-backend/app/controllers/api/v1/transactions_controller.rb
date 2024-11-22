@@ -38,6 +38,21 @@ class Api::V1::TransactionsController < ApplicationController
       render json: { error: "No history or records of transactions on this date"}, status: :not_found
   end
 
+  def by_date_range
+    start_date = params[:start_date]
+    end_date = params[:end_date]
+    Rails.logger.info("Start : #{start_date} End : #{end_date}")
+    @transactions = Transaction.where(transaction_date: start_date..end_date)
+  
+    if @transactions.any?
+      render json: @transactions
+    else
+      render json: { error: "No transactions found in this date range" }, status: :not_found
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Error fetching transactions" }, status: :not_found
+  end
+
   # Query transactions for this employee
   def by_employee
     employee = params[:employee]

@@ -3,21 +3,35 @@
     <div @click="showKart" class="kart">
       <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
     </div>
-    <div :class="['button-container', { 'no-scroll': popupType }]">
+    <div :class="['button-container', { 'no-scroll': mealType }]">
       <div v-for="meal in filteredMenuItems" :key="meal">
-        <button @click="handleShowPopup(meal)">
+        <button @click="handleShowMeal(meal)">
           <picture>
-            <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
-            <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
+            <source :srcset="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
+            <img :src="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
         </button>
       </div>
+      <button @click="handleShowMeal('drink')">
+        <picture>
+          <source :srcset="`../../src/assets/menu/drinks.avif`" type="image/avif">
+          <img :src="`../../src/assets/menu/drinks.avif`" alt="drinks">
+        </picture>
+        Drinks
+      </button>
+      <button @click="handleShowMeal('appetizer')">
+        <picture>
+          <source :srcset="`../../src/assets/menu/appetizers.avif`" type="image/avif">
+          <img :src="`../../src/assets/menu/appetizers.avif`" alt="appetizers">
+        </picture>
+        Appetizers
+      </button>
     </div>
-    <!--delete popup when dynamically made-->
-    <Popup v-if="popupType" :menu_item="popupType" :cat="popupItems" @close="closePopup" @add-to-kart="addToKart($event)"/>
+    <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
-
+    <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
+    <Recommendations v-if="recVisible" :orderedItemas="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -26,63 +40,151 @@
 
 <script>
 //delete popup when dynamically made
-import Popup from '../components/Popup.vue'; // Adjust path if necessary
+import MealPopup from '../components/MealPopup.vue'; // Adjust path if necessary
 import Kart from '../components/Kart.vue'; // Adjust path if necessary
 import api from '@/api';
+import AppOrDrinkPopup from '../components/AppOrDrinkPopup.vue';
+import Recommendations from '../components/Recommendations.vue';
 
 export default {
   name: 'Customer',
   components: {
-    Popup,
+    MealPopup,
     Kart,
+    AppOrDrinkPopup,
+    Recommendations,
   },
   data() {
     return {
-      popupType: null,
-      popupItems: [],
+      isLocked: false,
+      passkey: "",
+      mealType: null,
+      mealItems: [],
+      appOrDrinkType: null,
+      appOrDrinkItems: [],
       kartVisible: false,
       orderedItems: [],
       menuItems: [],
       categories: [],
+      drinks: [],
+      appetizers: [],
+      recVisible: false,
     };
   },
   mounted() {
     this.fetchMenuItems();
+    this.checkScreenLockStatus();
   },
   computed: {
-  filteredMenuItems() {
-        return this.menuItems.filter(item => item.category === 'meal');
+    filteredMenuItems() {
+      return this.menuItems.filter(item => item.category === 'meal');
     },
   },
+
+  beforeRouteLeave(to, from, next) {
+    if (!this.isLocked) {
+      next();  // Allow navigation if the screen is not locked
+    } else {
+      const enteredPasskey = prompt("Please enter the passcode to leave the page.");
+      console.log(this.passkey); //remove later
+      if (enteredPasskey === this.passkey) {
+        this.isLocked = false;
+        this.handleUnlock();
+        next();
+      } else {
+        alert("Incorrect passkey. You cannot leave the page.");
+        next(false);  // Prevent navigation if passkey is incorrect
+      }
+    }
+  },
   methods: {
-    async handleShowPopup(meal) {
+    async handleUnlock() {
       try {
-        const inv_ids = await this.getEntreesSides(meal);
+        const response = await api.unlockScreen({
+          screen: {
+            screenType: 'Customer',
+            passkey: this.passkey,
+          },
+        });
+
+        // Check if the response contains a success message
+        if (response.message) {
+          this.isLocked = false;  // Update the locked state after unlocking
+          console.log('Screen unlocked successfully');
+        } else {
+          console.error('Unexpected response format:', response);
+          alert('Failed to unlock the screen. No message received.');
+        }
+      } catch (error) {
+        console.error("Error unlocking the screen:", error);
+        alert('Failed to unlock the screen. Please check your passkey.');
+      }
+    },
+    
+    async checkScreenLockStatus() {
+      try {
+        const response = await api.get('screen_status', {
+          params: { screen_type: 'Customer' }
+        });
+        if (response.data.locked) {
+          this.isLocked = true;
+          this.passkey = response.data.passkey || "";  // Optionally, store the passkey if returned
+        } else {
+          this.isLocked = false;
+        }
+      } catch (error) {
+        console.error("Error fetching screen lock status:", error);
+      }
+    },
+
+    async handleShowMeal(meal) {
+      try {
         this.categories = [];
-        for(let inv_id of inv_ids){
-          if(inv_id.inv_id === 55){
-            for(let i = 0; i < inv_id.quantity; i++){
-              this.categories.push('side');
-            }
-          } else if(inv_id.inv_id === 54){
-            for(let i = 0; i < inv_id.quantity; i++){
-              this.categories.push('entree'); 
+        if(typeof meal === 'string' && meal === 'drink'){
+          this.categories.push('drink');
+          console.log(this.categories);
+          this.showAppOrDrink(meal, this.categories);
+          return;
+        } else if(typeof meal === 'string' && meal === 'appetizer'){
+          this.categories.push('appetizer');
+          this.showAppOrDrink(meal, this.categories);
+          return;
+        }
+        else{
+          const inv_ids = await this.getEntreesSides(meal);
+          for(let inv_id of inv_ids){
+            if(inv_id.inv_id === 55){
+              for(let i = 0; i < inv_id.quantity; i++){
+                this.categories.push('side');
+              }
+            } else if(inv_id.inv_id === 54){
+              for(let i = 0; i < inv_id.quantity; i++){
+                this.categories.push('entree'); 
+              }
             }
           }
+          console.log(this.categories);
+          this.showMeal(meal, this.categories);
         }
-        console.log(this.categories);
-        this.showPopup(meal, this.categories);
       } catch (error) {
         console.error('Error showing popup:', error);
       }
     },
-    showPopup(type, items) {
-      this.popupType = type;
-      this.popupItems = items;
+    showMeal(type, items) {
+      this.mealType = type;
+      this.mealItems = items;
     },
-    closePopup() {
-      this.popupType = null;
-      this.popupItems = [];
+    closeMeal() {
+      this.mealType = null;
+      this.mealItems = [];
+    },
+    showAppOrDrink(type, items) {
+      this.appOrDrinkType = type;
+      this.appOrDrinkItems = items;
+    },
+    closeAppOrDrink() {
+      this.appOrDrinkType = null;
+      this.appOrDrinkItems = [];
     },
     showKart() {
       this.kartVisible = true;
@@ -92,6 +194,13 @@ export default {
     },
     emptyKart() {
       this.orderedItems = [];
+    },
+    showRec(){
+      this.recVisible = true;
+    },
+    closeRec() {
+      this.recVisible = false;
+      this.showKart();
     },
     addToKart(items) {
       console.log('Adding to kart:', items);
@@ -136,6 +245,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
 }
 
 .button-container {
@@ -154,7 +264,7 @@ export default {
 
 .kart {
   position: absolute;
-  top: 10px; /* Adjust as needed */
+  bottom: 10px; /* Adjust as needed */
   right: 10px; /* Adjust as needed */
   width: 75px; /* Adjust as needed */
   height: 75px; /* Adjust as needed */
