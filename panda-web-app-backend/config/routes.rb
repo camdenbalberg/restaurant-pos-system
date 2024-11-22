@@ -14,6 +14,14 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      post 'lock_screen', to: 'screens#lock'
+      post 'unlock_screen', to: 'screens#unlock'
+      get 'screen_status', to: 'screens#status'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
       resources :menu_items, only: [ :index, :show ] do
         member do
           patch :update_image
