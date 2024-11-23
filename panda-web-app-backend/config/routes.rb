@@ -71,6 +71,7 @@ Rails.application.routes.draw do
           get "by_date/:date", to: "transactions#by_date"
           get "by_employee/:employee", to: "transactions#by_employee"
           get "by_date_range", to: "transactions#by_date_range"
+          get :highest_transaction_id, to: "transactions#highest_transaction_id" # Fix: Add this here
         end
         member do
           patch :toggle_completed
