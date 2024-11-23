@@ -39,6 +39,9 @@ export default {
         console.log('Transaction complete:', this.orderedItems);
         //track the total cost of transaction
         let cost = 0;
+        const transactionIdResponse = await axios.get('/api/v1/transactions/highest_transaction_id');
+        let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
+
         //add all sale items for transaction
         for (const item of this.orderedItems) {
           for (let i = 0; i < item.length; i++) {
@@ -49,6 +52,7 @@ export default {
                 menu_id: Number(item[i].menu_id),
                 quantity: 1,
                 price: parseFloat(item[i].price),
+                transaction_id: nextTransactionId,
               });
               cost += parseFloat(item[i].price);
             }

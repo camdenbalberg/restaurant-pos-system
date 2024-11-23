@@ -44,6 +44,8 @@ class Api::V1::SaleItemsController < ApplicationController
         menu_id = params[:menu_id]
         quantity = params[:quantity]
         price = params[:price]
+        transaction_id = params[:transaction_id]
+
         Rails.logger.info "#{menu_id} : #{quantity} : #{price}"
           # Check if all required parameters are present
         if menu_id.nil? || quantity.nil? || price.nil?
@@ -51,9 +53,7 @@ class Api::V1::SaleItemsController < ApplicationController
           return
         end
 
-        highest_sale_id = SaleItem.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
-        Rails.logger.info "#{highest_sale_id}"
-        new_sale_id = highest_sale_id + 1
+        new_sale_id = transaction_id || (SaleItem.maximum(:transaction_id) || 0) + 1
 
         Rails.logger.info "Received parameters: menuName = #{menu_id}, category = #{quantity}, price = #{price}"
         # Create new SaleItem instance

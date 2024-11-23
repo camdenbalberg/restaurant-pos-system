@@ -82,6 +82,11 @@ class Api::V1::TransactionsController < ApplicationController
     render json: { error: "Transaction not found" }, status: :not_found
   end
 
+  def highest_transaction_id
+    highest_id = Transaction.maximum(:transaction_id) || 0
+    render json: { transaction_id: highest_id }, status: :ok
+  end
+
   def add_transaction
     transaction_params = params.require(:transaction).permit(:date, :time, :total_cost, :expense)
 
