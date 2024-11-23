@@ -59,6 +59,7 @@
     /* Center the image */
     margin: auto;
     width: 50%;
+    z-index: 1;
   }
 
   label {
