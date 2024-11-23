@@ -2,6 +2,21 @@
 <template>
   <div>
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
+
+    <h1><strong>MEET THE TEAM</strong></h1>
+
+    <div class="team-grid">
+      <img class="member-card" src="../assets/about/connor.jpg" alt="Connor, scrum master">
+      <img class="member-card" src="../assets/about/leonardo.jpg" alt="Leonardo, refactoring god">
+      <img class="member-card" src="../assets/about/eduardo.jpg" alt="Eduardo, customer concierge">
+      <img class="member-card" src="../assets/about/nathan.jpg" alt="Nathan, design dynamo">
+      <img class="member-card" src="../assets/about/steven.jpg" alt="Steven, clutch king">
+      <img class="member-card" src="../assets/about/camden.jpg" alt="Camden, employee enforcer">
+    </div>
+
+
+    <h1><strong>ABOUT</strong></h1>
+
     <p>
       12Team12 is committed to making a simple yet effective management system for Panda Express.  Focused is placed on accessibility and human centered design to ensure that as many customers and employees are able to easily use the system.
       <br>
@@ -31,7 +46,7 @@ export default {
     --transparent: #00000000;
   }
 
-  img {
+  #big-logo {
     scale: 0.75;
     /* Center the image */
     margin: auto;
@@ -70,5 +85,21 @@ export default {
   a:active {
     color: var(--accentColorIntense);
     text-decoration: underline;
-}
+  }
+
+  h1 {
+    font-size: 100px;
+  }
+
+  .team-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .member-card {
+    margin: 50px;
+    width: 25%;
+  }
 </style>
