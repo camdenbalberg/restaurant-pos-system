@@ -5,11 +5,11 @@ export const fetchTransactions = async () => {
   try {
     console.log(import.meta.env.VITE_API_BACKEND_URL);
     // Get today's date in YYYY-MM-DD format (commented out for testing)
-    // const today = new Date();
-    // const formattedDate = today.toISOString().split('T')[0];
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
 
     // Temporary hardcoded value for testing
-    const response = await api.get("/transactions/by_date/2024-10-19"); 
+    const response = await api.get(`/transactions/by_date/${formattedDate}`); 
     const transactions = response.data;
 
     // Fetch sale items for each transaction
