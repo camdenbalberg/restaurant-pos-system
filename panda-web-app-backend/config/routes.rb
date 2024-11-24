@@ -64,6 +64,34 @@ Rails.application.routes.draw do
     end
   end
 
+
+namespace :api do
+  namespace :v1 do
+    resources :menu_items do
+      member do
+        patch :update_image
+      end
+      collection do
+        post '/create', to: 'menu_items#create'
+        put '/:id', to: 'menu_items#update'
+        delete '/:id', to: 'menu_items#destroy'
+      end
+    end
+  end
+end
+
+namespace :api do
+  namespace :v1 do
+    resources :recipes do
+      collection do
+        post '/create', to: 'recipes#create'
+        put '/:menu_id/:inv_id', to: 'recipes#update'
+        delete '/:menu_id/:inv_id', to: 'recipes#destroy'
+      end
+    end
+  end
+end
+
   namespace :api do
     namespace :v1 do
       resources :transactions do

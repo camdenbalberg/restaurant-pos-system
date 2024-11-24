@@ -1,5 +1,5 @@
 class Api::V1::SaleItemsController < ApplicationController
-  # skip_before_action :verify_authenticity_token, only: [:add_sale_item, :by_transaction_ids]
+
     def index
         @saleitems = SaleItem.all
         render json: @saleitems

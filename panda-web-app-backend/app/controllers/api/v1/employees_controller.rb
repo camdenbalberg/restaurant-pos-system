@@ -1,6 +1,6 @@
 class Api::V1::EmployeesController < ApplicationController
   # Query database for items and rendering it as json
-
+  
   def index
     @employees = Employee.all
     render json: @employees

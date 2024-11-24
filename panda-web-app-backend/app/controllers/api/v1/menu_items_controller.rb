@@ -4,7 +4,8 @@ require 'json'
 
 class Api::V1::MenuItemsController < ApplicationController
 
-  # skip_before_action :verify_authenticity_token, only: [:add_menu_item, :destroy, :update_image]
+
+  
       # Query database for items and rendering it as json
       def index
         if params[:category]
@@ -136,4 +137,21 @@ class Api::V1::MenuItemsController < ApplicationController
         end
       end
 
+
+      
+    def update
+      @menu_item = MenuItem.find(params[:id])
+      
+      if @menu_item.update(menu_item_params)
+        render json: @menu_item, status: :ok
+      else
+        render json: { error: 'Failed to update menu item' }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "Menu item not found" }, status: :not_found
+    end
+
+    def menu_item_params
+      params.permit(:menu_name, :price, :category)
+    end
 end
