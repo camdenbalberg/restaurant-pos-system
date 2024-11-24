@@ -88,25 +88,24 @@ export default {
                 this.getRandItem();
                 return true;
             }
-            // else if(meal && entree){
-            //     //recommend a side
-            //     this.recList = this.menuItems.filter(item => item.category === 'side');
-            //     this.recItem.push({menu_id: 1, menu_name: 'A La Carte Side', price: 4.4, category: 'meal', image_url: null})
-            //     this.getRandItem();
-            //     return true;
-            // }
+            else if(meal && entree){
+                //recommend a side
+                this.recList = this.menuItems.filter(item => item.category === 'side');
+                this.getRandItem();
+                return true;
+            }
             else if(meal){
                 //recommend a drink
                 this.recList = this.menuItems.filter(item => item.category === 'drink');
                 this.getRandItem();
                 return true;
             }
-            // else if(appetizer || entree || side || drink){
-            //     //recommend a meal
-            //     this.recList = this.menuItems.filter(item => item.category === 'meal');
-            //     this.getRandItem();
-            //     return true;
-            // }
+            else if(appetizer || entree || side || drink){
+                //recommend a meal
+                this.recList = this.menuItems.filter(item => item.category === 'meal');
+                this.getRandItem();
+                return true;
+            }
             else{
                 //no need to recommend
                 console.log("No need to recommend");
@@ -115,9 +114,22 @@ export default {
             }
         },
         addToKart(){
-            console.log([this.recItem]);
-            this.$emit('add-to-kart', [this.recItem]);
-            this.$emit('close');
+            if(this.recItem.category === 'meal'){
+                this.$emit('handle-show-meal', this.recItem);
+                this.$emit('close');
+            }
+            else if(this.recItem.category === 'side'){
+                let side = [];
+                side.push({menu_id: 1, menu_name: 'A La Carte Side', price: 4.40, category: 'meal'});
+                side.push(this.recItem);
+                this.$emit('add-to-kart', side);
+                this.$emit('close');
+            }
+            else{
+                console.log(this.recItem);
+                this.$emit('add-to-kart', [this.recItem]);
+                this.$emit('close');
+            }
         },
     },
 };

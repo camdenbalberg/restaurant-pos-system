@@ -31,7 +31,7 @@
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
-    <Recommendations v-if="recVisible" :menuItems="menuItems" :orderedItems="orderedItems" @close="closeRec" @add-to-kart="addToKart($event)"/>
+    <Recommendations v-if="recVisible" :menuItems="menuItems" :orderedItems="orderedItems" @close="closeRec" @add-to-kart="addToKart($event)" @handle-show-meal="handleShowMeal($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -80,6 +80,7 @@ export default {
   methods: {
     async handleShowMeal(meal) {
       try {
+        console.log('Showing meal:', meal);
         this.categories = [];
         if(typeof meal === 'string' && meal === 'drink'){
           this.categories.push('drink');
