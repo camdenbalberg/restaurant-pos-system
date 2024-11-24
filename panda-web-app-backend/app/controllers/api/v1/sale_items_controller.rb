@@ -1,5 +1,5 @@
 class Api::V1::SaleItemsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:add_sale_item]
+
     def index
         @saleitems = SaleItem.all
         render json: @saleitems
@@ -34,10 +34,18 @@ class Api::V1::SaleItemsController < ApplicationController
         render json: { error: "No history or records of transactions for this employee"}, status: :not_found
     end
 
+    def by_transaction_ids
+      transaction_ids = params[:transaction_ids]
+      @saleitems = SaleItem.where(transaction_id: transaction_ids)
+      render json: @saleitems
+    end
+
     def add_sale_item
         menu_id = params[:menu_id]
         quantity = params[:quantity]
         price = params[:price]
+        transaction_id = params[:transaction_id]
+
         Rails.logger.info "#{menu_id} : #{quantity} : #{price}"
           # Check if all required parameters are present
         if menu_id.nil? || quantity.nil? || price.nil?
@@ -45,9 +53,7 @@ class Api::V1::SaleItemsController < ApplicationController
           return
         end
 
-        highest_sale_id = SaleItem.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
-        Rails.logger.info "#{highest_sale_id}"
-        new_sale_id = highest_sale_id + 1
+        new_sale_id = transaction_id || (SaleItem.maximum(:transaction_id) || 0) + 1
 
         Rails.logger.info "Received parameters: menuName = #{menu_id}, category = #{quantity}, price = #{price}"
         # Create new SaleItem instance

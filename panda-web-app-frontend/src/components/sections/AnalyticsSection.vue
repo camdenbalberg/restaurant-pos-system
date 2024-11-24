@@ -87,6 +87,7 @@ export default {
   name: 'AnalyticsSection',
   data() {
     return {
+      allTransactions: [],
       transactions: [],
       loading: false,
       menuItems: {},
@@ -185,58 +186,39 @@ export default {
       this.loading = true;
       console.log("Fetching transactions by date range...");
 
-      const startDate = new Date(this.startDate);
-      const endDate = new Date(this.endDate);
-      const menuItemCounts = {};
-
-      // Generate an array of dates in YYYY-MM-DD format between start and end date
-      const datesInRange = [];
-      let currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        datesInRange.push(currentDate.toISOString().split('T')[0]);
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
       try {
-        const transactionsByDate = await Promise.all(
-          datesInRange.map(async date => {
-            try {
-              const transactions = await fetchTransactionsForDate(date);
-              return transactions.length ? transactions : null; // Return null if no transactions for that date
-            } catch (error) {
-              if (error.response && error.response.status === 406) {
-                console.warn(`No transactions for date ${date} (406 Not Acceptable)`);
-                return null; // Ignore this date if a 406 error occurs
-              } else {
-                console.error(`Error fetching transactions for ${date}:`, error);
-                return null; // Skip this date in case of an error
-              }
-            }
-          })
-        );
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+        console.log(response.data);
 
-        // Convert the array from something like "[[],[],[]]" to "[_,_,_]"
-        const allTransactions = transactionsByDate.flat().filter(Boolean);
+        this.allTransactions = response.data;
+        console.log('Type of allTransactions:', typeof this.allTransactions, Array.isArray(this.allTransactions), this.allTransactions);
+        
+        const transactionIds = this.allTransactions.map(transaction => transaction.transaction_id);
 
-        // Count sale items by menu_id across all transactions in the range
-        allTransactions.forEach(transaction => {
-          transaction.sale_items.forEach(saleItem => {
-            const menuId = saleItem.menu_id;
-            const quantity = saleItem.quantity;
-            if (menuItemCounts[menuId]) {
-              menuItemCounts[menuId] += quantity;
-            } else {
-              menuItemCounts[menuId] = quantity;
-            }
-          });
+        // Fetch sale items for all transactions in one request
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        
+        const menuItemCounts = {};
+        const saleItemsForTransactions = saleItemsResponse.data;
+
+    saleItemsForTransactions.forEach(sale_item => {
+          const menuId = sale_item.menu_id;
+          const quantity = sale_item.quantity;
+          if (menuItemCounts[menuId]) {
+            menuItemCounts[menuId] += quantity;
+          } else {
+            menuItemCounts[menuId] = quantity;
+          }
         });
 
-        // Transform the counts into an array for display
-        this.itemSales = Object.keys(menuItemCounts).map(menuId => ({
-          id: this.menuItems[menuId] || menuId, // Get the name if available, otherwise use the ID
-          amount: menuItemCounts[menuId]
-        }));
-        
+    this.itemSales = Object.keys(menuItemCounts).map(menuId => ({
+      id: this.menuItems[menuId] || menuId, // Get the name if available, otherwise use the ID
+      amount: menuItemCounts[menuId]
+    }));
+        console.log('Item sales: ', this.itemSales);
       } catch (error) {
         console.error('Error fetching transactions by date range:', error);
       } finally { 

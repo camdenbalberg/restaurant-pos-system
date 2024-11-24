@@ -63,6 +63,8 @@
   import EmployeesSection from './sections/EmployeesSection.vue';
   import ScreensSection from './sections/ScreensSection.vue';
   import AnalyticsSection from './sections/AnalyticsSection.vue';
+  import MenuSection from './sections/MenuSection.vue';
+  import RecipeSection from './sections/RecipeSection.vue';
   
   export default {
     // Register the component
@@ -75,6 +77,16 @@
           menuId: '',
         currentSection: '',
         navItems: [
+          {
+            name: 'menu', 
+            label: 'Menu',
+            description: 'Add, remove, and manage menu items.'
+          },
+          {
+            name: 'recipe',
+            label: 'Recipe',
+            description: 'Add, remove, and manage recipes.'
+          },
           { 
             name: 'inventory', 
             label: 'Inventory',
@@ -102,6 +114,8 @@
       currentComponent() {
         // Map section names to component names
         const componentMap = {
+          'menu': MenuSection,
+          'recipe': RecipeSection,
           'inventory': InventorySection,
             'employees': EmployeesSection,
             'screens': ScreensSection,

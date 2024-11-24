@@ -1,7 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
-  skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
-  
+
   def index
     @transactions = Transaction.all
     render json: @transactions
@@ -39,6 +38,21 @@ class Api::V1::TransactionsController < ApplicationController
       render json: { error: "No history or records of transactions on this date"}, status: :not_found
   end
 
+  def by_date_range
+    start_date = params[:start_date]
+    end_date = params[:end_date]
+    Rails.logger.info("Start : #{start_date} End : #{end_date}")
+    @transactions = Transaction.where(transaction_date: start_date..end_date)
+  
+    if @transactions.any?
+      render json: @transactions
+    else
+      render json: { error: "No transactions found in this date range" }, status: :not_found
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Error fetching transactions" }, status: :not_found
+  end
+
   # Query transactions for this employee
   def by_employee
     employee = params[:employee]
@@ -65,6 +79,11 @@ class Api::V1::TransactionsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Transaction not found" }, status: :not_found
+  end
+
+  def highest_transaction_id
+    highest_id = Transaction.maximum(:transaction_id) || 0
+    render json: { transaction_id: highest_id }, status: :ok
   end
 
   def add_transaction
