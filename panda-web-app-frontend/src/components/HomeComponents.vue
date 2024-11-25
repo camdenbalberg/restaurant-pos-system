@@ -9,7 +9,7 @@
           <button class="home-item" @click="travel('/customer')">Customer</button>
           <button class="home-item" @click="travel('/manager')">Manager</button>
           <button class="home-item" @click="travel('/about')">About</button>
-          <button class="home-item" @click="travel('/login')">Login</button>
+          <!-- <button class="home-item" @click="travel('/login')">Login</button> -->
         </li>
       </ul>
       <ul class="home-links">
