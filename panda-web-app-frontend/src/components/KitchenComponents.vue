@@ -14,7 +14,14 @@
                   <table>
                     <tbody>
                       <tr v-for="saleItem in item.sale_items" :key="saleItem.transaction_id">
-                        <td>{{ getMenuName(saleItem.menu_id) }}</td>
+                        <td>
+                          <span v-if="isCombo(saleItem.menu_id)" style="font-weight: bold;">
+                            {{ getMenuName(saleItem.menu_id) }}
+                          </span>
+                          <span v-else>
+                            &nbsp;&nbsp;- {{ getMenuName(saleItem.menu_id) }}
+                          </span>
+                        </td>
                         <td>{{ saleItem.quantity }}</td>
                       </tr>
                     </tbody>
@@ -69,7 +76,10 @@ export default {
       try {
         const menuData = await fetchMenuItems();  // Fetch menu items from API
         this.menuItems = menuData.reduce((acc, item) => {
-          acc[item.menu_id] = item.menu_name; // Create a mapping from menu_id to menu_name
+          acc[item.menu_id] = {
+            name: item.menu_name,
+            category: item.category
+          }; // Create a mapping from menu_id to menu_name
           this.flashScaffolding();
           return acc;
         }, {});
@@ -80,7 +90,7 @@ export default {
 
     getMenuName(menuId) {
       // console.log(menuId);
-      return this.menuItems[menuId] || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
+      return this.menuItems[menuId].name || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
     },
 
     async bumpOrder(transactionId) {
@@ -97,7 +107,14 @@ export default {
         } catch (error) {
             console.error('Error bumping order:', error);
         }
+  },
 
+  isCombo(menuId){
+    const category = this.menuItems[menuId]?.category;
+    console.log(menuId, this.menuItems[menuId], this.menuItems[menuId]?.name, category);
+
+    // Display appetizers, meals, drinks, anything that isnt a subset of a meal as bold
+    return category !== 'entree' && category !== 'side';
   }
 },
 };
