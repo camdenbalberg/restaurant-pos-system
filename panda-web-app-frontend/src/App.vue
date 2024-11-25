@@ -49,7 +49,7 @@
       return {
         time: "",
         startTime: new Date(),
-        uptime: "00:00:00",
+        uptime: "00:00",
         timeConfig: 0,
         weatherC: 9999,
         weatherConfig: 0,  // 0F, 1C, 2K
@@ -62,14 +62,13 @@
       setInterval(() => {
         this.time = this.getTime();
         this.uptime = this.getUptime();
-      }, 1 * 1000);
+        this.getWeather(); // Fetch weather updates every minute
+      }, 60 * 1000); 
 
-      this.getWeather();  // get weather
-      // update weather every 24 hours
-      setInterval(() => {
-        console.log("Updating weather");
-        this.getWeather();
-      }, 24 * 60 * 60 * 1000);  // 24 hours in a day, 60 minutes in an hour, 60 seconds in a minute, 1000 ms in a second
+      // Initialize time and weather immediately to avoid delay
+      this.time = this.getTime();
+      this.uptime = this.getUptime();
+      this.getWeather();
     },
 
     created() {
@@ -120,9 +119,14 @@
       },
 
       getTime() {
-        var date = new Date().toDateString();
-        var time = new Date().toLocaleTimeString('en-US', { hour12: false });
-        return date + " -> " + time;
+        const options = {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false, // Use 24-hour format
+        };
+        const time = new Date().toLocaleTimeString('en-US', options); // Returns HH:MM
+        const date = new Date().toDateString();
+        return `${date} -> ${time}`;
       },
 
       getUptime() {
@@ -130,8 +134,7 @@
         var diffTime = Math.abs(currentTime - this.startTime);
         var diffHours = Math.floor(diffTime / (60 * 60 * 1000));
         var diffMinutes = Math.floor(diffTime / (60 * 1000)) % 60;
-        var diffSeconds = Math.floor(diffTime / (1000)) % 60;
-
+    
         // Ensure number is always 2 digits
         if (diffHours < 10) {
           diffHours = "0" + diffHours;
@@ -139,11 +142,8 @@
         if (diffMinutes < 10) {
           diffMinutes = "0" + diffMinutes;
         }
-        if (diffSeconds < 10) {
-          diffSeconds = "0" + diffSeconds;
-        }
 
-        return diffHours + ":" + diffMinutes + ":" + diffSeconds;
+        return diffHours + ":" + diffMinutes;
       },
 
       goHome() {
