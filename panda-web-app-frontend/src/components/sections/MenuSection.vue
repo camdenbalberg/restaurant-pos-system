@@ -238,7 +238,34 @@ export default {
             // params: { menu_id: menuId }, 
           });
       } catch (error) {
-        console.error('Error uploading image:', error);
+        if (error.response) {
+            // Backend returned an error
+            const statusCode = error.response.status;
+            const errorMessage = error.response.data?.message || error.response.statusText;
+
+            console.error('Error uploading image:', errorMessage);
+
+            // Specific error handling based on status code or message
+            if (statusCode === 413 || errorMessage.includes('too large body')) {
+              alert('The uploaded image is too large. Please choose a smaller file.');
+            } else if (statusCode === 400) {
+              alert('Bad Request. Please check the menu ID and try again.');
+            } else if (statusCode === 404) {
+              alert('Menu ID not found. Please enter a valid menu ID.');
+            } else if (statusCode === 500) {
+              alert('Server error. Please try again later.');
+            } else {
+              alert(`An unexpected error occurred: ${errorMessage}`);
+            }
+          } else if (error.request) {
+            // Request was made but no response received
+            console.error('No response from server:', error.request);
+            alert('No response from the server. Please check your network connection.');
+          } else {
+            // Something else caused the error
+            console.error('Unexpected error:', error.message);
+            alert(`Unexpected error: ${error.message}`);
+          }
       }
     },
 
@@ -299,9 +326,10 @@ export default {
           }
           this.menuItems.push(response.data);
         }
-        
+        await this.fetchMenuItems();
         this.closeForm();
       } catch (error) {
+        alert(`Error saving menu item: ${error.message || JSON.stringify(error)}`);
         console.error('Error saving menu item:', error);
       }
     },

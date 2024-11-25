@@ -32,10 +32,30 @@
       <table class="inventory-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Current Stock</th>
-            <th>Base Stock</th>
-            <th>Status</th>
+            <th @click="sortTable('inv_name')">
+              Name
+              <span v-if="sortBy === 'inv_name'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th @click="sortTable('stock')">
+              Current Stock
+              <span v-if="sortBy === 'stock'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th @click="sortTable('base_stock')">
+              Base Stock
+              <span v-if="sortBy === 'base_stock'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th @click="sortTable('status')">
+              Status
+              <span v-if="sortBy === 'status'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -48,7 +68,7 @@
               <span 
                 :class="['status-badge', 
                   item.stock <= item.base_stock * 0.2 ? 'critical' :
-                  item.stock <= item.base_stock * 0.5 ? 'warning' : 'good'
+                  item.stock <= item.base_stock ? 'warning' : 'good'
                 ]"
               >
                 {{ getStockStatus(item) }}
@@ -165,14 +185,16 @@ export default {
         inv_name: '',
         stock: 0,
         base_stock: 0
-      }
-    }
+      },
+      sortBy: '',
+      sortDirection: 'asc'
+    };
   },
 
   computed: {
     lowStockItems() {
       return this.inventoryItems.filter(item => 
-        item.stock <= item.base_stock * 0.5
+        item.stock <= item.base_stock
       ).length;
     }
   },
@@ -193,7 +215,7 @@ export default {
 
     getStockStatus(item) {
       if (item.stock <= item.base_stock * 0.2) return 'Critical';
-      if (item.stock <= item.base_stock * 0.5) return 'Low';
+      if (item.stock <= item.base_stock) return 'Low';
       return 'Good';
     },
 
@@ -252,6 +274,44 @@ export default {
         stock: 0,
         base_stock: 0
       };
+    },
+
+    sortTable(column) {
+      if (this.sortBy === column) {
+        // Toggle sorting direction
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        // Set the column to sort by and reset direction
+        this.sortBy = column;
+        this.sortDirection = 'asc';
+      }
+
+      // Perform sorting
+      this.inventoryItems.sort((a, b) => {
+        let valA, valB;
+
+        // Special case for 'status' column
+        if (column === 'status') {
+          const statusPriority = {
+            Critical: 3,
+            Low: 2,
+            Good: 1
+          };
+          valA = statusPriority[this.getStockStatus(a)];
+          valB = statusPriority[this.getStockStatus(b)];
+        } else {
+          valA = a[column];
+          valB = b[column];
+
+          // Handle case-insensitive string comparison
+          if (typeof valA === 'string') valA = valA.toLowerCase();
+          if (typeof valB === 'string') valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
     }
   },
 
