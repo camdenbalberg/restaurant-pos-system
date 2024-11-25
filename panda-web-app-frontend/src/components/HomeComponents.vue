@@ -59,6 +59,7 @@
     /* Center the image */
     margin: auto;
     width: 50%;
+    z-index: 1;
   }
 
   label {
@@ -71,7 +72,7 @@
   }
 
   button {
-    margin: 50px;
+    margin: 20px;
     font-size: 30px;
     padding-top: 50px;
     padding-bottom: 50px;

@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <router-view />
+    <router-view></router-view>
 
   </div>
 </template>
@@ -225,12 +225,14 @@
   .scaffold-overlay {
     width: 100%;
     height: 70px;
+    z-index: 998;
     position: sticky;
     top: 0;
     background: var(--accentColorIntense);
   }
 
   .scaffold {
+    z-index: 999;
     width: 100%;
     height: 100%;
     background: var(--surfaceColor);
@@ -246,6 +248,7 @@
   }
 
   .scaffold-item {
+    z-index: 1000;
     display: flex;
     align-items: center;
     height: 70px;
@@ -264,16 +267,19 @@
   }
 
   #home-button {
+    z-index: 1;
     background-color: var(--transparent);
     scale: 1;
   }
 
   #home-button:hover {
+    z-index: 1;
     background-color: var(--accentColorWeak);
     scale: 1;
   }
 
   #home-button:active {
+    z-index: 1;
     scale: 1;
     background-color: var(--accentColor);
   }
