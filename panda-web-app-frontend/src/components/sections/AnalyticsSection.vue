@@ -9,10 +9,36 @@
         <input type="date" v-model="endDate" />
       </div>
       <div class="report-buttons">
-        <button class="report-button" @click="handleReport('X-report')">X-report</button>
-        <button class="report-button" @click="handleReport('Z-report')">Z-report</button>
-        <button v-if="!showDateFilter" class="report-button" @click="handleSalesReport">Sales report</button>
-        <button v-if="showDateFilter" class="report-button press-again" @click="handleReport('Sales-report')">Press again</button>
+        <button 
+          class="report-button" 
+          @click="handleReport('X-report')" 
+          title="The X-report provides sales counts per hour for the day."
+        >
+          X-report
+        </button>
+        <button 
+          class="report-button" 
+          @click="handleReport('Z-report')" 
+          title="The Z-report calculates total income per hour for the last 24 hours. Only generates once per day."
+        >
+          Z-report
+        </button>
+        <button 
+          v-if="!showDateFilter" 
+          class="report-button" 
+          @click="handleSalesReport" 
+          title="Click to filter and view the sales report by menu items within a date range."
+        >
+          Sales report
+        </button>
+        <button 
+          v-if="showDateFilter" 
+          class="report-button press-again" 
+          @click="handleReport('Sales-report')" 
+          title="Press again to generate the sales report based on selected dates."
+        >
+          Press again
+        </button>
       </div>
       
       <div v-if="loading" class="loading-spinner">

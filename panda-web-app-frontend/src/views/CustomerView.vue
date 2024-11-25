@@ -15,15 +15,15 @@
       </div>
       <button @click="handleShowMeal('drink')">
         <picture>
-          <source :srcset="`../../src/assets/menu/drinks.avif`" type="image/avif">
-          <img :src="`../../src/assets/menu/drinks.avif`" alt="drinks">
+          <source :srcset="`https://i.imgur.com/JPUW4k4.jpeg`">
+          <img :src="`https://i.imgur.com/JPUW4k4.jpeg`" alt="drinks">
         </picture>
         Drinks
       </button>
       <button @click="handleShowMeal('appetizer')">
         <picture>
-          <source :srcset="`../../src/assets/menu/appetizers.avif`" type="image/avif">
-          <img :src="`../../src/assets/menu/appetizers.avif`" alt="appetizers">
+          <source :srcset="`https://i.imgur.com/dFsyKuk.png`">
+          <img :src="`https://i.imgur.com/dFsyKuk.png`" alt="appetizers">
         </picture>
         Appetizers
       </button>

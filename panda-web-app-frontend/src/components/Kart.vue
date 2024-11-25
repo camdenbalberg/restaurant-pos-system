@@ -5,8 +5,8 @@
         <li v-for="item in orderedItems" :key="item">
           <div v-for="(i,index) in item" :key="i" class="item">
             <picture>
-              <source :srcset="`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
-              <img :src="`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
+              <source :srcset="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
+              <img :src="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
             </picture>
             <h2>{{ i.menu_name }}</h2>
             <p>Price: ${{ i.price }}</p>
