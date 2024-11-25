@@ -1,5 +1,6 @@
 <template>
   <div class="inventory-section">
+    <!-- Header Section -->
     <div class="header-section">
       <h2>Inventory Management</h2>
       <button 
@@ -32,34 +33,48 @@
       <table class="inventory-table">
         <thead>
           <tr>
-            <th @click="sortTable('inv_name')">
+            <!-- Static Column Headers -->
+            <th @click="sortTable('inv_name')" :class="{ sortable: true, sorted: sortBy === 'inv_name' }">
               Name
-              <span v-if="sortBy === 'inv_name'">
-                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'inv_name'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
               </span>
             </th>
-            <th @click="sortTable('stock')">
+            <th @click="sortTable('stock')" :class="{ sortable: true, sorted: sortBy === 'stock' }">
               Current Stock
-              <span v-if="sortBy === 'stock'">
-                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'stock'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
               </span>
             </th>
-            <th @click="sortTable('base_stock')">
+            <th @click="sortTable('base_stock')" :class="{ sortable: true, sorted: sortBy === 'base_stock' }">
               Base Stock
-              <span v-if="sortBy === 'base_stock'">
-                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'base_stock'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
               </span>
             </th>
-            <th @click="sortTable('status')">
+            <th @click="sortTable('status')" :class="{ sortable: true, sorted: sortBy === 'status' }">
               Status
-              <span v-if="sortBy === 'status'">
-                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'status'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
               </span>
             </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
+          <!-- Inventory Items Rendered Here -->
           <tr v-for="item in inventoryItems" :key="item.inv_id">
             <td>{{ item.inv_name }}</td>
             <td>{{ item.stock }}</td>
@@ -166,6 +181,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import api from '@/api';
@@ -402,11 +418,19 @@ export default {
   background-color: white;
 }
 
-.inventory-table th,
 .inventory-table td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #eee;
+}
+
+.inventory-table th {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
 }
 
 .inventory-table th {
@@ -418,6 +442,25 @@ export default {
 
 .inventory-table tr:hover {
   background-color: #f8f9fa;
+}
+
+.inventory-table th.sortable:hover {
+  background-color: #f0f4f8;
+}
+
+.inventory-table th.sorted {
+  background-color: #e3eaf0;
+}
+
+.sort-indicator {
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  color: #6c757d;
+}
+
+.sort-indicator span {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
 }
 
 .status-badge {
