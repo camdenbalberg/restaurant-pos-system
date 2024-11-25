@@ -238,8 +238,8 @@ export default {
             // params: { menu_id: menuId }, 
           });
       } catch (error) {
-        alert("Error uploading image:", error);
-        console.error('Error uploading image:', error);
+        alert("Error uploading image:", response.error);
+        console.error('Error uploading image:', response.error);
       }
     },
 
@@ -303,8 +303,8 @@ export default {
         await this.fetchMenuItems();
         this.closeForm();
       } catch (error) {
-        alert("Error saving menu item:", error);
-        console.error('Error saving menu item:', error);
+        alert("Error saving menu item:", response.error);
+        console.error('Error saving menu item:', response.error);
       }
     },
 
