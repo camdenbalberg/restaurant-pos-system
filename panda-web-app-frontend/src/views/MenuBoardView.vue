@@ -162,11 +162,11 @@ export default {
 
     getCategoryImage(categoryName) {
       const images = {
-        entree: '../../src/assets/entreeImages.png',
-        meal: '../../src/assets/mealImages.png',
-        side: '../../src/assets/sideImages.png',
-        appetizer: '../../src/assets/appetizerImages.png',
-        drink: '../../src/assets/drinkImages.png'
+        entree: 'https://i.imgur.com/BEhf8zt.png',
+        meal: 'https://i.imgur.com/uVZyIZs.png',
+        side: 'https://i.imgur.com/szq6n6I.png',
+        appetizer: 'https://i.imgur.com/7fYAqdh.png',
+        drink: 'https://i.imgur.com/ibEASgp.png'
       };
       console.log(images[categoryName.toLowerCase()]);
       return images[categoryName.toLowerCase()] || '../assets/biglogo.png';

@@ -19,7 +19,7 @@
         <button 
           class="report-button" 
           @click="handleReport('Z-report')" 
-          title="The Z-report calculates total income per hour for the day."
+          title="The Z-report calculates total income per hour for the last 24 hours. Only generates once per day."
         >
           Z-report
         </button>
