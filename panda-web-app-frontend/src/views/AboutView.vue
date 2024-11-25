@@ -29,6 +29,11 @@
       <br>
       The project is being developed using Vuejs and Ruby on Rails.
     </p>
+    
+    <div class="small-logo-wrapper">
+      <img src="../assets/smalllogo.png" id="small-logo" alt="12Team12 Small Logo">
+      <div id="small-logo-text">12Team12 Systems</div>
+    </div>
   </div>
 </template>
 
@@ -58,15 +63,37 @@ export default {
     width: 50%;
   }
 
+  #small-logo {
+    width: 8%;
+    margin-bottom: 20px;
+    opacity: 30%;
+  }
+
+  #small-logo-text {
+    font-size: 30px;
+    opacity: 80%;
+  }
+
+  .small-logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    margin-top: 15rem;
+    margin-bottom: 10rem;
+  }
+
   p {
     font-size: 30px;
+    text-align: left;
     margin-left: 8%;
     margin-right: 8%;
   }
 
   br {
    display: block;
-   margin: 50px 0;
+   margin: 20px 0;
   }
 
   a:link {
