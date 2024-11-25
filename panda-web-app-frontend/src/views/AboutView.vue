@@ -14,6 +14,11 @@
       <img class="member-card" src="../assets/about/camden.jpg" alt="Camden, employee enforcer">
     </div>
 
+    <div class="team-picture-wrapper">
+      <img class="team-picture" src="../assets/about/all.jpg" alt="Team picture">
+    </div>
+    
+
 
     <h1><strong>ABOUT</strong></h1>
 
@@ -55,8 +60,8 @@ export default {
 
   p {
     font-size: 30px;
-    margin-left: 200px;
-    margin-right: 200px;
+    margin-left: 8%;
+    margin-right: 8%;
   }
 
   br {
@@ -88,7 +93,9 @@ export default {
   }
 
   h1 {
-    font-size: 100px;
+    font-size: 70px;
+    text-align: left;
+    margin-left: 8%;
   }
 
   .team-grid {
@@ -99,7 +106,18 @@ export default {
   }
 
   .member-card {
-    margin: 50px;
-    width: 25%;
+    margin: 1.5%;
+    width: 38rem;
+  }
+
+  .team-picture-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 70px;
+  }
+
+  .team-picture {
+    width: 60%;
   }
 </style>
