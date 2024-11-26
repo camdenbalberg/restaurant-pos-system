@@ -3,6 +3,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=translate" />
 
   <div id="app">
     <div class="scaffold-overlay">
@@ -10,6 +11,7 @@
 
         <button class="scaffold-item" id="home-button" @click="goHome">Home</button>
 
+        <button type="button" onclick="document.getElementById('translate-modal').style.display='block'" class="scaffold-item"><span class="material-symbols-outlined">translate</span></button>
         <div class="scaffold-item" id="google_translate_element"></div>
 
         <button class="scaffold-item" id="back-button" @click="goBack">Back</button>
@@ -26,6 +28,17 @@
           <div class="scaffold-item" id="weather" @click="weatherClicked">
             Loading weather...
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="translate-modal" class="w3-modal">
+      <div class="w3-modal-content">
+        <div class="w3-container">
+          <span onclick="document.getElementById('translate-modal').style.display='none'"
+          class="w3-button w3-display-topright">&times;</span>
+          <p>Some text in the Modal..</p>
+          <p>Some text in the Modal..</p>
         </div>
       </div>
     </div>
@@ -204,7 +217,15 @@
 
       goBack() {
         return this.$router.push(this.$backStack.pop());
-      }
+      },
+
+      showModal() {
+        this.$bvModal.show(translate-modal);
+      },
+
+      hideModal() {
+        this.$bvModal.hide(translate-modal);
+      },
     }
   }
 </script>
