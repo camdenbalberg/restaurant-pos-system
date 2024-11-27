@@ -2,8 +2,10 @@
 <template>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Font and icons -->
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=arrow_back,home,location_city,translate" />
+  <!-- Modal style -->
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
   <div id="app">
@@ -119,7 +121,7 @@
       });
     },
       async getWeather() {
-        //weather script, API connection presently nonfunctional
+        // weather script
         const apiKey = '6fb6a81a74d923c021c776074b270bc9'; // Replace with your OpenWeather API key
         const city = this.currentCity; // Change to your preferred city
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
@@ -265,6 +267,10 @@
     --transparent: #00000000;
   }
 
+  /* ----------------------
+  Scaffolding
+  ---------------------- */
+
   .scaffold-overlay {
     width: 100%;
     height: 70px;
@@ -317,6 +323,10 @@
     align-items: center;
   }
 
+  /* ----------------------
+  Home and Logo
+  ---------------------- */
+
   #home-button {
     z-index: 1;
     background-color: var(--transparent);
@@ -339,6 +349,10 @@
     height: 90%;
   }
 
+  /* ----------------------
+  Time
+  ---------------------- */
+
   #time {
     margin-right: 40px;
     text-align: left;
@@ -359,7 +373,9 @@
     padding: 0px;
   }
 
-  /* Weather */
+  /* ----------------------
+  Weather
+  ---------------------- */
 
   #weather {
     /* background-color: var(--surfaceColor); */
@@ -388,6 +404,10 @@
     scale: 1;
   }
 
+  /* ----------------------
+  Time
+  ---------------------- */
+
   #time {
     border-radius: 5px;
     transition: scale 0.5s ease;
@@ -401,6 +421,10 @@
   #time:active {
     background-color: var(--accentColor);
   }
+
+  /* ----------------------
+  Translate
+  ---------------------- */
 
   #translate-close-button {
     margin: 70px;
