@@ -311,6 +311,18 @@
 
     color: var(--textColor);
     text-decoration: none;
+    background-color: var(--transparent);
+    scale: 1;
+  }
+
+  .scaffold-item:hover {
+    background-color: var(--accentColorWeak);
+    scale: 1;
+  }
+
+  .scaffold-item:active {
+    background-color: var(--accentColor);
+    scale: 1;
   }
 
   .scaffold-button-pair {
@@ -327,30 +339,10 @@
     align-items: center;
   }
 
-  /* ----------------------
-  Home and Logo
-  ---------------------- */
-
-  #home-button {
-    z-index: 1;
-    background-color: var(--transparent);
-    scale: 1;
-  }
-
-  #home-button:hover {
-    z-index: 1;
-    background-color: var(--accentColorWeak);
-    scale: 1;
-  }
-
-  #home-button:active {
-    z-index: 1;
-    scale: 1;
-    background-color: var(--accentColor);
-  }
-
   #scaffold-logo {
     height: 90%;
+    transition: scale 0.5s ease;
+    transition: background-color 0.25s ease;
   }
 
   /* ----------------------
@@ -393,21 +385,6 @@
     transition: background-color 0.25s ease;
   }
 
-  #weather:hover {
-    background-color: var(--accentColorWeak);
-    scale: 1;
-  }
-
-  #weather:active {
-    scale: 1;
-    background-color: var(--accentColor);
-  }
-
-  #changeCity:hover {
-    background-color: var(--accentColorWeak);
-    scale: 1;
-  }
-
   /* ----------------------
   Time
   ---------------------- */
@@ -416,14 +393,6 @@
     border-radius: 5px;
     transition: scale 0.5s ease;
     transition: background-color 0.25s ease;
-  }
-
-  #time:hover {
-    background-color: var(--accentColorWeak);
-  }
-
-  #time:active {
-    background-color: var(--accentColor);
   }
 
   /* ----------------------
