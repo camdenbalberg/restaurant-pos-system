@@ -21,6 +21,7 @@
 <script>
 import axios from 'axios';
 import MealItem from './MealItems.vue'; // Adjust path if necessary
+import shared from '../shared'
 
 export default {
   name: 'Kart',
@@ -32,6 +33,9 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
   },
   methods: {
     async completeTransaction() {
@@ -74,6 +78,7 @@ export default {
         //clear the cart
         this.$emit('close');
         this.$emit('empty-kart');
+        this.flashScaffolding();
       }
       catch (error) {
         console.error('Error completing transaction:', error);

@@ -45,6 +45,7 @@ import Kart from '../components/Kart.vue'; // Adjust path if necessary
 import api from '@/api';
 import AppOrDrinkPopup from '../components/AppOrDrinkPopup.vue';
 import Recommendations from '../components/Recommendations.vue';
+import shared from '../shared'
 
 export default {
   name: 'Customer',
@@ -75,6 +76,9 @@ export default {
     this.fetchMenuItems();
     this.checkScreenLockStatus();
   },
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
   computed: {
     filteredMenuItems() {
       return this.menuItems.filter(item => item.category === 'meal');
@@ -88,6 +92,7 @@ export default {
       const enteredPasskey = prompt("Please enter the passcode to leave the page.");
       console.log(this.passkey); //remove later
       if (enteredPasskey === this.passkey) {
+        this.flashScaffolding();
         this.isLocked = false;
         this.handleUnlock();
         next();
@@ -211,6 +216,7 @@ export default {
         newItems.push(items[i]);
       }
       this.orderedItems.push(newItems);
+      this.flashScaffolding();
     },
     async fetchMenuItems() {
       try {
@@ -218,6 +224,7 @@ export default {
           console.log(import.meta.env.VITE_API_BACKEND_URL);
           const response = await api.get('/menu_items');
           this.menuItems = response.data;
+          this.flashScaffolding();
       } catch (error) {
           console.error('Error fetching menu items:', error);
       } finally {
@@ -234,6 +241,7 @@ export default {
         //filter so only contains entrees and sides
         entreesSides = entreesSides.filter(item => item.inv_id === 55 || item.inv_id === 54);
         console.log(entreesSides);
+        this.flashScaffolding();
         return entreesSides;
     },
   },

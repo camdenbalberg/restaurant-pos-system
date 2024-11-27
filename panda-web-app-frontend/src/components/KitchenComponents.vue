@@ -104,6 +104,7 @@ export default {
                 // Optionally, you can fetch the updated transactions list again
                 await this.loadTransctions(); // or just update the local state if needed
             }
+            this.flashScaffolding();
         } catch (error) {
             console.error('Error bumping order:', error);
         }
