@@ -12,10 +12,10 @@
 
         <button class="scaffold-item" id="home-button" @click="goHome">Home</button>
 
-        <button type="button" onclick="document.getElementById('translate-modal').style.display='block'" class="scaffold-item"><span class="material-symbols-outlined">translate</span></button>
-        <!-- <div class="scaffold-item" id="google_translate_element"></div> -->
-
         <button class="scaffold-item" id="back-button" @click="goBack">Back</button>
+
+        <button type="button" onclick="document.getElementById('translate-modal').style.display='block'" class="scaffold-item"><span class="material-symbols-outlined">translate</span></button>
+
         
         <img class="scaffold-item" src="./assets/smalllogo.png" id="scaffold-logo" alt="12Team12 Scaffold Logo" @click="goHome">
         <div class="right-side">
