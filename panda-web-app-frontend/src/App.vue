@@ -99,8 +99,12 @@
       setInterval(() => {
         this.time = this.getTime();
         this.uptime = this.getUptime();
-        this.getWeather(); // Fetch weather updates every minute
       }, 60 * 1000); 
+
+      setInterval(() => {
+        console.log("Updating weather");
+        this.getWeather();
+      }, 60 * 60 * 1000);  // Fetch weather updates every hour
 
       // Initialize time and weather immediately to avoid delay
       this.time = this.getTime();
