@@ -4,6 +4,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=translate" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
   <div id="app">
     <div class="scaffold-overlay">
@@ -12,7 +13,7 @@
         <button class="scaffold-item" id="home-button" @click="goHome">Home</button>
 
         <button type="button" onclick="document.getElementById('translate-modal').style.display='block'" class="scaffold-item"><span class="material-symbols-outlined">translate</span></button>
-        <div class="scaffold-item" id="google_translate_element"></div>
+        <!-- <div class="scaffold-item" id="google_translate_element"></div> -->
 
         <button class="scaffold-item" id="back-button" @click="goBack">Back</button>
         
@@ -33,12 +34,13 @@
     </div>
 
     <div id="translate-modal" class="w3-modal">
-      <div class="w3-modal-content">
+      <div class="w3-modal-content w3-animate-top">
         <div class="w3-container">
           <span onclick="document.getElementById('translate-modal').style.display='none'"
           class="w3-button w3-display-topright">&times;</span>
-          <p>Some text in the Modal..</p>
-          <p>Some text in the Modal..</p>
+          <h1>Translate Page</h1>
+          <div id="google_translate_element"></div>
+          <button id="translate-close-button" onclick="document.getElementById('translate-modal').style.display='none'">Close</button>
         </div>
       </div>
     </div>
@@ -370,5 +372,14 @@
 
   #time:active {
     background-color: var(--accentColor);
+  }
+
+  #translate-close-button {
+    margin: 70px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
   }
 </style>
