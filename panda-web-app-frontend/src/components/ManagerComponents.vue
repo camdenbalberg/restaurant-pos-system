@@ -47,6 +47,7 @@
   import AnalyticsSection from './sections/AnalyticsSection.vue';
   import MenuSection from './sections/MenuSection.vue';
   import RecipeSection from './sections/RecipeSection.vue';
+  import shared from '../shared'
   
   export default {
     // Register the component
@@ -92,6 +93,9 @@
         ]
       }
     },
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
+    },
     computed: {
       currentComponent() {
         // Map section names to component names
@@ -135,6 +139,7 @@
 
           console.log('Image uploaded successfully:', response.data);
           alert('Image uploaded successfully!');
+          this.flashScaffolding();
         } catch (error) {
           if (error.response) {
             // Backend returned an error

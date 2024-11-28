@@ -43,6 +43,7 @@
 
 <script>
 import api from '@/api';
+import shared from '../shared'
 
 export default {
   data() {
@@ -52,6 +53,11 @@ export default {
       buttonText: 'Submit',
     }
   },
+
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
+
   methods: {
     googleLogin() {
       this.isClicked = true;
@@ -77,6 +83,7 @@ export default {
             console.log('Login successful:', response.data.user);
             this.$backStack.push(this.$route.name);
             this.$router.push('/');
+            this.flashScaffolding();
           } else {
             console.log('Invalid login:', response.data.error);
             this.buttonText = "Submit\nInvalid";

@@ -47,6 +47,7 @@
 <script>
   import CashierMenuItems from '@/components/CashierMenuItems.vue';
   import api from '@/api'
+  import shared from '../shared'
 
   export default {
     name: 'Cashier View',
@@ -63,6 +64,9 @@
     mounted() {
       this.checkScreenLockStatus();
     },
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
+    },
     beforeRouteLeave(to, from, next) {
       if (!this.isLocked) {
         next();  // Allow navigation if the screen is not locked
@@ -70,6 +74,7 @@
         const enteredPasskey = prompt("Please enter the passcode to leave the page.");
         console.log(this.passkey); //remove later
         if (enteredPasskey === this.passkey) {
+          this.flashScaffolding();
           this.isLocked = false;
           this.handleUnlock();
           next();
@@ -130,6 +135,7 @@
           items: [item],
         }
 
+        this.flashScaffolding();
         this.orderItems.push(orderItem);
       },
 
@@ -144,6 +150,7 @@
           items: meal,
         }
 
+        this.flashScaffolding()
         this.orderItems.push(orderItem);
       },
 
@@ -173,7 +180,7 @@
 
       checkout() {
         
-
+        this.flashScaffolding();
         this.deleteAllItems();
       },
 
