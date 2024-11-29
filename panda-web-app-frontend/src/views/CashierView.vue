@@ -220,18 +220,34 @@
         this.orderItems.push(orderItem);
       },
 
-      receiveMeal(mealJSON) {
-        const meal = JSON.parse(JSON.stringify(mealJSON))
-
-        const orderItem = {
-          index: this.orderItems.length,
-          name: meal[0].menu_name,
-          price: meal.reduce((total, item) => {return total += item.price}, 0),
-          quantity: 1,
-          items: meal,
+      receiveMeal(meal) {
+        if (!meal || !meal.menuItem || !meal.menuItem.menu_name) {
+          console.error('Invalid meal data received:', meal);
+          alert('Invalid meal data.');
+          return;
         }
 
-        this.flashScaffolding()
+        const allSelections = [];
+        let totalPrice = meal.menuItem.price;
+        Object.keys(meal.selections).forEach(key => {
+          const selectionItems = meal.selections[key];
+          allSelections.push(...selectionItems);  // Add all selected items to the selections array
+          selectionItems.forEach(item => {
+            totalPrice += item.price;  // Add the price of each selected item
+          });
+        });
+
+        // Create an order item based on the meal received
+        const orderItem = {
+          index: this.orderItems.length,
+          name: meal.menuItem.menu_name,  // Name of the main meal
+          price: totalPrice,  // Price of main meal + selections
+          quantity: 1,
+          items: [meal.menuItem, ...allSelections],  // Combine the main item with its selections
+        };
+
+        // Add the order item to the orderItems array
+        this.flashScaffolding();
         this.orderItems.push(orderItem);
       },
 
