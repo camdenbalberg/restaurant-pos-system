@@ -402,6 +402,8 @@
       checkDiscounts() {
         if (parseInt(this.points) >= 10) {
           this.canDiscount = true;
+        } else {
+          this.canDiscount = false;
         }
 
         // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
@@ -413,6 +415,8 @@
 
         if (parseInt(this.birthday.split("-")[1]) == month && parseInt(this.birthday.split("-")[2]) == day) {
           this.canBirthday = true;
+        } else {
+          this.canBirthday = false;
         }
       },
 
