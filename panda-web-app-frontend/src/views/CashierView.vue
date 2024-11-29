@@ -78,6 +78,7 @@
               <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
             </div>
             <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="loyaltyErrorAdd">Unable to add customer</div>
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
@@ -93,7 +94,7 @@
               <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
             </div>
             <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
-            <div v-show="noCustomer">Unable to find customer</div>
+            <div v-show="loyaltyErrorFind">Unable to find customer</div>
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
@@ -129,7 +130,8 @@
         prospectivePhone: "",
         prospectiveBirthday: "",
         prospectivePoints: 0,
-        noCustomer: false,
+        loyaltyErrorFind: false,
+        loyaltyErrorAdd: false,
       }
     },
     mounted() {
@@ -325,8 +327,10 @@
           this.birthday = response.data.birthday;
           this.points = response.data.loyalty_points;
           console.log(response);
+          this.loyaltyErrorAdd = false;
         } catch (error) {
           console.log("Error adding customer:", error);
+          this.loyaltyErrorAdd = true;
         }
       },
 
@@ -339,14 +343,14 @@
           this.phone = response.data[0].phone;
           this.birthday = response.data[0].birthday;
           this.points = response.data[0].loyalty_points;
-          this.noCustomer = false;
+          this.loyaltyErrorFind = false;
         } catch (error) {
           this.flashScaffolding();
           console.log("Error checking employees or no employee found: ", error);
           this.phone = "";
           this.birthday = "";
           this.points = 0;
-          this.noCustomer = true;
+          this.loyaltyErrorFind = true;
         }
       }
     }
