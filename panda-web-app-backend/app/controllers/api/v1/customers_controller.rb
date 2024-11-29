@@ -50,6 +50,7 @@ class Api::V1::CustomersController < ApplicationController
   def by_email
     customer_email = params[:email]
 
+    Rails.logger.info "Checking if customer exists with email: #{customer_email}"
     @customers = Customer.where(email: customer_email)
     if @customers.any?
       render json: @customers

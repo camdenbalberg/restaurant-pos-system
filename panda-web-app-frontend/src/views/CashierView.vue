@@ -67,16 +67,17 @@
           <div class="modal-column">
             <div class="modal-row">
               <label for="loyalty-email">Email:</label>
-              <input class="modal-input" type="text" id="loyalty-email" v-model="email">
+              <input class="modal-input" type="text" id="loyalty-email" v-model="prospectiveEmail">
             </div>
             <div class="modal-row">
               <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
-              <input class="modal-input"type="text" id="loyalty-birthday" v-model="birthday">
+              <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
             </div>
             <div class="modal-row">
               <label for="loyalty-points">Points:</label>
-              <input class="modal-input"type="text" id="loyalty-points" v-model="points">
+              <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
             </div>
+            <div v-show="email">Loaded customer: ({{ this.email }}, {{ this.birthday }}, {{ this.points }})</div>
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
@@ -89,8 +90,10 @@
           <div class="modal-column">
             <div class="modal-row">
               <label for="loyalty-email">Email:</label>
-              <input class="modal-input"type="text" id="loyalty-email" v-model="email">
+              <input class="modal-input"type="text" id="loyalty-email" v-model="prospectiveEmail">
             </div>
+            <div v-show="email">Loaded customer: ({{ this.email }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="noCustomer">Unable to find customer</div>
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
@@ -123,6 +126,10 @@
         email: "",
         birthday: "",
         points: 0,
+        prospectiveEmail: "",
+        prospectiveBirthday: "",
+        prospectivePoints: 0,
+        noCustomer: false,
       }
     },
     mounted() {
@@ -307,12 +314,16 @@
 
       async loyaltyAddCustomer() {
         try {
-          console.log(`Adding loyalty for (${this.email},${this.birthday},${this.points})`);
+          console.log(`Adding loyalty for (${this.prospectiveEmail},${this.prospectiveBirthday},${this.prospectivePoints})`);
           const response = await api.post('/customers/add_customer', {
-            email: this.email,
-            birthday: this.birthday,
-            loyalty_points: this.points,
+            email: this.prospectiveEmail,
+            birthday: this.prospectiveBirthday,
+            loyalty_points: this.prospectivePoints,
           });
+          this.flashScaffolding();
+          this.email = response.data.email;
+          this.birthday = response.data.birthday;
+          this.points = response.data.loyalty_points;
           console.log(response);
         } catch (error) {
           console.log("Error adding customer:", error);
@@ -321,11 +332,21 @@
 
       async loyaltyCheckCustomer() {
         try {
-          console.log("Checking loyalty for " + this.email);
-          const response = await api.get(`/customers/by_email/${this.email}`);
+          console.log("Checking loyalty for " + this.prospectiveEmail);
+          const response = await api.get(`/customers/by_email/${this.prospectiveEmail}`);
+          this.flashScaffolding();
           console.log(response);
+          this.email = response.data[0].email;
+          this.birthday = response.data[0].birthday;
+          this.points = response.data[0].loyalty_points;
+          this.noCustomer = false;
         } catch (error) {
-          console.log("Error checking employees:", error);
+          this.flashScaffolding();
+          console.log("Error checking employees or no employee found: ", error);
+          this.email = "";
+          this.birthday = "";
+          this.points = 0;
+          this.noCustomer = true;
         }
       }
     }
