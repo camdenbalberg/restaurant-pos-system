@@ -53,19 +53,51 @@
         <span onclick="document.getElementById('loyalty-modal').style.display='none'"
         class="w3-button w3-display-topright">&times;</span>
         <h1>Loyalty</h1>
+
         <div v-if="loyaltyScreen == 0">
           <h2>Loyalty Root</h2>
-          <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
-          <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+            <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
+          </div>
         </div>
+
         <div v-else-if="loyaltyScreen == 1">
           <h2>Loyalty Add Customer</h2>
-          <button class="modal-button" @click="loyaltyScreen = 2">Check existing</button>
+          <div class="modal-column">
+            <div class="modal-row">
+              <label for="loyalty-email">Email:</label>
+              <input class="modal-input" type="text" id="loyalty-email" v-model="email">
+            </div>
+            <div class="modal-row">
+              <label for="loyalty-birthday">Birthday:</label>
+              <input class="modal-input"type="text" id="loyalty-birthday" v-model="birthday">
+            </div>
+            <div class="modal-row">
+              <label for="loyalty-points">Points:</label>
+              <input class="modal-input"type="text" id="loyalty-points" v-model="points">
+            </div>
+          </div>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+            <button class="modal-button" @click="">Add Customer</button>
+          </div>
         </div>
+
         <div v-else>
           <h2>Loyalty Check Customer</h2>
-          <button class="modal-button" @click="loyaltyScreen = 0">Root</button>
+          <div class="modal-column">
+            <div class="modal-row">
+              <label for="loyalty-email">Email:</label>
+              <input class="modal-input"type="text" id="loyalty-email" v-model="email">
+            </div>
+          </div>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+            <button class="modal-button" @click="">Check Customer</button>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -86,7 +118,11 @@
         orderItems: [],
         isLocked: false,
         passkey: "",
+
         loyaltyScreen: 0,
+        email: "",
+        birthday: "",
+        points: 0,
       }
     },
     mounted() {
@@ -417,6 +453,8 @@
     padding: 1em;
   }
 
+  /* Loyalty Modal */
+
   .modal-button {
     margin: 35px;
     font-size: 30px;
@@ -424,5 +462,23 @@
     padding-bottom: 25px;
     padding-right: 50px;
     padding-left: 50px;
+  }
+
+  .modal-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-input {
+    margin: 5px;
   }
 </style>
