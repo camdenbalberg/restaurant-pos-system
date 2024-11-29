@@ -59,4 +59,21 @@ class Api::V1::CustomersController < ApplicationController
     render json: { error: "No customers found for this phone"}, status: :not_found
   end
 
+  def add_points
+    @customer = Customer.find(params[:id])
+    customer_points = params[:loyalty_points]
+
+    update_params = {
+      loyalty_points: customer_points
+    }
+
+    if @customer.update(update_params)
+      render json: @customer, status: :ok
+    else
+      render json: { error: 'Failed to update customer' }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Customer not found" }, status: :not_found
+  end
+
 end

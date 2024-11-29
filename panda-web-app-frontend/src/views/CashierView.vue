@@ -37,8 +37,8 @@
         </div>
         <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
         <button class="order-checkout" @click="checkout()">Checkout</button>
-        
       </div>
+      <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
     </div>
 
     <!-- Menu Items -->
@@ -127,6 +127,7 @@
         phone: "",
         birthday: "",
         points: 0,
+        id: "",
         prospectivePhone: "",
         prospectiveBirthday: "",
         prospectivePoints: 0,
@@ -266,6 +267,33 @@
         });
         console.log(transactionResponse);
 
+        // Add loyalty points
+        if (this.phone) {
+          try {
+            var formData = {
+              loyalty_points: this.points,
+            };
+            formData.loyalty_points += parseInt(this.getAddedPoints());
+            console.log(`Adding ${parseInt(this.getAddedPoints())} points` )
+            const response = await api.put(
+              `/customers/add_points/${this.id}`,
+              formData
+            );
+          } catch (error) {
+            console.log("Error adding loyalty points:",error);
+          }
+          // Reset loyalty
+          this.phone = "";
+          this.birthday = "";
+          this.points = 0;
+          this.id = "";
+          this.prospectivePhone = "";
+          this.prospectiveBirthday = "";
+          this.prospectivePoints = 0;
+          this.loyaltyErrorFind = false;
+          this.loyaltyErrorAdd = false;
+        }
+
         // go through each order item
         // look at the items inside each orderitem...
         // collect their quantity into a map <menu_item, quantity>
@@ -314,6 +342,10 @@
         });
       },
 
+      getAddedPoints() {
+        return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
+      },
+
       async loyaltyAddCustomer() {
         try {
           console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
@@ -326,6 +358,7 @@
           this.phone = response.data.phone;
           this.birthday = response.data.birthday;
           this.points = response.data.loyalty_points;
+          this.id = response.data.id;
           console.log(response);
           this.loyaltyErrorAdd = false;
         } catch (error) {
@@ -343,6 +376,7 @@
           this.phone = response.data[0].phone;
           this.birthday = response.data[0].birthday;
           this.points = response.data[0].loyalty_points;
+          this.id = response.data[0].id;
           this.loyaltyErrorFind = false;
         } catch (error) {
           this.flashScaffolding();

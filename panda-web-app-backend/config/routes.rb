@@ -147,6 +147,7 @@ end
     namespace :v1 do
       resources :customers, only: [ :index, :show ]
       post "/customers/add_customer", to: "customers#add_customer"
+      put '/customers/add_points/:id', to: 'customers#add_points'
     end
   end
 
