@@ -22,12 +22,30 @@ class Api::V1::CustomersController < ApplicationController
       render json: { error: "No customer found with given id" }, status: :not_found
   end
 
-  # def loyalty_add_customer
-  #   customer_email = params[:customer_email]
-  #   customer_birthday = params[:customer_birthday]
-  #   customer_points = params[:customer_points]
+  def add_customer
+    customer_email = params[:email]
+    customer_birthday = params[:birthday]
+    customer_points = params[:loyalty_points]
 
-  # end
+    # Check for missing parameters
+    if customer_email.nil? || customer_birthday.nil? || customer_points.nil?
+      render json: { error: 'Missing parameters' }, status: :unprocessable_entity
+      return
+    end
+
+    highest_customer_id = Customer.maximum(:id) || 0  # Returns 0 if no customers exist
+    Rails.logger.info "#{highest_customer_id}"
+    new_customer_id = highest_customer_id + 1
+
+    Rails.logger.info "Received parameters"
+    # Create new Customer instance
+    customer = Customer.new(id: new_customer_id, email: customer_email, birthday: customer_birthday, loyalty_points: customer_points)
+    if customer.save
+      render json: customer, status: :created
+    else
+      render json: { error: 'Failed to create customer' }, status: :unprocessable_entity
+    end
+  end
 
   def by_email
     customer_email = params[:email]

@@ -70,7 +70,7 @@
               <input class="modal-input" type="text" id="loyalty-email" v-model="email">
             </div>
             <div class="modal-row">
-              <label for="loyalty-birthday">Birthday:</label>
+              <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
               <input class="modal-input"type="text" id="loyalty-birthday" v-model="birthday">
             </div>
             <div class="modal-row">
@@ -306,7 +306,17 @@
       },
 
       async loyaltyAddCustomer() {
-
+        try {
+          console.log(`Adding loyalty for (${this.email},${this.birthday},${this.points})`);
+          const response = await api.post('/customers/add_customer', {
+            email: this.email,
+            birthday: this.birthday,
+            loyalty_points: this.points,
+          });
+          console.log(response);
+        } catch (error) {
+          console.log("Error adding customer:", error);
+        }
       },
 
       async loyaltyCheckCustomer() {
@@ -317,7 +327,6 @@
         } catch (error) {
           console.log("Error checking employees:", error);
         }
-
       }
     }
   };

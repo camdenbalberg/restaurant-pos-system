@@ -142,6 +142,13 @@ end
       end
     end
   end
+  
+  namespace :api do
+    namespace :v1 do
+      resources :customers, only: [ :index, :show ]
+      post "/customers/add_customer", to: "customers#add_customer"
+    end
+  end
 
   namespace :api do
     namespace :v1 do
