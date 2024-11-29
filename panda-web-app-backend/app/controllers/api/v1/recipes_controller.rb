@@ -17,7 +17,7 @@ class Api::V1::RecipesController < ApplicationController
   def show
     @recipe = Recipe.joins(:menu_item, :inventory_item)
                    .select('recipes.*, menu_items.menu_name, inventory_items.inv_name')
-                   .find_by(menu_id: params[:id])
+                   .where(menu_id: params[:id])
     render json: @recipe
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Recipe not found" }, status: :not_found
