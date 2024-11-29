@@ -35,7 +35,7 @@
           <div class="order-tax-label">Tax:</div><div class="order-tax">{{getTax()}}</div>
           <div class="order-total-label">Total:</div><div class="order-total">{{getTotal()}}</div>
         </div>
-        <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'">Loyalty</button>
+        <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
         <button class="order-checkout" @click="checkout()">Checkout</button>
         
       </div>
