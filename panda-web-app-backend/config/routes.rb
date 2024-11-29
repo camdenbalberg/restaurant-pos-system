@@ -135,6 +135,16 @@ end
 
   namespace :api do
     namespace :v1 do
+      resources :customers, only: [ :index, :show ] do
+        collection do
+          get 'by_email/:email', to: 'customers#by_email'
+        end
+      end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
       resources :transactions, only: [ :index, :show ]
       post '/transactions/add_transaction', to: 'transactions#add_transaction'
     end

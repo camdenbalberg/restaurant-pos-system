@@ -80,7 +80,7 @@
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-            <button class="modal-button" @click="">Add Customer</button>
+            <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
           </div>
         </div>
 
@@ -94,7 +94,7 @@
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-            <button class="modal-button" @click="">Check Customer</button>
+            <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
           </div>
         </div>
 
@@ -304,6 +304,21 @@
           currency: 'USD',
         });
       },
+
+      async loyaltyAddCustomer() {
+
+      },
+
+      async loyaltyCheckCustomer() {
+        try {
+          console.log("Checking loyalty for " + this.email);
+          const response = await api.get(`/customers/by_email/${this.email}`);
+          console.log(response);
+        } catch (error) {
+          console.log("Error checking employees:", error);
+        }
+
+      }
     }
   };
 </script>
