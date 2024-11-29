@@ -47,8 +47,8 @@ export default {
   },
   methods: {
     selectItem(item) {
-      console.log("meal selection received item: ")
-      console.log(item);
+      // console.log("meal selection received item: ")
+      // console.log(item);
 
       this.mealItems.push(item);
     }
@@ -59,11 +59,11 @@ export default {
 <style scoped>
   .cashier-popup {
     position: fixed;
-    top: 50%;
+    top: calc(50% + 70px);
     left: 50%;
+    height: calc(90% - 70px);
     width: 90%;
-    height: 90%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, calc(-50% - 35px));
     padding: 1.5em;
 
     background-color: white;

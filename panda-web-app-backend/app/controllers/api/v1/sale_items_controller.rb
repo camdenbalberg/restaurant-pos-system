@@ -53,11 +53,12 @@ class Api::V1::SaleItemsController < ApplicationController
           return
         end
 
-        new_sale_id = transaction_id || (SaleItem.maximum(:transaction_id) || 0) + 1
+        latest_transaction_id = Transaction.maximum(:transaction_id) || 0  # Returns 0 if no menu_items exist
+        Rails.logger.info "#{latest_transaction_id}"
 
         Rails.logger.info "Received parameters: menuName = #{menu_id}, category = #{quantity}, price = #{price}"
         # Create new SaleItem instance
-        sale_item = SaleItem.new(transaction_id: new_sale_id, menu_id: menu_id, quantity: quantity, price: price)
+        sale_item = SaleItem.new(transaction_id: latest_transaction_id, menu_id: menu_id, quantity: quantity, price: price)
         if sale_item.save
           render json: sale_item, status: :created
         else

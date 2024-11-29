@@ -282,6 +282,8 @@
     position: sticky;
     top: 0;
     background: var(--accentColorIntense);
+    z-index: 9999;
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
   }
 
   .scaffold {
