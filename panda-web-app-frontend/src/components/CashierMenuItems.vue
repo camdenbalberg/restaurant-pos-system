@@ -1,114 +1,158 @@
 <template>
-    <div>
-      <div v-if="loading">Loading...</div>
+  <div>
+    <div v-if="loading">Loading...</div>
 
-      <div v-if="!loading && !menuItems.length">No menu items available.</div>
+    <div v-if="!loading && !menuItems.length">No menu items available.</div>
 
-      <div v-if="!loading && meals.length" class="menu-category">
-        <div class="menu-category-title">Meals</div>
-        <ul class="cashier-selection-list">
-          <li v-for="item in meals">
-            <button class="menu-item" :id="item.menu_id" @click="showPopup(item, ['side', 'entree'])">
-                {{item.menu_name}}
-            </button>
-          </li>
-        </ul>
-      </div>
-
-      <div v-if="!loading && appetizers.length" class="menu-category">
-        <div class="menu-category-title">Appetizers</div>
-        <ul class="cashier-selection-list">
-          <li v-for="item in appetizers">
-            <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
-                {{item.menu_name}}
-            </button>
-          </li>
-        </ul>
-      </div>
-
-      <div v-if="!loading && drinks.length" class="menu-category">
-        <div class="menu-category-title">Drinks</div>
-        <ul class="cashier-selection-list">
-          <li v-for="item in drinks" :key="item.menu_id">
-            <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
-                {{item.menu_name}}
-            </button>
-          </li>
-        </ul>
-      </div>
+    <div v-if="!loading && meals.length" class="menu-category">
+      <div class="menu-category-title">Meals</div>
+      <ul class="cashier-selection-list">
+        <li v-for="item in meals" :key="item.menu_id">
+          <button class="menu-item" :id="item.menu_id" @click="handleShowMeal(item)">
+            {{ item.menu_name }}
+          </button>
+        </li>
+      </ul>
     </div>
 
-    <CashierPopup v-if="popup" 
+    <div v-if="!loading && appetizers.length" class="menu-category">
+      <div class="menu-category-title">Appetizers</div>
+      <ul class="cashier-selection-list">
+        <li v-for="item in appetizers" :key="item.menu_id">
+          <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+            {{ item.menu_name }}
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div v-if="!loading && drinks.length" class="menu-category">
+      <div class="menu-category-title">Drinks</div>
+      <ul class="cashier-selection-list">
+        <li v-for="item in drinks" :key="item.menu_id">
+          <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+            {{ item.menu_name }}
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <CashierPopup
+      v-if="popup"
       :menu_item="selectedItem"
-      :cat="mealItems" 
+      :cat="mealItems"
+      :maxSelections="maxSelections"
+      :selectedItems="selectedItems"
       @cancel="closePopup"
-      @submitMeal="submitMeal($event)"
+      @submitMeal="submitMeal"
     />
-  </template>
+  </div>
+</template>
+
   
-  <script>
-  import api from '@/api';
-  import CashierPopup from './CashierPopup.vue';
-  
-  export default {
-    name: 'CashierMenuItems',
-    components: {
-      CashierPopup,
+<script>
+import api from '@/api';
+import CashierPopup from './CashierPopup.vue';
+
+export default {
+  name: 'CashierMenuItems',
+  components: {
+    CashierPopup,
+  },
+  emits: ['submitItem', 'submitMeal'],
+  data() {
+    return {
+      loading: true,
+      menuItems: [],
+      meals: [],
+      appetizers: [],
+      drinks: [],
+      popup: false,
+      selectedItem: null,
+      mealItems: [],
+      maxSelections: {}, // Tracks max selections for each category
+      selectedItems: {}, // Tracks selected items by category
+    };
+  },
+  mounted() {
+    this.fetchMenuItems();
+  },
+  methods: {
+    async fetchMenuItems() {
+      try {
+        const response = await api.get('/menu_items');
+        this.menuItems = response.data;
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      } finally {
+        this.meals = this.menuItems.filter(item => item.category === "meal");
+        this.appetizers = this.menuItems.filter(item => item.category === "appetizer");
+        this.drinks = this.menuItems.filter(item => item.category === "drink");
+        this.loading = false;
+      }
     },
-    emits: ['submitItem', 'submitMeal'],
-    data() {
-      return {
-        loading: true,
-        menuItems: [],
-        meals: [],
-        appetizers: [],
-        drinks: [],
 
-        popup: false, 
-        selectedItem: "",
-        mealItems: [],
-      };
+    async handleShowMeal(meal) {
+      try {
+        const mealStructure = await this.getEntreesSides(meal);
+
+        this.mealItems = [...new Set(mealStructure.map(item => item.category))];
+        this.maxSelections = mealStructure.reduce((acc, curr) => {
+          acc[curr.category] = (acc[curr.category] || 0) + curr.quantity;
+          return acc;
+        }, {});
+
+        console.log('Meal items:', this.mealItems);
+        console.log('Max selections:', this.maxSelections);
+
+        this.showPopup(meal);
+      } catch (error) {
+        console.error('Error showing meal:', error);
+      }
     },
-    mounted() {
-      this.fetchMenuItems();
+
+    async getEntreesSides(meal) {
+      try {
+        const response = await api.get(`/recipes/${meal.menu_id}`);
+        console.log('Recipe response:', response.data); // Debug log
+
+        // Map inventory IDs to categories
+        const entreesSides = response.data
+          .filter(item => item.inv_id === 54 || item.inv_id === 55)
+          .map(item => ({
+            category: item.inv_id === 54 ? 'entree' : 'side',
+            quantity: item.quantity,
+          }));
+
+        console.log('Processed entrees and sides:', entreesSides);
+        return entreesSides;
+      } catch (error) {
+        console.error('Error fetching entrees and sides:', error);
+        return [];
+      }
     },
-    methods: {
-      async fetchMenuItems() {
-        try {
-          const response = await api.get('/menu_items');
-          this.menuItems = response.data;
-        } catch (error) {
-          console.error('Error fetching menu items:', error);
-        } finally {
-          this.meals = this.menuItems.filter(item => item.category == "meal");
-          this.appetizers = this.menuItems.filter(item => item.category == "appetizer");
-          this.drinks = this.menuItems.filter(item => item.category == "drink");
 
-          this.loading = false;
-        }
-      },
-
-      showPopup(menuItem, mealStructure) {
-        this.popup = true;
-        this.selectedItem = menuItem;
-        this.mealItems = mealStructure;
-      },
-
-      closePopup() {
-        this.popup = false;
-        this.selectedItem = "";
-        this.mealItems = [];
-      },
-
-      submitMeal(meal) {
-        this.$emit("submitMeal", meal);
-
-        this.closePopup();
-      },
+    showPopup(menuItem) {
+      this.popup = true;
+      this.selectedItem = menuItem;
     },
-  };
-  </script>
-  
+
+    closePopup() {
+      this.popup = false;
+      this.selectedItem = null;
+      this.mealItems = [];
+      this.maxSelections = {};
+      this.selectedItems = {};
+    },
+
+    submitMeal(meal) {
+      this.$emit("submitMeal", meal);
+      this.closePopup();
+    },
+  },
+};
+</script>
+
 <style scoped>  
   .menu-category {
     margin-bottom: 2em;
