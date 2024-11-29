@@ -137,7 +137,7 @@ end
     namespace :v1 do
       resources :customers, only: [ :index, :show ] do
         collection do
-          get 'by_email/:email', to: 'customers#by_email'
+          get 'by_phone/:phone', to: 'customers#by_phone'
         end
       end
     end

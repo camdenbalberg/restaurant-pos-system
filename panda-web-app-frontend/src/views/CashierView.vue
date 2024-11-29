@@ -66,8 +66,8 @@
           <h2>Loyalty Add Customer</h2>
           <div class="modal-column">
             <div class="modal-row">
-              <label for="loyalty-email">Email:</label>
-              <input class="modal-input" type="text" id="loyalty-email" v-model="prospectiveEmail">
+              <label for="loyalty-phone">Phone:</label>
+              <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
             </div>
             <div class="modal-row">
               <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
@@ -77,7 +77,7 @@
               <label for="loyalty-points">Points:</label>
               <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
             </div>
-            <div v-show="email">Loaded customer: ({{ this.email }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
           </div>
           <div class="modal-row">
             <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
@@ -89,10 +89,10 @@
           <h2>Loyalty Check Customer</h2>
           <div class="modal-column">
             <div class="modal-row">
-              <label for="loyalty-email">Email:</label>
-              <input class="modal-input"type="text" id="loyalty-email" v-model="prospectiveEmail">
+              <label for="loyalty-phone">Phone:</label>
+              <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
             </div>
-            <div v-show="email">Loaded customer: ({{ this.email }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
             <div v-show="noCustomer">Unable to find customer</div>
           </div>
           <div class="modal-row">
@@ -123,10 +123,10 @@
         passkey: "",
 
         loyaltyScreen: 0,
-        email: "",
+        phone: "",
         birthday: "",
         points: 0,
-        prospectiveEmail: "",
+        prospectivePhone: "",
         prospectiveBirthday: "",
         prospectivePoints: 0,
         noCustomer: false,
@@ -314,14 +314,14 @@
 
       async loyaltyAddCustomer() {
         try {
-          console.log(`Adding loyalty for (${this.prospectiveEmail},${this.prospectiveBirthday},${this.prospectivePoints})`);
+          console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
           const response = await api.post('/customers/add_customer', {
-            email: this.prospectiveEmail,
+            phone: this.prospectivePhone,
             birthday: this.prospectiveBirthday,
             loyalty_points: this.prospectivePoints,
           });
           this.flashScaffolding();
-          this.email = response.data.email;
+          this.phone = response.data.phone;
           this.birthday = response.data.birthday;
           this.points = response.data.loyalty_points;
           console.log(response);
@@ -332,18 +332,18 @@
 
       async loyaltyCheckCustomer() {
         try {
-          console.log("Checking loyalty for " + this.prospectiveEmail);
-          const response = await api.get(`/customers/by_email/${this.prospectiveEmail}`);
+          console.log("Checking loyalty for " + this.prospectivePhone);
+          const response = await api.get(`/customers/by_phone/${this.prospectivePhone}`);
           this.flashScaffolding();
           console.log(response);
-          this.email = response.data[0].email;
+          this.phone = response.data[0].phone;
           this.birthday = response.data[0].birthday;
           this.points = response.data[0].loyalty_points;
           this.noCustomer = false;
         } catch (error) {
           this.flashScaffolding();
           console.log("Error checking employees or no employee found: ", error);
-          this.email = "";
+          this.phone = "";
           this.birthday = "";
           this.points = 0;
           this.noCustomer = true;

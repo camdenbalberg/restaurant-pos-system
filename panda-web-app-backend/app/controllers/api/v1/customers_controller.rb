@@ -23,12 +23,12 @@ class Api::V1::CustomersController < ApplicationController
   end
 
   def add_customer
-    customer_email = params[:email]
+    customer_phone = params[:phone]
     customer_birthday = params[:birthday]
     customer_points = params[:loyalty_points]
 
     # Check for missing parameters
-    if customer_email.nil? || customer_birthday.nil? || customer_points.nil?
+    if customer_phone.nil? || customer_birthday.nil? || customer_points.nil?
       render json: { error: 'Missing parameters' }, status: :unprocessable_entity
       return
     end
@@ -39,7 +39,7 @@ class Api::V1::CustomersController < ApplicationController
 
     Rails.logger.info "Received parameters"
     # Create new Customer instance
-    customer = Customer.new(id: new_customer_id, email: customer_email, birthday: customer_birthday, loyalty_points: customer_points)
+    customer = Customer.new(id: new_customer_id, phone: customer_phone, birthday: customer_birthday, loyalty_points: customer_points)
     if customer.save
       render json: customer, status: :created
     else
@@ -47,16 +47,16 @@ class Api::V1::CustomersController < ApplicationController
     end
   end
 
-  def by_email
-    customer_email = params[:email]
+  def by_phone
+    customer_phone = params[:phone]
 
-    Rails.logger.info "Checking if customer exists with email: #{customer_email}"
-    @customers = Customer.where(email: customer_email)
+    Rails.logger.info "Checking if customer exists with phone: #{customer_phone}"
+    @customers = Customer.where(phone: customer_phone)
     if @customers.any?
       render json: @customers
     end
   rescue ActiveRecord::RecordNotFound
-    render json: { error: "No customers found for this email"}, status: :not_found
+    render json: { error: "No customers found for this phone"}, status: :not_found
   end
 
 end
