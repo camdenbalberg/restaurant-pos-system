@@ -103,6 +103,11 @@
         </div>
 
       </div>
+      <div class="modal-row">
+        <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
+        <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+      </div>
+      
     </div>
   </div>
 </template>
@@ -133,6 +138,8 @@
         prospectivePoints: 0,
         loyaltyErrorFind: false,
         loyaltyErrorAdd: false,
+        canDiscount: false,
+        canBirthday: false,
       }
     },
     mounted() {
@@ -292,6 +299,8 @@
           this.prospectivePoints = 0;
           this.loyaltyErrorFind = false;
           this.loyaltyErrorAdd = false;
+          this.canBirthday = false;
+          this.canDiscount = false;
         }
 
         // go through each order item
@@ -365,6 +374,7 @@
           console.log("Error adding customer:", error);
           this.loyaltyErrorAdd = true;
         }
+        this.checkDiscounts();
       },
 
       async loyaltyCheckCustomer() {
@@ -386,7 +396,54 @@
           this.points = 0;
           this.loyaltyErrorFind = true;
         }
-      }
+        this.checkDiscounts();
+      },
+
+      checkDiscounts() {
+        if (parseInt(this.points) >= 10) {
+          this.canDiscount = true;
+        }
+
+        // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
+        const dateObj = new Date();
+        const month   = parseInt(dateObj.getUTCMonth() + 1); // months from 1-12
+        const day     = parseInt(dateObj.getUTCDate());
+
+        // console.log(`Today is ${month}-${day} and your birthday is ${this.birthday.split("-")[1]}-${this.birthday.split("-")[2]}`);
+
+        if (parseInt(this.birthday.split("-")[1]) == month && parseInt(this.birthday.split("-")[2]) == day) {
+          this.canBirthday = true;
+        }
+      },
+
+      applyBirthdayDiscount() {
+        const orderItem = { 
+          index: this.orderItems.length,
+          name: "Birthday Discount",
+          price: -10,
+          quantity: 1,
+          items: [],
+        }
+
+        this.flashScaffolding();
+        this.orderItems.push(orderItem);
+      },
+
+      applyDiscount() {
+        const orderItem = { 
+          index: this.orderItems.length,
+          name: "$1 Discount",
+          price: -1,  // With tax it will be 1 dollar
+          quantity: 1,
+          items: [],
+        }
+
+        this.points -= 10;
+        this.checkDiscounts();
+        
+        this.flashScaffolding();
+        this.orderItems.push(orderItem);
+      },
     }
   };
 </script>
