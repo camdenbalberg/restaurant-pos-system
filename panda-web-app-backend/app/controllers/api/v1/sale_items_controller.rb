@@ -1,5 +1,5 @@
 class Api::V1::SaleItemsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:add_sale_item, :by_transaction_ids]
+
     def index
         @saleitems = SaleItem.all
         render json: @saleitems
@@ -44,6 +44,8 @@ class Api::V1::SaleItemsController < ApplicationController
         menu_id = params[:menu_id]
         quantity = params[:quantity]
         price = params[:price]
+        transaction_id = params[:transaction_id]
+
         Rails.logger.info "#{menu_id} : #{quantity} : #{price}"
           # Check if all required parameters are present
         if menu_id.nil? || quantity.nil? || price.nil?

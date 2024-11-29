@@ -1,7 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
   # Query database for items and rendering it as json
-  skip_before_action :verify_authenticity_token, only: [:toggle_completed, :add_transaction]
-  
+
   def index
     @transactions = Transaction.all
     render json: @transactions
@@ -80,6 +79,11 @@ class Api::V1::TransactionsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Transaction not found" }, status: :not_found
+  end
+
+  def highest_transaction_id
+    highest_id = Transaction.maximum(:transaction_id) || 0
+    render json: { transaction_id: highest_id }, status: :ok
   end
 
   def add_transaction

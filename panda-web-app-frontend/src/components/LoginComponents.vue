@@ -2,7 +2,7 @@
   <div class="login-screen">
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
     <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
-    
+
     <div class="login-text-fields">
       <label for="username">Username:</label>
       <input type="text" id="login-username" v-model="username">
@@ -10,16 +10,40 @@
       <label for="password">Password:</label>
       <input type="password" id="login-password" v-model="password">
       <br id="bigBr">
-      <button @click="submitForm">
+      <button id="submit_login_button" @click="submitForm">
         {{ buttonText }}
       </button>
     </div>
-
+  </div>
+  <div>
+    <button
+      id="google_login_button"
+      @click="googleLogin"
+      :class="{ 'clicked': isClicked }"
+      type="button"
+      class="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 me-2 mb-2"
+    >
+      <svg
+        class="w-8 h-8 me-4"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 18 19"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      Sign in With Google
+    </button>
   </div>
 </template>
 
 <script>
 import api from '@/api';
+import shared from '../shared'
 
 export default {
   data() {
@@ -29,34 +53,46 @@ export default {
       buttonText: 'Submit',
     }
   },
-  methods: {
-    async submitForm() {
 
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
+
+  methods: {
+    googleLogin() {
+      this.isClicked = true;
+      setTimeout(() => {
+        this.isClicked = false;
+      }, 1000); // Animation duration (1 second)
+
+      // Call the original googleLogin method
+      this.googleInitiateFlow();
+    },
+    googleInitiateFlow() {
+      window.location.href = 'http://localhost/auth/google_oauth2';
+    },
+    async submitForm() {
       try {
-        this.buttonText = "Loading..."
-        console.log(import.meta.env.VITE_API_BACKEND_URL);
-        const response_pwd = await api.get(`/employees/by_password/${this.password}`);
-        this.employees_pwd = response_pwd.data;
-        const response_usr = await api.get(`/employees/by_employee_id/${this.username}`);
-        this.employees_usr = response_usr.data;
-        let found = false;
-        for (let i = 0; i < this.employees_pwd.length; i++) {
-          if (this.employees_pwd[i].email == this.employees_usr[0].email) {
-            console.log("Matching employee found");
-            found = true;
-            // https://router.vuejs.org/guide/essentials/navigation.html
-            return this.$router.push('/');
+        if (this.username && this.password) {
+          // Manual login flow
+          const response = await api.post('http://localhost/auth/login', {
+            username: this.username,
+            password: this.password,
+          });
+          if (response.data.success) {
+            console.log('Login successful:', response.data.user);
+            this.$backStack.push(this.$route.name);
+            this.$router.push('/');
+            this.flashScaffolding();
+          } else {
+            console.log('Invalid login:', response.data.error);
+            this.buttonText = "Submit\nInvalid";
           }
         }
-        if (!found) {
-          console.log("Invalid");
-        }
-
       } catch (error) {
-        console.error('Error fetching employees:', error);
-      } 
-      this.buttonText = "Submit\nInvalid"
-    }
+        console.error('Error logging in:', error);
+      }
+    },
   }
 };
 
@@ -73,32 +109,56 @@ export default {
     --textColor: #33353D;
     --subTextColor: #33353D;
 
-    color: var(--textColor);
-  }
+  color: var(--textColor);
+}
 
-  img {
-    scale: 0.75;
-    /* Center the image */
-    margin: auto;
-    width: 50%;
-  }
+img {
+  scale: 0.75;
+  /* Center the image */
+  margin: auto;
+  width: 50%;
+}
 
-  label {
-    font-size: 30px;
-    width: 100px;
-  }
+label {
+  font-size: 30px;
+  width: 100px;
+}
 
-  input {
-    padding: 10px;
-  }
+input {
+  padding: 10px;
+}
 
-  button {
-    margin-top: 70px;
-    font-size: 30px;
-    padding-top: 25px;
-    padding-bottom: 25px;
-    padding-right: 50px;
-    padding-left: 50px;
+#submit_login_button {
+  margin-top: 70px;
+  font-size: 30px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  padding-right: 50px;
+  padding-left: 50px;
+}
+
+#google_login_button {
+  margin-top: 70px;
+  font-size: 30px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  padding-right: 50px;
+  padding-left: 50px;
+}
+
+.clicked {
+  animation: color-change 1s forwards;
+}
+
+@keyframes color-change {
+  0% {
+    background-color: #4285f4;
   }
+  50% {
+    background-color: #34a853;
+  }
+  100% {
+    background-color: #ea4335;
+  }
+}
 </style>
-

@@ -33,24 +33,6 @@
             </div>
           </keep-alive>
         </transition>
-
-        <!-- Image Upload Section -->
-        <div class="image-upload-section">
-          <h3>Manage Images</h3>
-          <p>Add images for specific menu items by entering the menu ID.</p>
-
-          <!-- Menu ID Input -->
-          <label for="menu-id">Menu ID:</label>
-            <input 
-              type="number" 
-              id="menu-id" 
-              v-model="menuId" 
-              placeholder="Enter Menu ID" 
-            />
-
-          <!-- Image Upload -->
-          <ImageUpload :menuId="menuId" @imageUploaded="handleImageUpload" />
-        </div>
       </div>
     </div>
   </template>
@@ -63,6 +45,9 @@
   import EmployeesSection from './sections/EmployeesSection.vue';
   import ScreensSection from './sections/ScreensSection.vue';
   import AnalyticsSection from './sections/AnalyticsSection.vue';
+  import MenuSection from './sections/MenuSection.vue';
+  import RecipeSection from './sections/RecipeSection.vue';
+  import shared from '../shared'
   
   export default {
     // Register the component
@@ -75,6 +60,16 @@
           menuId: '',
         currentSection: '',
         navItems: [
+          {
+            name: 'menu', 
+            label: 'Menu',
+            description: 'Add, remove, and manage menu items.'
+          },
+          {
+            name: 'recipe',
+            label: 'Recipe',
+            description: 'Add, remove, and manage recipes.'
+          },
           { 
             name: 'inventory', 
             label: 'Inventory',
@@ -98,10 +93,15 @@
         ]
       }
     },
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
+    },
     computed: {
       currentComponent() {
         // Map section names to component names
         const componentMap = {
+          'menu': MenuSection,
+          'recipe': RecipeSection,
           'inventory': InventorySection,
             'employees': EmployeesSection,
             'screens': ScreensSection,
@@ -139,6 +139,7 @@
 
           console.log('Image uploaded successfully:', response.data);
           alert('Image uploaded successfully!');
+          this.flashScaffolding();
         } catch (error) {
           if (error.response) {
             // Backend returned an error

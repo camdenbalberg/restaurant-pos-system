@@ -5,8 +5,8 @@
         <li v-for="item in orderedItems" :key="item">
           <div v-for="(i,index) in item" :key="i" class="item">
             <picture>
-              <source :srcset="`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
-              <img :src="`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
+              <source :srcset="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
+              <img :src="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
             </picture>
             <h2>{{ i.menu_name }}</h2>
             <p>Price: ${{ i.price }}</p>
@@ -21,6 +21,7 @@
 <script>
 import axios from 'axios';
 import MealItem from './MealItems.vue'; // Adjust path if necessary
+import shared from '../shared'
 
 export default {
   name: 'Kart',
@@ -33,12 +34,18 @@ export default {
       required: true,
     },
   },
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
   methods: {
     async completeTransaction() {
       try{
         console.log('Transaction complete:', this.orderedItems);
         //track the total cost of transaction
         let cost = 0;
+        const transactionIdResponse = await axios.get('/api/v1/transactions/highest_transaction_id');
+        let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
+
         //add all sale items for transaction
         for (const item of this.orderedItems) {
           for (let i = 0; i < item.length; i++) {
@@ -49,6 +56,7 @@ export default {
                 menu_id: Number(item[i].menu_id),
                 quantity: 1,
                 price: parseFloat(item[i].price),
+                transaction_id: nextTransactionId,
               });
               cost += parseFloat(item[i].price);
             }
@@ -70,6 +78,7 @@ export default {
         //clear the cart
         this.$emit('close');
         this.$emit('empty-kart');
+        this.flashScaffolding();
       }
       catch (error) {
         console.error('Error completing transaction:', error);

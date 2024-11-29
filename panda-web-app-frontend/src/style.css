@@ -12,6 +12,7 @@
   background: url("./assets/bg.jpg");
   background-repeat: no-repeat;
   background-size: cover;
+  background-attachment: fixed;
 }
 
 #app {
@@ -25,6 +26,7 @@
   margin-right: 0px;
   margin-left: 0px;
 
+  zoom: 95%;
 }
 
 input {

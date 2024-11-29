@@ -8,6 +8,8 @@ Bundler.require(*Rails.groups)
 
 module PandaWebAppBackend
   class Application < Rails::Application
+    # config.middleware.use ActionDispatch::Session::CookieStore, key: '_my_app_session', secure: Rails.env.production?
+    # config.secret_key_base = ENV['SECRET_KEY_BASE'] if ENV['SECRET_KEY_BASE'].present?
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
@@ -16,6 +18,7 @@ module PandaWebAppBackend
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    config.api_only = false
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

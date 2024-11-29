@@ -49,6 +49,8 @@ import { fetchMenuItems } from '../api/menuService';
 export default {
   data() {
     return {
+      isLocked: false,
+      passkey: "",
       menuItems: {},
       loading: false,
       carouselIndex: 0, // Track current slide
@@ -72,13 +74,71 @@ export default {
   mounted() {
     this.loadMenuItems();
     this.startAutoSlide(); // Start the auto transition when the component mounts
+     // Listen for lock event to lock the screen
+    this.checkScreenLockStatus();
   },
   beforeDestroy() {
     if (this.carouselInterval) {
       clearInterval(this.carouselInterval); // Clear interval when component is destroyed
     }
   },
+  beforeRouteLeave(to, from, next) {
+    if (!this.isLocked) {
+      next();  // Allow navigation if the screen is not locked
+    } else {
+      const enteredPasskey = prompt("Please enter the passcode to leave the page.");
+      console.log(this.passkey); //remove later
+      if (enteredPasskey === this.passkey) {
+        this.isLocked = false;
+        this.handleUnlock();
+        next();
+      } else {
+        alert("Incorrect passkey. You cannot leave the page.");
+        next(false);  // Prevent navigation if passkey is incorrect
+      }
+    }
+  },
+
   methods: {
+    async handleUnlock() {
+      try {
+        const response = await api.unlockScreen({
+          screen: {
+            screenType: 'Menu_Board',
+            passkey: this.passkey,
+          },
+        });
+
+        // Check if the response contains a success message
+        if (response.message) {
+          this.isLocked = false;  // Update the locked state after unlocking
+          console.log('Screen unlocked successfully');
+        } else {
+          console.error('Unexpected response format:', response);
+          alert('Failed to unlock the screen. No message received.');
+        }
+      } catch (error) {
+        console.error("Error unlocking the screen:", error);
+        alert('Failed to unlock the screen. Please check your passkey.');
+      }
+    },
+    
+    async checkScreenLockStatus() {
+      try {
+        const response = await api.get('screen_status', {
+          params: { screen_type: 'Menu_Board' }
+        });
+        if (response.data.locked) {
+          this.isLocked = true;
+          this.passkey = response.data.passkey || "";  // Optionally, store the passkey if returned
+        } else {
+          this.isLocked = false;
+        }
+      } catch (error) {
+        console.error("Error fetching screen lock status:", error);
+      }
+    },
+
     async loadMenuItems() {
       this.loading = true; 
       try {
@@ -102,11 +162,11 @@ export default {
 
     getCategoryImage(categoryName) {
       const images = {
-        entree: '../../src/assets/entreeImages.png',
-        meal: '../../src/assets/mealImages.png',
-        side: '../../src/assets/sideImages.png',
-        appetizer: '../../src/assets/appetizerImages.png',
-        drink: '../../src/assets/drinkImages.png'
+        entree: 'https://i.imgur.com/BEhf8zt.png',
+        meal: 'https://i.imgur.com/uVZyIZs.png',
+        side: 'https://i.imgur.com/szq6n6I.png',
+        appetizer: 'https://i.imgur.com/7fYAqdh.png',
+        drink: 'https://i.imgur.com/ibEASgp.png'
       };
       console.log(images[categoryName.toLowerCase()]);
       return images[categoryName.toLowerCase()] || '../assets/biglogo.png';
