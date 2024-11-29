@@ -1,4 +1,6 @@
 <template>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
   <div class="cashier-view">
 
     <!-- Items in Order -->
@@ -33,13 +35,38 @@
           <div class="order-tax-label">Tax:</div><div class="order-tax">{{getTax()}}</div>
           <div class="order-total-label">Total:</div><div class="order-total">{{getTotal()}}</div>
         </div>
+        <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'">Loyalty</button>
         <button class="order-checkout" @click="checkout()">Checkout</button>
+        
       </div>
     </div>
 
     <!-- Menu Items -->
     <div class="menu-items">
       <CashierMenuItems @submitItem="receiveItem" @submitMeal="receiveMeal" />
+    </div>
+  </div>
+
+  <div id="loyalty-modal" class="w3-modal">
+    <div class="w3-modal-content w3-animate-top">
+      <div class="w3-container">
+        <span onclick="document.getElementById('loyalty-modal').style.display='none'"
+        class="w3-button w3-display-topright">&times;</span>
+        <h1>Loyalty</h1>
+        <div v-if="loyaltyScreen == 0">
+          <h2>Loyalty Root</h2>
+          <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+          <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
+        </div>
+        <div v-else-if="loyaltyScreen == 1">
+          <h2>Loyalty Add Customer</h2>
+          <button class="modal-button" @click="loyaltyScreen = 2">Check existing</button>
+        </div>
+        <div v-else>
+          <h2>Loyalty Check Customer</h2>
+          <button class="modal-button" @click="loyaltyScreen = 0">Root</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +86,7 @@
         orderItems: [],
         isLocked: false,
         passkey: "",
+        loyaltyScreen: 0,
       }
     },
     mounted() {
@@ -387,5 +415,14 @@
     overflow-y: scroll;
     border: 1px solid white;
     padding: 1em;
+  }
+
+  .modal-button {
+    margin: 35px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
   }
 </style>
