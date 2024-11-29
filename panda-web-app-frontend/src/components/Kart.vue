@@ -13,6 +13,9 @@
           </div>
         </li>
       </ul>
+      <div v-if="loading" class="loading-spinner">
+        Loading...
+      </div>
       <button @click="$emit('close')">Close</button>
       <button @click="completeTransaction">Order</button>
     </div>
@@ -25,6 +28,11 @@ import shared from '../shared'
 
 export default {
   name: 'Kart',
+  data() {
+    return{
+      loading: false,
+    }
+  },
   components: {
     MealItem,
   },
@@ -40,6 +48,7 @@ export default {
   methods: {
     async completeTransaction() {
       try{
+        this.loading = true;
         console.log('Transaction complete:', this.orderedItems);
         //track the total cost of transaction
         let cost = 0;
@@ -79,9 +88,13 @@ export default {
         this.$emit('close');
         this.$emit('empty-kart');
         this.flashScaffolding();
+        this.loading = false;
+        alert(`Order completed, your order number is: ${nextTransactionId}`);
       }
       catch (error) {
+        this.loading = false;
         console.error('Error completing transaction:', error);
+        alert(`Error placing order`);
       }
     },
   }
