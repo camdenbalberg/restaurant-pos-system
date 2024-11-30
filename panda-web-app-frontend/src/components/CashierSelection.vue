@@ -18,9 +18,9 @@
         </button>
       </li>
     </ul>
-    <p class="selection-count">
+    <!-- <p class="selection-count">
       Selections: {{ selectedItems.length }}/{{ maxSelections }}
-    </p>
+    </p> -->
   </div>
 </template>
 
@@ -118,9 +118,9 @@ export default {
 }
 
 .menu-item.selected {
-  background-color: #a3d9a5;
+  background-color: #8a3d3d;
   color: white;
-  border-color: #70b475;
+  border-color: #7b3333;
 }
 
 .menu-item.disabled {

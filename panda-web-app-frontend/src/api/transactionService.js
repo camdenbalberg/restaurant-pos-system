@@ -13,10 +13,17 @@ export const fetchTransactions = async () => {
     const transactions = response.data;
 
     // Fetch sale items for each transaction
-    await Promise.all(transactions.map(async (transaction) => {
-      const saleItemsResponse = await api.get(`/sale_items/by_transaction_id/${transaction.transaction_id}`);
-      transaction.sale_items = saleItemsResponse.data;
-    }));
+    await Promise.all(
+      transactions.map(async (transaction) => {
+        try {
+          const saleItemsResponse = await api.get(`/sale_items/by_transaction_id/${transaction.transaction_id}`);
+          transaction.sale_items = saleItemsResponse.data || []; // Ensure empty array if no sale items
+        } catch (saleItemsError) {
+          console.warn(`No sale items found for transaction ID: ${transaction.transaction_id}`);
+          transaction.sale_items = []; // Assign empty array if error occurs (e.g., no sale items)
+        }
+      })
+    );
 
     return transactions;
   } catch (error) {
