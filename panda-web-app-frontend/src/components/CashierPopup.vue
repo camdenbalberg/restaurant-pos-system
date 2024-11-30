@@ -86,7 +86,7 @@ export default {
       const maxSelections = this.categoryConfigs[category].max;
       const selected = this.selectedItems[category];
 
-      if (selected.length < maxSelections && !selected.includes(item)) {
+      if (selected.length < maxSelections /*&& !selected.includes(item)*/) {
         selected.push(item);
       } else if (selected.includes(item)) {
         // Deselect the item if it's already selected
