@@ -423,11 +423,12 @@
         }
 
         // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
-        const dateObj = new Date();
+        var dateObj = new Date();
+        dateObj.setHours(dateObj.getUTCHours() - (dateObj.getTimezoneOffset() / 60));
         const month   = parseInt(dateObj.getUTCMonth() + 1); // months from 1-12
         const day     = parseInt(dateObj.getUTCDate());
 
-        // console.log(`Today is ${month}-${day} and your birthday is ${this.birthday.split("-")[1]}-${this.birthday.split("-")[2]}`);
+        console.log(`Today is ${month}-${day} and your birthday is ${this.birthday.split("-")[1]}-${this.birthday.split("-")[2]}`);
 
         if (parseInt(this.birthday.split("-")[1]) == month && parseInt(this.birthday.split("-")[2]) == day) {
           this.canBirthday = true;
@@ -444,7 +445,8 @@
           quantity: 1,
           items: [],
         }
-
+        
+        this.canBirthday = false;
         this.flashScaffolding();
         this.orderItems.push(orderItem);
       },
