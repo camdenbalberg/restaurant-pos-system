@@ -11,6 +11,8 @@
             <img :src="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
+          <p v-if="meal.price > 0">${{ meal.price.toFixed(2) }}</p>
+
         </button>
       </div>
       <button @click="handleShowMeal('drink')">

@@ -12,7 +12,7 @@
             <img :src="item.image_url || `../../src/assets/menu/${item.menu_id}.avif`" :alt="item.menu_name">
           </picture>
           <h2>{{ item.menu_name }}</h2>
-          <p>Price: ${{ item.price }}</p>
+          <p v-if="item.price > 0">${{ item.price.toFixed(2) }}</p>
         </button>
       </li>
     </ul>
