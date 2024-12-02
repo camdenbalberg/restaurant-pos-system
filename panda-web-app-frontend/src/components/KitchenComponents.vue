@@ -2,7 +2,7 @@
   <div class="kitchen-display">
       <h1>Order List</h1>
       <div v-if="loading">Loading...</div>
-      <ul v-if="!loading && transactions.length"></ul>
+      <ul v-if="transactions.length"></ul>
       <div class="order-list">
         <div v-for="item in transactions">
             <div v-if="!item.completed" :key="item.transaction_id" class="order-box">
@@ -28,7 +28,12 @@
                   </table>
                 </ul>
               </div>
-              <button @click="bumpOrder(item.transaction_id)">Bump Order</button>
+              <button 
+                :disabled="loading" 
+                :class="{ 'disabled-button': loading }" 
+                @click="bumpOrder(item.transaction_id)">
+                Bump Order
+              </button>
             </div>
           </div>
       </div>
@@ -94,6 +99,7 @@ export default {
     },
 
     async bumpOrder(transactionId) {
+      this.loading = true;
       this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
       //process on the backend
       try {
@@ -104,9 +110,11 @@ export default {
                 // Optionally, you can fetch the updated transactions list again
                 await this.loadTransctions(); // or just update the local state if needed
             }
+            this.loading = false;
             this.flashScaffolding();
         } catch (error) {
             console.error('Error bumping order:', error);
+            this.loading = false;
         }
   },
 
@@ -129,8 +137,10 @@ export default {
     padding: 20px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px; /* space between boxes */
+    justify-content: flex-start; /* Align items to the left */
+    gap: 15px; /* Space between boxes */
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 80vh; /* Set a maximum height for the order list */
 }
 
 .order-box {
@@ -144,6 +154,11 @@ export default {
 
 .order-box:hover {
     transform: scale(1.05); /* scaling effect on hover */
+}
+
+.disabled-button {
+  background-color: gray;
+  cursor: not-allowed;
 }
 
 .order-box button {
