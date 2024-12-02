@@ -2,7 +2,6 @@
   <div class="kitchen-display">
       <h1>Order List</h1>
       <div v-if="loading">Loading...</div>
-      <ul v-if="transactions.length"></ul>
       <div class="order-list">
         <div v-for="item in transactions">
             <div v-if="!item.completed" :key="item.transaction_id" class="order-box">
@@ -130,6 +129,16 @@ export default {
 </script>
 
 <style>
+h1 {
+    margin: 0;
+    padding-bottom: 10px; 
+}
+
+.kitchen-display {
+    margin: 0;
+    padding: 0; 
+}
+
 .order-list {
     background-color: white;
     border-radius: 8px;
@@ -138,9 +147,9 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start; /* Align items to the left */
-    gap: 15px; /* Space between boxes */
-    overflow-y: auto; /* Enable vertical scrolling */
-    max-height: 80vh; /* Set a maximum height for the order list */
+    /* gap: 15px;  */
+    overflow-y: auto; 
+    max-height: 80vh; 
 }
 
 .order-box {
@@ -149,6 +158,7 @@ export default {
     padding: 20px;
     width: 250px; /* width of each box */
     text-align: center;
+    margin: 0 15px 15px 0;
     transition: transform 0.3s;
 }
 
