@@ -647,12 +647,15 @@ export default {
         case 'Product-usage':
           console.log('Generating Product Usage Report.');
           await this.generateProductUsageReport();
+          break;
         case 'What-sells-together':
           console.log('Generating What Sells Together Report...');
           await this.generateWhatSellsTogetherReport();
+          break;
         case 'Excess-report':
           console.log('Generating Excess Report...');
           await this.generateExcessReport();
+          break;
         default:
           console.log('Unknown report type');
           this.showDateFilter = false;
@@ -662,7 +665,11 @@ export default {
           this.loading = false;
           break;
       }
-      
+      this.showDateFilter = false;
+      this.showDateFilter2 = false;
+      this.showDateFilter3 = false;
+      this.showDateFilter4 = false;
+      this.loading = false;
     }
   }
 };
