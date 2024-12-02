@@ -4,10 +4,10 @@
     <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
 
     <div class="login-text-fields">
-      <label for="username">Username:</label>
+      <label for="login-username">Username:</label>
       <input type="text" id="login-username" v-model="username">
       <br>
-      <label for="password">Password:</label>
+      <label for="login-password">Password:</label>
       <input type="password" id="login-password" v-model="password">
       <br id="bigBr">
       <button id="submit_login_button" @click="submitForm">
@@ -39,6 +39,7 @@
       Sign in With Google
     </button>
   </div>
+  <button id = "skip_login_button" @click="skipForm">Skip Login As Customer</button>
 </template>
 
 <script>
@@ -83,6 +84,30 @@ export default {
             console.log('Login successful:', response.data.user);
             this.$backStack.push(this.$route.name);
             this.$router.push('/');
+            this.flashScaffolding();
+          } else {
+            console.log('Invalid login:', response.data.error);
+            this.buttonText = "Submit\nInvalid";
+          }
+        }
+      } catch (error) {
+        console.error('Error logging in:', error);
+      }
+    },
+    async skipForm() {
+      try {
+        if (true) {
+          // Manual login flow
+          // this.username = "5"
+          // this.password = "b455mord";
+          const response = await api.post('http://localhost/auth/login', {
+            username: "5",
+            password: "b455mord",
+          });
+          if (response.data.success) {
+            console.log('Login successful:', response.data.user);
+            this.$backStack.push(this.$route.name);
+            this.$router.push('/customer');
             this.flashScaffolding();
           } else {
             console.log('Invalid login:', response.data.error);

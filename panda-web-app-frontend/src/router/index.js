@@ -45,7 +45,7 @@ const routes = [
     path: '/customer',
     name: 'customer',
     component: CustomerView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/manager",
