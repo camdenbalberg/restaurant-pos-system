@@ -25,70 +25,69 @@
       
       <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
       <div v-show="discountsApplied">Added discounts: ${{ this.birthdayDiscounts + this.normalDiscounts }} off</div>
+    </div>
 
+    <div id="loyalty-modal" class="w3-modal">
+      <div class="w3-modal-content w3-animate-top">
+        <div class="w3-container">
+          <span onclick="document.getElementById('loyalty-modal').style.display='none'"
+          class="w3-button w3-display-topright">&times;</span>
+          <h1>Loyalty</h1>
 
-      <div id="loyalty-modal" class="w3-modal">
-        <div class="w3-modal-content w3-animate-top">
-          <div class="w3-container">
-            <span onclick="document.getElementById('loyalty-modal').style.display='none'"
-            class="w3-button w3-display-topright">&times;</span>
-            <h1>Loyalty</h1>
-
-            <div v-if="loyaltyScreen == 0">
-              <h2>Loyalty Root</h2>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
-                <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
-              </div>
+          <div v-if="loyaltyScreen == 0">
+            <h2>Loyalty Root</h2>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+              <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
             </div>
-
-            <div v-else-if="loyaltyScreen == 1">
-              <h2>Loyalty Add Customer</h2>
-              <div class="modal-column">
-                <div class="modal-row">
-                  <label for="loyalty-phone">Phone:</label>
-                  <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
-                </div>
-                <div class="modal-row">
-                  <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
-                  <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
-                </div>
-                <div class="modal-row">
-                  <label for="loyalty-points">Points:</label>
-                  <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
-                </div>
-                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
-                <div v-show="loyaltyErrorAdd">Unable to add customer</div>
-              </div>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-                <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
-              </div>
-            </div>
-
-            <div v-else>
-              <h2>Loyalty Check Customer</h2>
-              <div class="modal-column">
-                <div class="modal-row">
-                  <label for="loyalty-phone">Phone:</label>
-                  <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
-                </div>
-                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
-                <div v-show="loyaltyErrorFind">Unable to find customer</div>
-              </div>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-                <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
-              </div>
-            </div>
-
           </div>
-          <div class="modal-row">
-            <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
-            <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+
+          <div v-else-if="loyaltyScreen == 1">
+            <h2>Loyalty Add Customer</h2>
+            <div class="modal-column">
+              <div class="modal-row">
+                <label for="loyalty-phone">Phone:</label>
+                <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
+              </div>
+              <div class="modal-row">
+                <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
+                <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
+              </div>
+              <div class="modal-row">
+                <label for="loyalty-points">Points:</label>
+                <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
+              </div>
+              <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+              <div v-show="loyaltyErrorAdd">Unable to add customer</div>
+            </div>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+              <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
+            </div>
           </div>
-          
+
+          <div v-else>
+            <h2>Loyalty Check Customer</h2>
+            <div class="modal-column">
+              <div class="modal-row">
+                <label for="loyalty-phone">Phone:</label>
+                <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
+              </div>
+              <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+              <div v-show="loyaltyErrorFind">Unable to find customer</div>
+            </div>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+              <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
+            </div>
+          </div>
+
         </div>
+        <div class="modal-row">
+          <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
+          <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+        </div>
+        
       </div>
     </div>
 </template>
@@ -356,6 +355,10 @@ export default {
   }
 
   /* Loyalty Modal */
+
+  .loyalty-modal {
+    position: fixed;
+  }
 
   .modal-button {
     margin: 35px;
