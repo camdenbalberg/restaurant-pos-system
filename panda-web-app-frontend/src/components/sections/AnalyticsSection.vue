@@ -2,7 +2,7 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
-      <div v-if="showDateFilter || showDateFilter2" class="date-filter">
+      <div v-if="showDateFilter || showDateFilter2 || showDateFilter3" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
@@ -16,6 +16,7 @@
         >
           X-report
         </button>
+
         <button 
           class="report-button" 
           @click="handleReport('Z-report')" 
@@ -23,6 +24,7 @@
         >
           Z-report
         </button>
+
         <button 
           v-if="!showDateFilter" 
           class="report-button" 
@@ -39,6 +41,7 @@
         >
           Press again
         </button>
+
         <button 
           v-if="!showDateFilter2" 
           class="report-button" 
@@ -52,6 +55,23 @@
           class="report-button press-again" 
           @click="handleReport('Product-usage')" 
           title="Press again to generate."
+        >
+          Press again
+        </button>
+
+        <button 
+          v-if="!showDateFilter3" 
+          class="report-button" 
+          @click="handleWhatSellsTogether" 
+          title="Find pairs of menu items that sell together within a date range."
+        >
+          What Sells Together
+        </button>
+        <button 
+          v-if="showDateFilter3" 
+          class="report-button press-again" 
+          @click="handleReport('What-sells-together')" 
+          title="Press again to generate the report."
         >
           Press again
         </button>
@@ -114,6 +134,7 @@
           </tbody>
         </table>
       </div>
+
       <!-- Inventory Usage Report Table -->
       <div v-if="inventoryUsageReport.length">
         <table class="report-table">
@@ -131,6 +152,25 @@
           </tbody>
         </table>
       </div>
+
+      <!-- What sells together table -->
+      <div v-if="pairsReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Menu Item Pair</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="pair in pairsReport" :key="pair.id">
+              <td>{{ pair.items }}</td>
+              <td>{{ pair.frequency }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </template>
@@ -160,6 +200,8 @@ export default {
       endDate: null,
       showDateFilter: false,
       showDateFilter2: false,
+      pairsReport: [],
+      showDateFilter3: false,
     };
   },
   mounted() {
@@ -388,6 +430,68 @@ export default {
       }
     },
 
+    async generateWhatSellsTogetherReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+
+      try {
+        // Fetch transactions within the date range
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+        const transactions = response.data;
+
+        // Fetch sale items for all transactions
+        const transactionIds = transactions.map(transaction => transaction.transaction_id);
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        const saleItems = saleItemsResponse.data;
+
+        // Group sale items by transaction ID
+        const groupedItems = {};
+        saleItems.forEach(item => {
+          if (!groupedItems[item.transaction_id]) {
+            groupedItems[item.transaction_id] = [];
+          }
+          groupedItems[item.transaction_id].push(item.menu_id);
+        });
+
+        // Generate pairs and their frequencies
+        const pairCounts = {};
+        Object.values(groupedItems).forEach(items => {
+          items.sort(); // Sort items to ensure consistent pair ordering
+          for (let i = 0; i < items.length; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+              const pair = `${items[i]}-${items[j]}`;
+              pairCounts[pair] = (pairCounts[pair] || 0) + 1;
+            }
+          }
+        });
+
+        // Convert pair counts to an array and sort by frequency
+        this.pairsReport = Object.keys(pairCounts)
+          .map(pair => {
+            const [menuId1, menuId2] = pair.split('-');
+            return {
+              items: `${this.menuItems[menuId1] || menuId1} & ${this.menuItems[menuId2] || menuId2}`,
+              frequency: pairCounts[pair],
+            };
+          })
+          .sort((a, b) => b.frequency - a.frequency); // Sort by descending frequency
+
+      } catch (error) {
+        console.error('Error generating What Sells Together report:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+
     async handleSalesReport() {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter = true;
@@ -398,6 +502,10 @@ export default {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter2 = true;
       // this.handleReport('Sales-report');
+    },
+    
+    async handleWhatSellsTogether() {
+      this.showDateFilter3 = true;
     },
 
     async handleReport(reportType) {
@@ -411,7 +519,7 @@ export default {
       switch (reportType) {
         case 'X-report':
           console.log('Generating X-report...');
-          this.calculateSalesPerHour();
+          await this.calculateSalesPerHour();
           break;
         case 'Z-report':
         if (this.zReportGenerated) {
@@ -419,22 +527,26 @@ export default {
             this.hourlyIncome = []; // Clear the table if Z-report has been generated
           } else {
             console.log('Generating Z-report...');
-            this.calculateIncomePerHour();
+            await this.calculateIncomePerHour();
             this.zReportGenerated = true; // Set the flag after first generation
           }
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');
-          this.calculateMenuItemsPerHour();
+          await this.calculateMenuItemsPerHour();
           break;
         case 'Product-usage':
           console.log('Generating Product Usage Report.');
-          this.generateProductUsageReport();
+          await this.generateProductUsageReport();
+        case 'What-sells-together':
+          console.log('Generating What Sells Together Report...');
+          await this.generateWhatSellsTogetherReport();
         default:
           console.log('Unknown report type');
           this.showDateFilter = false;
           this.showDateFilter2 = false;
-          // this.loading = false;
+          this.showDateFilter3 = false;
+          this.loading = false;
           break;
       }
       
