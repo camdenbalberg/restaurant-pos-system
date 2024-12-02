@@ -2,7 +2,7 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
-      <div v-if="showDateFilter" class="date-filter">
+      <div v-if="showDateFilter || showDateFilter2" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
@@ -36,6 +36,22 @@
           class="report-button press-again" 
           @click="handleReport('Sales-report')" 
           title="Press again to generate the sales report based on selected dates."
+        >
+          Press again
+        </button>
+        <button 
+          v-if="!showDateFilter2" 
+          class="report-button" 
+          @click="handleProuctUsage" 
+          title="Given a time window, display the number of each inventory item used during that time period."
+        >
+          Product Usage
+        </button>
+        <button 
+          v-if="showDateFilter2" 
+          class="report-button press-again" 
+          @click="handleReport('Product-usage')" 
+          title="Press again to generate."
         >
           Press again
         </button>
@@ -98,6 +114,23 @@
           </tbody>
         </table>
       </div>
+      <!-- Inventory Usage Report Table -->
+      <div v-if="inventoryUsageReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Inventory Item</th>
+              <th>Amount Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in inventoryUsageReport" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -120,15 +153,19 @@ export default {
       hourlySales: [], 
       hourlyIncome: [],
       itemSales: [],
+      inventoryUsageReport: [],
+      inventoryItems: {},
       zReportGenerated: false,
       startDate: null,
       endDate: null,
       showDateFilter: false,
+      showDateFilter2: false,
     };
   },
   mounted() {
     this.loadTransactions();
     this.loadMenuItems();
+    this.fetchInventoryItems();
   },
   methods: {
     async loadTransactions() {
@@ -199,7 +236,6 @@ export default {
         amount,
       }));
       this.loading = false;
-      this.showDateFilter = false;
     },
 
     async calculateMenuItemsPerHour() { //Sales report
@@ -252,6 +288,74 @@ export default {
       }
     },
 
+    async generateProductUsageReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+      console.log("Fetching transactions by date range...");
+
+      try {
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+        
+        this.allTransactions = response.data;
+        
+        const transactionIds = this.allTransactions.map(transaction => transaction.transaction_id);
+
+        // Fetch sale items for all transactions in one request
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        
+        const menuItemCounts = {};
+        const saleItemsForTransactions = saleItemsResponse.data;
+
+        saleItemsForTransactions.forEach(sale_item => {
+          const menuId = sale_item.menu_id;
+          const quantity = sale_item.quantity;
+          if (menuItemCounts[menuId]) {
+            menuItemCounts[menuId] += quantity;
+          } else {
+            menuItemCounts[menuId] = quantity;
+          }
+        });
+        
+        const inventoryUsage = {};
+
+        for (const menuId of Object.keys(menuItemCounts)) {
+          const recipeResponse = await api.get(`recipes/${menuId}`);
+          const recipes = recipeResponse.data;
+
+          // Multiply the menu item count by the inventory quantities in the recipes
+          recipes.forEach(recipe => {
+            const inventoryId = recipe.inv_id;
+            const recipeQuantity = recipe.quantity;
+            const totalUsed = menuItemCounts[menuId] * recipeQuantity;
+
+            if (inventoryUsage[inventoryId]) {
+              inventoryUsage[inventoryId] += totalUsed;
+            } else {
+              inventoryUsage[inventoryId] = totalUsed;
+            }
+          });
+        }
+        
+        this.inventoryUsageReport = Object.keys(inventoryUsage).map(invId => ({
+          id: this.inventoryItems[invId] || invId,
+          amount: inventoryUsage[invId]
+        }));
+        console.log('Inv usage: ', this.inventoryUsageReport);
+      } catch (error) {
+        console.error('Error fetching transactions by date range:', error);
+      } finally { 
+        this.loading = false;
+      }
+    },
+
     validateDates() {
         if (this.startDate && this.endDate) {
           const start = new Date(this.startDate);
@@ -265,9 +369,34 @@ export default {
         }
     },
 
+    async fetchInventoryItems() {
+      this.loading = true;
+      try {
+        const response = await api.get('/inventory_items');
+        const inventoryData = response.data;
+
+        // Map inventory IDs to their names
+        this.inventoryItems = inventoryData.reduce((acc, item) => {
+          acc[item.inv_id] = item.inv_name;
+          return acc;
+        }, {});
+        console.log("Inv: ", this.inventoryItems);
+      } catch (error) {
+        console.error('Error fetching inventory items:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async handleSalesReport() {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter = true;
+      // this.handleReport('Sales-report');
+    },
+
+    async handleProuctUsage() {
+      // Show the date filter section only when 'Sales Report' is clicked
+      this.showDateFilter2 = true;
       // this.handleReport('Sales-report');
     },
 
@@ -277,6 +406,7 @@ export default {
       this.hourlySales = [];
       this.hourlyIncome = [];
       this.itemSales = [];
+      this.inventoryUsageReport = [];
 
       switch (reportType) {
         case 'X-report':
@@ -297,8 +427,14 @@ export default {
           console.log('Generating Sales Report...');
           this.calculateMenuItemsPerHour();
           break;
+        case 'Product-usage':
+          console.log('Generating Product Usage Report.');
+          this.generateProductUsageReport();
         default:
           console.log('Unknown report type');
+          this.showDateFilter = false;
+          this.showDateFilter2 = false;
+          // this.loading = false;
           break;
       }
       
