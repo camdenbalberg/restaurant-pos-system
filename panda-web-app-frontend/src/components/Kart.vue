@@ -91,7 +91,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import MealItem from './MealItems.vue'; // Adjust path if necessary
 import shared from '../shared'
 import api from '@/api'
@@ -135,7 +134,7 @@ export default {
         console.log('Transaction complete:', this.orderedItems);
         //track the total cost of transaction
         let cost = 0;
-        const transactionIdResponse = await axios.get('/api/v1/transactions/highest_transaction_id');
+        const transactionIdResponse = await api.get('/api/v1/transactions/highest_transaction_id');
         let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
 
         //add all sale items for transaction
@@ -144,7 +143,7 @@ export default {
               console.log('Added Sale Item:', item[i]);
               console.log('Menu ID:', item[i].menu_id);
               console.log('Price:', item[i].price);
-              const response = await axios.post('/api/v1/sale_items/add_sale_item', {
+              const response = await api.post('/api/v1/sale_items/add_sale_item', {
                 menu_id: Number(item[i].menu_id),
                 quantity: 1,
                 price: parseFloat(item[i].price),
@@ -158,7 +157,7 @@ export default {
         const now = new Date();
         const currentDate = now.toISOString().split('T')[0];
         const currentTime = now.toTimeString().split(' ')[0];
-        const response = await axios.post('/api/v1/transactions/add_transaction', {
+        const response = await api.post('/api/v1/transactions/add_transaction', {
           transaction: {
             date: currentDate,
             time: currentTime,
