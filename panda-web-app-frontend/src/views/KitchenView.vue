@@ -3,7 +3,6 @@
   <body>
     <div>
       <Transactions />
-      <router-link to="/">Go to Home</router-link>
     </div>
   </body>
 </template>

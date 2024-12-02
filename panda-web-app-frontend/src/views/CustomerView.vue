@@ -8,19 +8,21 @@
             <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
+          <p v-if="meal.price > 0">${{ meal.price.toFixed(2) }}</p>
+
         </button>
       </div>
       <button @click="handleShowMeal('drink')">
         <picture>
-          <source :srcset="`../../src/assets/menu/drinks.avif`" type="image/avif">
-          <img :src="`../../src/assets/menu/drinks.avif`" alt="drinks">
+          <source :srcset="`https://i.imgur.com/JPUW4k4.jpeg`">
+          <img :src="`https://i.imgur.com/JPUW4k4.jpeg`" alt="drinks">
         </picture>
         Drinks
       </button>
       <button @click="handleShowMeal('appetizer')">
         <picture>
-          <source :srcset="`../../src/assets/menu/appetizers.avif`" type="image/avif">
-          <img :src="`../../src/assets/menu/appetizers.avif`" alt="appetizers">
+          <source :srcset="`https://i.imgur.com/dFsyKuk.png`">
+          <img :src="`https://i.imgur.com/dFsyKuk.png`" alt="appetizers">
         </picture>
         Appetizers
       </button>
@@ -45,6 +47,7 @@ import Kart from '../components/Kart.vue'; // Adjust path if necessary
 import api from '@/api';
 import AppOrDrinkPopup from '../components/AppOrDrinkPopup.vue';
 import Recommendations from '../components/Recommendations.vue';
+import shared from '../shared'
 
 export default {
   name: 'Customer',
@@ -75,6 +78,9 @@ export default {
     this.fetchMenuItems();
     this.checkScreenLockStatus();
   },
+  created() {
+    this.flashScaffolding = shared.flashScaffolding
+  },
   computed: {
     filteredMenuItems() {
       return this.menuItems.filter(item => item.category === 'meal');
@@ -88,6 +94,7 @@ export default {
       const enteredPasskey = prompt("Please enter the passcode to leave the page.");
       console.log(this.passkey); //remove later
       if (enteredPasskey === this.passkey) {
+        this.flashScaffolding();
         this.isLocked = false;
         this.handleUnlock();
         next();
@@ -212,7 +219,7 @@ export default {
         newItems.push(items[i]);
       }
       this.orderedItems.push(newItems);
-      console.log(this.orderedItems);
+      this.flashScaffolding();
     },
     async fetchMenuItems() {
       try {
@@ -220,6 +227,7 @@ export default {
           console.log(import.meta.env.VITE_API_BACKEND_URL);
           const response = await api.get('/menu_items');
           this.menuItems = response.data;
+          this.flashScaffolding();
       } catch (error) {
           console.error('Error fetching menu items:', error);
       } finally {
@@ -236,6 +244,7 @@ export default {
         //filter so only contains entrees and sides
         entreesSides = entreesSides.filter(item => item.inv_id === 55 || item.inv_id === 54);
         console.log(entreesSides);
+        this.flashScaffolding();
         return entreesSides;
     },
   },

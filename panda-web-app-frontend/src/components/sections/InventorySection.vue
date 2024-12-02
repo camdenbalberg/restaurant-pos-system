@@ -1,5 +1,6 @@
 <template>
   <div class="inventory-section">
+    <!-- Header Section -->
     <div class="header-section">
       <h2>Inventory Management</h2>
       <button 
@@ -32,14 +33,48 @@
       <table class="inventory-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Current Stock</th>
-            <th>Base Stock</th>
-            <th>Status</th>
+            <!-- Static Column Headers -->
+            <th @click="sortTable('inv_name')" :class="{ sortable: true, sorted: sortBy === 'inv_name' }">
+              Name
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'inv_name'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </span>
+            </th>
+            <th @click="sortTable('stock')" :class="{ sortable: true, sorted: sortBy === 'stock' }">
+              Current Stock
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'stock'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </span>
+            </th>
+            <th @click="sortTable('base_stock')" :class="{ sortable: true, sorted: sortBy === 'base_stock' }">
+              Base Stock
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'base_stock'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </span>
+            </th>
+            <th @click="sortTable('status')" :class="{ sortable: true, sorted: sortBy === 'status' }">
+              Status
+              <span class="sort-indicator">
+                ↕
+                <span v-if="sortBy === 'status'">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </span>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
+          <!-- Inventory Items Rendered Here -->
           <tr v-for="item in inventoryItems" :key="item.inv_id">
             <td>{{ item.inv_name }}</td>
             <td>{{ item.stock }}</td>
@@ -48,7 +83,7 @@
               <span 
                 :class="['status-badge', 
                   item.stock <= item.base_stock * 0.2 ? 'critical' :
-                  item.stock <= item.base_stock * 0.5 ? 'warning' : 'good'
+                  item.stock <= item.base_stock ? 'warning' : 'good'
                 ]"
               >
                 {{ getStockStatus(item) }}
@@ -147,6 +182,7 @@
   </div>
 </template>
 
+
 <script>
 import api from '@/api';
 
@@ -165,14 +201,16 @@ export default {
         inv_name: '',
         stock: 0,
         base_stock: 0
-      }
-    }
+      },
+      sortBy: '',
+      sortDirection: 'asc'
+    };
   },
 
   computed: {
     lowStockItems() {
       return this.inventoryItems.filter(item => 
-        item.stock <= item.base_stock * 0.5
+        item.stock <= item.base_stock
       ).length;
     }
   },
@@ -193,7 +231,7 @@ export default {
 
     getStockStatus(item) {
       if (item.stock <= item.base_stock * 0.2) return 'Critical';
-      if (item.stock <= item.base_stock * 0.5) return 'Low';
+      if (item.stock <= item.base_stock) return 'Low';
       return 'Good';
     },
 
@@ -252,6 +290,44 @@ export default {
         stock: 0,
         base_stock: 0
       };
+    },
+
+    sortTable(column) {
+      if (this.sortBy === column) {
+        // Toggle sorting direction
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        // Set the column to sort by and reset direction
+        this.sortBy = column;
+        this.sortDirection = 'asc';
+      }
+
+      // Perform sorting
+      this.inventoryItems.sort((a, b) => {
+        let valA, valB;
+
+        // Special case for 'status' column
+        if (column === 'status') {
+          const statusPriority = {
+            Critical: 3,
+            Low: 2,
+            Good: 1
+          };
+          valA = statusPriority[this.getStockStatus(a)];
+          valB = statusPriority[this.getStockStatus(b)];
+        } else {
+          valA = a[column];
+          valB = b[column];
+
+          // Handle case-insensitive string comparison
+          if (typeof valA === 'string') valA = valA.toLowerCase();
+          if (typeof valB === 'string') valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
     }
   },
 
@@ -342,11 +418,19 @@ export default {
   background-color: white;
 }
 
-.inventory-table th,
 .inventory-table td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #eee;
+}
+
+.inventory-table th {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
 }
 
 .inventory-table th {
@@ -358,6 +442,25 @@ export default {
 
 .inventory-table tr:hover {
   background-color: #f8f9fa;
+}
+
+.inventory-table th.sortable:hover {
+  background-color: #f0f4f8;
+}
+
+.inventory-table th.sorted {
+  background-color: #e3eaf0;
+}
+
+.sort-indicator {
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  color: #6c757d;
+}
+
+.sort-indicator span {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
 }
 
 .status-badge {

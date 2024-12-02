@@ -9,7 +9,7 @@
           <button class="home-item" @click="travel('/customer')">Customer</button>
           <button class="home-item" @click="travel('/manager')">Manager</button>
           <button class="home-item" @click="travel('/about')">About</button>
-          <button class="home-item" @click="travel('/login')">Login</button>
+          <!-- <button class="home-item" @click="travel('/login')">Login</button> -->
         </li>
       </ul>
       <ul class="home-links">
@@ -59,6 +59,7 @@
     /* Center the image */
     margin: auto;
     width: 50%;
+    z-index: 1;
   }
 
   label {
@@ -71,7 +72,7 @@
   }
 
   button {
-    margin: 50px;
+    margin: 20px;
     font-size: 30px;
     padding-top: 50px;
     padding-bottom: 50px;

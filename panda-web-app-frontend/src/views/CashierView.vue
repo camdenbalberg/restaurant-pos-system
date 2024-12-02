@@ -1,4 +1,6 @@
 <template>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
   <div class="cashier-view">
 
     <!-- Items in Order -->
@@ -33,8 +35,10 @@
           <div class="order-tax-label">Tax:</div><div class="order-tax">{{getTax()}}</div>
           <div class="order-total-label">Total:</div><div class="order-total">{{getTotal()}}</div>
         </div>
+        <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
         <button class="order-checkout" @click="checkout()">Checkout</button>
       </div>
+      <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
     </div>
 
     <!-- Menu Items -->
@@ -42,11 +46,76 @@
       <CashierMenuItems @submitItem="receiveItem" @submitMeal="receiveMeal" />
     </div>
   </div>
+
+  <div id="loyalty-modal" class="w3-modal">
+    <div class="w3-modal-content w3-animate-top">
+      <div class="w3-container">
+        <span onclick="document.getElementById('loyalty-modal').style.display='none'"
+        class="w3-button w3-display-topright">&times;</span>
+        <h1>Loyalty</h1>
+
+        <div v-if="loyaltyScreen == 0">
+          <h2>Loyalty Root</h2>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+            <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
+          </div>
+        </div>
+
+        <div v-else-if="loyaltyScreen == 1">
+          <h2>Loyalty Add Customer</h2>
+          <div class="modal-column">
+            <div class="modal-row">
+              <label for="loyalty-phone">Phone:</label>
+              <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
+            </div>
+            <div class="modal-row">
+              <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
+              <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
+            </div>
+            <div class="modal-row">
+              <label for="loyalty-points">Points:</label>
+              <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
+            </div>
+            <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="loyaltyErrorAdd">Unable to add customer</div>
+          </div>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+            <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
+          </div>
+        </div>
+
+        <div v-else>
+          <h2>Loyalty Check Customer</h2>
+          <div class="modal-column">
+            <div class="modal-row">
+              <label for="loyalty-phone">Phone:</label>
+              <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
+            </div>
+            <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+            <div v-show="loyaltyErrorFind">Unable to find customer</div>
+          </div>
+          <div class="modal-row">
+            <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+            <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-row">
+        <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
+        <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+      </div>
+      
+    </div>
+  </div>
 </template>
   
 <script>
   import CashierMenuItems from '@/components/CashierMenuItems.vue';
   import api from '@/api'
+  import shared from '../shared'
 
   export default {
     name: 'Cashier View',
@@ -58,10 +127,26 @@
         orderItems: [],
         isLocked: false,
         passkey: "",
+
+        loyaltyScreen: 0,
+        phone: "",
+        birthday: "",
+        points: 0,
+        id: "",
+        prospectivePhone: "",
+        prospectiveBirthday: "",
+        prospectivePoints: 0,
+        loyaltyErrorFind: false,
+        loyaltyErrorAdd: false,
+        canDiscount: false,
+        canBirthday: false,
       }
     },
     mounted() {
       this.checkScreenLockStatus();
+    },
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
     },
     beforeRouteLeave(to, from, next) {
       if (!this.isLocked) {
@@ -70,6 +155,7 @@
         const enteredPasskey = prompt("Please enter the passcode to leave the page.");
         console.log(this.passkey); //remove later
         if (enteredPasskey === this.passkey) {
+          this.flashScaffolding();
           this.isLocked = false;
           this.handleUnlock();
           next();
@@ -130,20 +216,38 @@
           items: [item],
         }
 
+        this.flashScaffolding();
         this.orderItems.push(orderItem);
       },
 
-      receiveMeal(mealJSON) {
-        const meal = JSON.parse(JSON.stringify(mealJSON))
-
-        const orderItem = {
-          index: this.orderItems.length,
-          name: meal[0].menu_name,
-          price: meal.reduce((total, item) => {return total += item.price}, 0),
-          quantity: 1,
-          items: meal,
+      receiveMeal(meal) {
+        if (!meal || !meal.menuItem || !meal.menuItem.menu_name) {
+          console.error('Invalid meal data received:', meal);
+          alert('Invalid meal data.');
+          return;
         }
 
+        const allSelections = [];
+        let totalPrice = meal.menuItem.price;
+        Object.keys(meal.selections).forEach(key => {
+          const selectionItems = meal.selections[key];
+          allSelections.push(...selectionItems);  // Add all selected items to the selections array
+          selectionItems.forEach(item => {
+            totalPrice += item.price;  // Add the price of each selected item
+          });
+        });
+
+        // Create an order item based on the meal received
+        const orderItem = {
+          index: this.orderItems.length,
+          name: meal.menuItem.menu_name,  // Name of the main meal
+          price: totalPrice,  // Price of main meal + selections
+          quantity: 1,
+          items: [meal.menuItem, ...allSelections],  // Combine the main item with its selections
+        };
+
+        // Add the order item to the orderItems array
+        this.flashScaffolding();
         this.orderItems.push(orderItem);
       },
 
@@ -171,9 +275,74 @@
         this.orderItems[orderItem.index].price = orderItem.items.reduce((total, item) => {return total += item.price}, 0) * newQuantity;
       },
 
-      checkout() {
+      async checkout() {
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0];
+        const currentTime = now.toTimeString().split(' ')[0].substring(0,5);
         
+        const transactionResponse = await api.post('transactions/add_transaction', {
+          transaction: {
+            date: currentDate,
+            time: currentTime,
+            total_cost: this.orderItems.reduce((total, item) => {return total += item.price}, 0),
+            expense: false,
+          }
+        });
+        console.log(transactionResponse);
 
+        // Add loyalty points
+        if (this.phone) {
+          try {
+            var formData = {
+              loyalty_points: this.points,
+            };
+            formData.loyalty_points += parseInt(this.getAddedPoints());
+            console.log(`Adding ${parseInt(this.getAddedPoints())} points` )
+            const response = await api.put(
+              `/customers/add_points/${this.id}`,
+              formData
+            );
+          } catch (error) {
+            console.log("Error adding loyalty points:",error);
+          }
+          // Reset loyalty
+          this.phone = "";
+          this.birthday = "";
+          this.points = 0;
+          this.id = "";
+          this.prospectivePhone = "";
+          this.prospectiveBirthday = "";
+          this.prospectivePoints = 0;
+          this.loyaltyErrorFind = false;
+          this.loyaltyErrorAdd = false;
+          this.canBirthday = false;
+          this.canDiscount = false;
+        }
+
+        // go through each order item
+        // look at the items inside each orderitem...
+        // collect their quantity into a map <menu_item, quantity>
+        const map = new Map();
+        this.orderItems.forEach((orderItem) => {
+          for (let item of orderItem.items) {
+            if (!map.has(item)) {
+              map.set(item, orderItem.quantity);
+            } else {
+              map.set(item, orderItem.quantity + map.get(item));
+            } 
+          }
+        });
+
+        map.forEach(async (value, key) => {
+          const saleItemResponse = await api.post('sale_items/add_sale_item', {
+            menu_id: key.menu_id,
+            quantity: value,
+            price: key.price * value,
+          });
+          console.log(saleItemResponse);
+        });
+        
+        this.flashScaffolding();
         this.deleteAllItems();
       },
 
@@ -197,6 +366,106 @@
           currency: 'USD',
         });
       },
+
+      getAddedPoints() {
+        return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
+      },
+
+      async loyaltyAddCustomer() {
+        try {
+          console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
+          const response = await api.post('/customers/add_customer', {
+            phone: this.prospectivePhone,
+            birthday: this.prospectiveBirthday,
+            loyalty_points: this.prospectivePoints,
+          });
+          this.flashScaffolding();
+          this.phone = response.data.phone;
+          this.birthday = response.data.birthday;
+          this.points = response.data.loyalty_points;
+          this.id = response.data.id;
+          console.log(response);
+          this.loyaltyErrorAdd = false;
+        } catch (error) {
+          console.log("Error adding customer:", error);
+          this.loyaltyErrorAdd = true;
+        }
+        this.checkDiscounts();
+      },
+
+      async loyaltyCheckCustomer() {
+        try {
+          console.log("Checking loyalty for " + this.prospectivePhone);
+          const response = await api.get(`/customers/by_phone/${this.prospectivePhone}`);
+          this.flashScaffolding();
+          console.log(response);
+          this.phone = response.data[0].phone;
+          this.birthday = response.data[0].birthday;
+          this.points = response.data[0].loyalty_points;
+          this.id = response.data[0].id;
+          this.loyaltyErrorFind = false;
+        } catch (error) {
+          this.flashScaffolding();
+          console.log("Error checking employees or no employee found: ", error);
+          this.phone = "";
+          this.birthday = "";
+          this.points = 0;
+          this.loyaltyErrorFind = true;
+        }
+        this.checkDiscounts();
+      },
+
+      checkDiscounts() {
+        if (parseInt(this.points) >= 10) {
+          this.canDiscount = true;
+        } else {
+          this.canDiscount = false;
+        }
+
+        // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
+        var dateObj = new Date();
+        dateObj.setHours(dateObj.getUTCHours() - (dateObj.getTimezoneOffset() / 60));
+        const month   = parseInt(dateObj.getUTCMonth() + 1); // months from 1-12
+        const day     = parseInt(dateObj.getUTCDate());
+
+        console.log(`Today is ${month}-${day} and your birthday is ${this.birthday.split("-")[1]}-${this.birthday.split("-")[2]}`);
+
+        if (parseInt(this.birthday.split("-")[1]) == month && parseInt(this.birthday.split("-")[2]) == day) {
+          this.canBirthday = true;
+        } else {
+          this.canBirthday = false;
+        }
+      },
+
+      applyBirthdayDiscount() {
+        const orderItem = { 
+          index: this.orderItems.length,
+          name: "Birthday Discount",
+          price: -10,
+          quantity: 1,
+          items: [],
+        }
+        
+        this.canBirthday = false;
+        this.flashScaffolding();
+        this.orderItems.push(orderItem);
+      },
+
+      applyDiscount() {
+        const orderItem = { 
+          index: this.orderItems.length,
+          name: "$1 Discount",
+          price: -1,  // With tax it will be 1 dollar
+          quantity: 1,
+          items: [],
+        }
+
+        this.points -= 10;
+        this.checkDiscounts();
+        
+        this.flashScaffolding();
+        this.orderItems.push(orderItem);
+      },
     }
   };
 </script>
@@ -204,7 +473,7 @@
 <style scoped>
   .cashier-view {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 70px);
     padding: 1em 2em;
   }
 
@@ -281,7 +550,6 @@
     grid-row: 3;
     grid-column: 2 / 2;
     color: #242528;
-    background-color: #C3C7D0;
   }
 
   .order-item-delete button {
@@ -345,5 +613,34 @@
     overflow-y: scroll;
     border: 1px solid white;
     padding: 1em;
+  }
+
+  /* Loyalty Modal */
+
+  .modal-button {
+    margin: 35px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
+  }
+
+  .modal-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-input {
+    margin: 5px;
   }
 </style>

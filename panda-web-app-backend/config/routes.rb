@@ -135,6 +135,24 @@ end
 
   namespace :api do
     namespace :v1 do
+      resources :customers, only: [ :index, :show ] do
+        collection do
+          get 'by_phone/:phone', to: 'customers#by_phone'
+        end
+      end
+    end
+  end
+  
+  namespace :api do
+    namespace :v1 do
+      resources :customers, only: [ :index, :show ]
+      post "/customers/add_customer", to: "customers#add_customer"
+      put '/customers/add_points/:id', to: 'customers#add_points'
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
       resources :transactions, only: [ :index, :show ]
       post '/transactions/add_transaction', to: 'transactions#add_transaction'
     end

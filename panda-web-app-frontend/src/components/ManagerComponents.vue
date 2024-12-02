@@ -33,24 +33,6 @@
             </div>
           </keep-alive>
         </transition>
-
-        <!-- Image Upload Section -->
-        <div class="image-upload-section">
-          <h3>Manage Images</h3>
-          <p>Add images for specific menu items by entering the menu ID.</p>
-
-          <!-- Menu ID Input -->
-          <label for="menu-id">Menu ID:</label>
-            <input 
-              type="number" 
-              id="menu-id" 
-              v-model="menuId" 
-              placeholder="Enter Menu ID" 
-            />
-
-          <!-- Image Upload -->
-          <ImageUpload :menuId="menuId" @imageUploaded="handleImageUpload" />
-        </div>
       </div>
     </div>
   </template>
@@ -65,6 +47,7 @@
   import AnalyticsSection from './sections/AnalyticsSection.vue';
   import MenuSection from './sections/MenuSection.vue';
   import RecipeSection from './sections/RecipeSection.vue';
+  import shared from '../shared'
   
   export default {
     // Register the component
@@ -110,6 +93,9 @@
         ]
       }
     },
+    created() {
+      this.flashScaffolding = shared.flashScaffolding
+    },
     computed: {
       currentComponent() {
         // Map section names to component names
@@ -153,6 +139,7 @@
 
           console.log('Image uploaded successfully:', response.data);
           alert('Image uploaded successfully!');
+          this.flashScaffolding();
         } catch (error) {
           if (error.response) {
             // Backend returned an error
