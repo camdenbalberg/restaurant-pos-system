@@ -24,6 +24,7 @@
       <button class="kart-button" @click="completeTransaction">Order</button>
       
       <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+      <div v-show="discountsApplied">Added discounts: ${{ this.birthdayDiscounts + this.normalDiscounts }} off</div>
 
 
       <div id="loyalty-modal" class="w3-modal">
@@ -115,6 +116,9 @@ export default {
       loyaltyErrorAdd: false,
       canDiscount: false,
       canBirthday: false,
+      birthdayDiscounts: 0,
+      normalDiscounts: 0,
+      discountsApplied:  false,
     }
   },
   components: {
@@ -136,7 +140,7 @@ export default {
         console.log('Transaction complete:', this.orderedItems);
         //track the total cost of transaction
         let cost = 0;
-        const transactionIdResponse = await api.get('/api/v1/transactions/highest_transaction_id');
+        const transactionIdResponse = await api.get('/transactions/highest_transaction_id');
         let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
 
         //add all sale items for transaction
@@ -145,7 +149,7 @@ export default {
               console.log('Added Sale Item:', item[i]);
               console.log('Menu ID:', item[i].menu_id);
               console.log('Price:', item[i].price);
-              const response = await api.post('/api/v1/sale_items/add_sale_item', {
+              const response = await api.post('/sale_items/add_sale_item', {
                 menu_id: Number(item[i].menu_id),
                 quantity: 1,
                 price: parseFloat(item[i].price),
@@ -155,11 +159,14 @@ export default {
             }
         }
 
+        // account for loyalty discounts
+        cost -= this.birthdayDiscounts + this.normalDiscounts;
+
         //add the transaction
         const now = new Date();
         const currentDate = now.toISOString().split('T')[0];
         const currentTime = now.toTimeString().split(' ')[0];
-        const response = await api.post('/api/v1/transactions/add_transaction', {
+        const response = await api.post('/transactions/add_transaction', {
           transaction: {
             date: currentDate,
             time: currentTime,
@@ -186,6 +193,9 @@ export default {
         this.loyaltyErrorAdd = false;
         this.canBirthday = false;
         this.canDiscount = false;
+        this.birthdayDiscounts = 0;
+        this.normalDiscounts = 0;
+        this.discountsApplied = false;
 
         alert(`Order completed, your order number is: ${nextTransactionId}`);
       }
@@ -267,33 +277,21 @@ export default {
     },
 
     applyBirthdayDiscount() {
-      const orderItem = { 
-        index: this.orderItems.length,
-        name: "Birthday Discount",
-        price: -10,
-        quantity: 1,
-        items: [],
-      }
+      this.birthdayDiscounts += 10;
+      this.discountsApplied = true;
       
       this.canBirthday = false;
       this.flashScaffolding();
-      this.orderItems.push(orderItem);
     },
 
     applyDiscount() {
-      const orderItem = { 
-        index: this.orderItems.length,
-        name: "$1 Discount",
-        price: -1,  // With tax it will be 1 dollar
-        quantity: 1,
-        items: [],
-      }
+      this.normalDiscounts += 1;
+      this.discountsApplied = true;
 
       this.points -= 10;
       this.checkDiscounts();
       
       this.flashScaffolding();
-      this.orderItems.push(orderItem);
     },
   }
 };
