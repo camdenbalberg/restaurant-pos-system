@@ -1,4 +1,7 @@
 <template>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+
     <div class="popup">
       <p>Cart</p>
       <ul>
@@ -17,7 +20,73 @@
         Loading...
       </div>
       <button @click="$emit('close')">Close</button>
+      <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
       <button @click="completeTransaction">Order</button>
+
+
+      <div id="loyalty-modal" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top">
+          <div class="w3-container">
+            <span onclick="document.getElementById('loyalty-modal').style.display='none'"
+            class="w3-button w3-display-topright">&times;</span>
+            <h1>Loyalty</h1>
+
+            <div v-if="loyaltyScreen == 0">
+              <h2>Loyalty Root</h2>
+              <div class="modal-row">
+                <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+                <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
+              </div>
+            </div>
+
+            <div v-else-if="loyaltyScreen == 1">
+              <h2>Loyalty Add Customer</h2>
+              <div class="modal-column">
+                <div class="modal-row">
+                  <label for="loyalty-phone">Phone:</label>
+                  <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
+                </div>
+                <div class="modal-row">
+                  <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
+                  <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
+                </div>
+                <div class="modal-row">
+                  <label for="loyalty-points">Points:</label>
+                  <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
+                </div>
+                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+                <div v-show="loyaltyErrorAdd">Unable to add customer</div>
+              </div>
+              <div class="modal-row">
+                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+                <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
+              </div>
+            </div>
+
+            <div v-else>
+              <h2>Loyalty Check Customer</h2>
+              <div class="modal-column">
+                <div class="modal-row">
+                  <label for="loyalty-phone">Phone:</label>
+                  <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
+                </div>
+                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+                <div v-show="loyaltyErrorFind">Unable to find customer</div>
+              </div>
+              <div class="modal-row">
+                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+                <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-row">
+            <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
+            <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+          </div>
+          
+        </div>
+      </div>
     </div>
 </template>
 
@@ -25,12 +94,26 @@
 import axios from 'axios';
 import MealItem from './MealItems.vue'; // Adjust path if necessary
 import shared from '../shared'
+import api from '@/api'
 
 export default {
   name: 'Kart',
   data() {
     return{
       loading: false,
+
+      loyaltyScreen: 0,
+      phone: "",
+      birthday: "",
+      points: 0,
+      id: "",
+      prospectivePhone: "",
+      prospectiveBirthday: "",
+      prospectivePoints: 0,
+      loyaltyErrorFind: false,
+      loyaltyErrorAdd: false,
+      canDiscount: false,
+      canBirthday: false,
     }
   },
   components: {
@@ -89,6 +172,20 @@ export default {
         this.$emit('empty-kart');
         this.flashScaffolding();
         this.loading = false;
+
+        // Reset loyalty
+        this.phone = "";
+        this.birthday = "";
+        this.points = 0;
+        this.id = "";
+        this.prospectivePhone = "";
+        this.prospectiveBirthday = "";
+        this.prospectivePoints = 0;
+        this.loyaltyErrorFind = false;
+        this.loyaltyErrorAdd = false;
+        this.canBirthday = false;
+        this.canDiscount = false;
+
         alert(`Order completed, your order number is: ${nextTransactionId}`);
       }
       catch (error) {
@@ -97,30 +194,159 @@ export default {
         alert(`Error placing order`);
       }
     },
+
+    getAddedPoints() {
+      return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
+    },
+
+    async loyaltyAddCustomer() {
+      try {
+        console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
+        const response = await api.post('/customers/add_customer', {
+          phone: this.prospectivePhone,
+          birthday: this.prospectiveBirthday,
+          loyalty_points: this.prospectivePoints,
+        });
+        this.flashScaffolding();
+        this.phone = response.data.phone;
+        this.birthday = response.data.birthday;
+        this.points = response.data.loyalty_points;
+        this.id = response.data.id;
+        console.log(response);
+        this.loyaltyErrorAdd = false;
+      } catch (error) {
+        console.log("Error adding customer:", error);
+        this.loyaltyErrorAdd = true;
+      }
+      this.checkDiscounts();
+    },
+
+    async loyaltyCheckCustomer() {
+      try {
+        console.log("Checking loyalty for " + this.prospectivePhone);
+        const response = await api.get(`/customers/by_phone/${this.prospectivePhone}`);
+        this.flashScaffolding();
+        console.log(response);
+        this.phone = response.data[0].phone;
+        this.birthday = response.data[0].birthday;
+        this.points = response.data[0].loyalty_points;
+        this.id = response.data[0].id;
+        this.loyaltyErrorFind = false;
+      } catch (error) {
+        this.flashScaffolding();
+        console.log("Error checking employees or no employee found: ", error);
+        this.phone = "";
+        this.birthday = "";
+        this.points = 0;
+        this.loyaltyErrorFind = true;
+      }
+      this.checkDiscounts();
+    },
+
+    checkDiscounts() {
+      if (parseInt(this.points) >= 10) {
+        this.canDiscount = true;
+      } else {
+        this.canDiscount = false;
+      }
+
+      // https://stackoverflow.com/questions/2013255/how-to-get-year-month-day-from-a-date-object
+      var dateObj = new Date();
+      dateObj.setHours(dateObj.getUTCHours() - (dateObj.getTimezoneOffset() / 60));
+      const month   = parseInt(dateObj.getUTCMonth() + 1); // months from 1-12
+      const day     = parseInt(dateObj.getUTCDate());
+
+      console.log(`Today is ${month}-${day} and your birthday is ${this.birthday.split("-")[1]}-${this.birthday.split("-")[2]}`);
+
+      if (parseInt(this.birthday.split("-")[1]) == month && parseInt(this.birthday.split("-")[2]) == day) {
+        this.canBirthday = true;
+      } else {
+        this.canBirthday = false;
+      }
+    },
+
+    applyBirthdayDiscount() {
+      const orderItem = { 
+        index: this.orderItems.length,
+        name: "Birthday Discount",
+        price: -10,
+        quantity: 1,
+        items: [],
+      }
+      
+      this.canBirthday = false;
+      this.flashScaffolding();
+      this.orderItems.push(orderItem);
+    },
+
+    applyDiscount() {
+      const orderItem = { 
+        index: this.orderItems.length,
+        name: "$1 Discount",
+        price: -1,  // With tax it will be 1 dollar
+        quantity: 1,
+        items: [],
+      }
+
+      this.points -= 10;
+      this.checkDiscounts();
+      
+      this.flashScaffolding();
+      this.orderItems.push(orderItem);
+    },
   }
 };
 </script>
 
 <style scoped>
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 90%;
-  height: 90%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border: 1px solid black;
-  overflow-y:scroll;
-}
-li{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex: 1;
-  flex-wrap: wrap;
-  padding: 20px;
-  overflow-y: auto; /* Ensure the container is scrollable */
-}
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    height: 90%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    overflow-y:scroll;
+  }
+  li{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex: 1;
+    flex-wrap: wrap;
+    padding: 20px;
+    overflow-y: auto; /* Ensure the container is scrollable */
+  }
+
+  /* Loyalty Modal */
+
+  .modal-button {
+    margin: 35px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
+  }
+
+  .modal-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-input {
+    margin: 5px;
+  }
 </style>
