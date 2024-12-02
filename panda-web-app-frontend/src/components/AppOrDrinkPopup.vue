@@ -1,6 +1,5 @@
 <template>
     <div class="popup">
-      <p>{{ menu_item }}</p>
       <ul>
         <!--loop through all categories passed into popup-->
         <li v-for="(item, index) in cat" :key="item">
@@ -50,7 +49,6 @@ export default {
     addToKart() {
       const allItemsSelected = this.selected_items.every(item => item !== null);
       if (allItemsSelected) {
-        this.selected_items.unshift(this.menu_item);
         console.log('Emitting add-to-kart:', this.selected_items);
         this.$emit('add-to-kart', this.selected_items);
         this.$emit('close');
@@ -89,5 +87,11 @@ export default {
   flex-wrap: wrap;
   padding: 20px;
   overflow-y: auto; /* Ensure the container is scrollable */
+}
+.popup button {
+  margin: 0.5em;
+  padding: 0.5em 0.75em; 
+  color: #242528;
+  background-color: #C3C7D0;
 }
 </style>

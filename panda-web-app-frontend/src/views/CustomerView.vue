@@ -1,14 +1,11 @@
 <template>
   <div class="container">
-    <div @click="showKart" class="kart">
-      <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
-    </div>
     <div :class="['button-container', { 'no-scroll': mealType }]">
       <div v-for="meal in filteredMenuItems" :key="meal">
         <button @click="handleShowMeal(meal)">
           <picture>
-            <source :srcset="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
-            <img :src="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
+            <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
+            <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
           <p v-if="meal.price > 0">${{ meal.price.toFixed(2) }}</p>
@@ -29,11 +26,14 @@
         </picture>
         Appetizers
       </button>
+      <button @click="showRec" class="kart">
+        <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
+      </button>
     </div>
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
-    <Recommendations v-if="recVisible" :orderedItemas="orderedItems" @close="closeRec" @add="addItemToOrder($event)"/>
+    <Recommendations v-if="recVisible" :menuItems="menuItems" :orderedItems="orderedItems" @close="closeRec" @add-to-kart="addToKart($event)" @handle-show-meal="handleShowMeal($event)"/>
     <footer>
       <router-link to="/">Go to Home</router-link>
     </footer>
@@ -62,7 +62,7 @@ export default {
       isLocked: false,
       passkey: "",
       mealType: null,
-      mealItems: [],
+      mealItems: [], //stores all the items in a meal i.e. sides and entrees
       appOrDrinkType: null,
       appOrDrinkItems: [],
       kartVisible: false,
@@ -146,6 +146,7 @@ export default {
 
     async handleShowMeal(meal) {
       try {
+        console.log('Showing meal:', meal);
         this.categories = [];
         if(typeof meal === 'string' && meal === 'drink'){
           this.categories.push('drink');
@@ -273,11 +274,8 @@ export default {
 }
 
 .kart {
-  position: absolute;
-  bottom: 10px; /* Adjust as needed */
-  right: 10px; /* Adjust as needed */
-  width: 75px; /* Adjust as needed */
-  height: 75px; /* Adjust as needed */
+  display: flex;
+  justify-content: center;
   border-radius: 50%;
   transition: scale 0.5s ease;
   transition: background-color 0.25s ease;

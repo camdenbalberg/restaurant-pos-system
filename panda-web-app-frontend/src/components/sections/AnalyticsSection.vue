@@ -2,7 +2,7 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
-      <div v-if="showDateFilter" class="date-filter">
+      <div v-if="showDateFilter || showDateFilter2 || showDateFilter3 || showDateFilter4" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
@@ -16,6 +16,7 @@
         >
           X-report
         </button>
+
         <button 
           class="report-button" 
           @click="handleReport('Z-report')" 
@@ -23,6 +24,7 @@
         >
           Z-report
         </button>
+
         <button 
           v-if="!showDateFilter" 
           class="report-button" 
@@ -36,6 +38,57 @@
           class="report-button press-again" 
           @click="handleReport('Sales-report')" 
           title="Press again to generate the sales report based on selected dates."
+        >
+          Press again
+        </button>
+
+        <button 
+          v-if="!showDateFilter2" 
+          class="report-button" 
+          @click="handleProuctUsage" 
+          title="Given a time window, display the number of each inventory item used during that time period."
+        >
+          Product Usage
+        </button>
+        <button 
+          v-if="showDateFilter2" 
+          class="report-button press-again" 
+          @click="handleReport('Product-usage')" 
+          title="Press again to generate."
+        >
+          Press again
+        </button>
+
+        <button 
+          v-if="!showDateFilter3" 
+          class="report-button" 
+          @click="handleWhatSellsTogether" 
+          title="Find pairs of menu items that sell together within a date range."
+        >
+          What Sells Together
+        </button>
+        <button 
+          v-if="showDateFilter3" 
+          class="report-button press-again" 
+          @click="handleReport('What-sells-together')" 
+          title="Press again to generate the report."
+        >
+          Press again
+        </button>
+
+        <button 
+          v-if="!showDateFilter4" 
+          class="report-button" 
+          @click="handleExcessReport" 
+          title="Excess report displays inventory items that sold less than 10% of their quantity between the selected dates."
+        >
+          Excess Report
+        </button>
+        <button 
+          v-if="showDateFilter4" 
+          class="report-button press-again" 
+          @click="handleReport('Excess-report')" 
+          title="Press again to generate the excess report based on selected dates."
         >
           Press again
         </button>
@@ -98,6 +151,62 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Inventory Usage Report Table -->
+      <div v-if="inventoryUsageReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Inventory Item</th>
+              <th>Amount Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in inventoryUsageReport" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- What sells together table -->
+      <div v-if="pairsReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Menu Item Pair</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="pair in pairsReport" :key="pair.id">
+              <td>{{ pair.items }}</td>
+              <td>{{ pair.frequency }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Excess Report Table -->
+      <div v-if="excessReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Inventory Item</th>
+              <th>Quantity Sold</th>
+              <th>Total Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in excessReport" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.sold }}</td>
+              <td>{{ entry.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -120,15 +229,23 @@ export default {
       hourlySales: [], 
       hourlyIncome: [],
       itemSales: [],
+      inventoryUsageReport: [],
+      inventoryItems: {},
       zReportGenerated: false,
       startDate: null,
       endDate: null,
       showDateFilter: false,
+      showDateFilter2: false,
+      pairsReport: [],
+      showDateFilter3: false,
+      excessReport: [],
+      showDateFilter4: false,
     };
   },
   mounted() {
     this.loadTransactions();
     this.loadMenuItems();
+    this.fetchInventoryItems();
   },
   methods: {
     async loadTransactions() {
@@ -199,7 +316,6 @@ export default {
         amount,
       }));
       this.loading = false;
-      this.showDateFilter = false;
     },
 
     async calculateMenuItemsPerHour() { //Sales report
@@ -252,6 +368,74 @@ export default {
       }
     },
 
+    async generateProductUsageReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+      console.log("Fetching transactions by date range...");
+
+      try {
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+        
+        this.allTransactions = response.data;
+        
+        const transactionIds = this.allTransactions.map(transaction => transaction.transaction_id);
+
+        // Fetch sale items for all transactions in one request
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        
+        const menuItemCounts = {};
+        const saleItemsForTransactions = saleItemsResponse.data;
+
+        saleItemsForTransactions.forEach(sale_item => {
+          const menuId = sale_item.menu_id;
+          const quantity = sale_item.quantity;
+          if (menuItemCounts[menuId]) {
+            menuItemCounts[menuId] += quantity;
+          } else {
+            menuItemCounts[menuId] = quantity;
+          }
+        });
+        
+        const inventoryUsage = {};
+
+        for (const menuId of Object.keys(menuItemCounts)) {
+          const recipeResponse = await api.get(`recipes/${menuId}`);
+          const recipes = recipeResponse.data;
+
+          // Multiply the menu item count by the inventory quantities in the recipes
+          recipes.forEach(recipe => {
+            const inventoryId = recipe.inv_id;
+            const recipeQuantity = recipe.quantity;
+            const totalUsed = menuItemCounts[menuId] * recipeQuantity;
+
+            if (inventoryUsage[inventoryId]) {
+              inventoryUsage[inventoryId] += totalUsed;
+            } else {
+              inventoryUsage[inventoryId] = totalUsed;
+            }
+          });
+        }
+        
+        this.inventoryUsageReport = Object.keys(inventoryUsage).map(invId => ({
+          id: this.inventoryItems[invId] || invId,
+          amount: inventoryUsage[invId]
+        }));
+        console.log('Inv usage: ', this.inventoryUsageReport);
+      } catch (error) {
+        console.error('Error fetching transactions by date range:', error);
+      } finally { 
+        this.loading = false;
+      }
+    },
+
     validateDates() {
         if (this.startDate && this.endDate) {
           const start = new Date(this.startDate);
@@ -265,10 +449,171 @@ export default {
         }
     },
 
+    async fetchInventoryItems() {
+      this.loading = true;
+      try {
+        const response = await api.get('/inventory_items');
+        const inventoryData = response.data;
+
+        // Map inventory IDs to their names
+        this.inventoryItems = inventoryData.reduce((acc, item) => {
+          acc[item.inv_id] = item.inv_name;
+          return acc;
+        }, {});
+        console.log("Inv: ", this.inventoryItems);
+      } catch (error) {
+        console.error('Error fetching inventory items:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async generateWhatSellsTogetherReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+
+      try {
+        // Fetch transactions within the date range
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+        const transactions = response.data;
+
+        // Fetch sale items for all transactions
+        const transactionIds = transactions.map(transaction => transaction.transaction_id);
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        const saleItems = saleItemsResponse.data;
+
+        // Group sale items by transaction ID
+        const groupedItems = {};
+        saleItems.forEach(item => {
+          if (!groupedItems[item.transaction_id]) {
+            groupedItems[item.transaction_id] = [];
+          }
+          groupedItems[item.transaction_id].push(item.menu_id);
+        });
+
+        // Generate pairs and their frequencies
+        const pairCounts = {};
+        Object.values(groupedItems).forEach(items => {
+          items.sort(); // Sort items to ensure consistent pair ordering
+          for (let i = 0; i < items.length; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+              const pair = `${items[i]}-${items[j]}`;
+              pairCounts[pair] = (pairCounts[pair] || 0) + 1;
+            }
+          }
+        });
+
+        // Convert pair counts to an array and sort by frequency
+        this.pairsReport = Object.keys(pairCounts)
+          .map(pair => {
+            const [menuId1, menuId2] = pair.split('-');
+            return {
+              items: `${this.menuItems[menuId1] || menuId1} & ${this.menuItems[menuId2] || menuId2}`,
+              frequency: pairCounts[pair],
+            };
+          })
+          .sort((a, b) => b.frequency - a.frequency); // Sort by descending frequency
+
+      } catch (error) {
+        console.error('Error generating What Sells Together report:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async generateExcessReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+      console.log("Generating Excess Report...");
+
+      try {
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+
+        const allTransactions = response.data;
+        const transactionIds = allTransactions.map(transaction => transaction.transaction_id);
+
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        const saleItemsForTransactions = saleItemsResponse.data;
+
+        const itemQuantities = {};
+
+        saleItemsForTransactions.forEach(sale_item => {
+          const invId = sale_item.inv_id;
+          const quantitySold = sale_item.quantity;
+
+          if (itemQuantities[invId]) {
+            itemQuantities[invId].sold += quantitySold;
+          } else {
+            itemQuantities[invId] = { sold: quantitySold, total: 0 };
+          }
+        });
+
+        const inventoryData = await api.get('/inventory_items');
+        const inventoryDataArray = inventoryData.data;
+
+        inventoryDataArray.forEach(item => {
+          if (itemQuantities[item.inv_id]) {
+            itemQuantities[item.inv_id].total = item.total_quantity;
+          }
+        });
+
+        this.excessReport = Object.keys(itemQuantities).map(invId => {
+          const item = itemQuantities[invId];
+          if (item.sold / item.total < 0.1) { // Sold less than 10%
+            return {
+              id: this.inventoryItems[invId] || invId,
+              sold: item.sold,
+              total: item.total,
+            };
+          }
+        }).filter(item => item); // Remove any null values
+
+        console.log('Excess Report: ', this.excessReport);
+      } catch (error) {
+        console.error('Error generating excess report:', error);
+      } finally {
+        if(this.excessReport.length === 0){
+          alert("No inventory items sold less than 10% of their quantity during this timeframe")
+        }
+        this.loading = false;
+      }
+    },
+
+
     async handleSalesReport() {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter = true;
       // this.handleReport('Sales-report');
+    },
+
+    async handleProuctUsage() {
+      // Show the date filter section only when 'Sales Report' is clicked
+      this.showDateFilter2 = true;
+      // this.handleReport('Sales-report');
+    },
+    
+    async handleWhatSellsTogether() {
+      this.showDateFilter3 = true;
+    },
+
+    handleExcessReport() {
+      this.showDateFilter4 = true;
     },
 
     async handleReport(reportType) {
@@ -277,11 +622,13 @@ export default {
       this.hourlySales = [];
       this.hourlyIncome = [];
       this.itemSales = [];
+      this.inventoryUsageReport = [];
+      this.excessReport = [];
 
       switch (reportType) {
         case 'X-report':
           console.log('Generating X-report...');
-          this.calculateSalesPerHour();
+          await this.calculateSalesPerHour();
           break;
         case 'Z-report':
         if (this.zReportGenerated) {
@@ -289,16 +636,30 @@ export default {
             this.hourlyIncome = []; // Clear the table if Z-report has been generated
           } else {
             console.log('Generating Z-report...');
-            this.calculateIncomePerHour();
+            await this.calculateIncomePerHour();
             this.zReportGenerated = true; // Set the flag after first generation
           }
           break;
         case 'Sales-report':
           console.log('Generating Sales Report...');
-          this.calculateMenuItemsPerHour();
+          await this.calculateMenuItemsPerHour();
           break;
+        case 'Product-usage':
+          console.log('Generating Product Usage Report.');
+          await this.generateProductUsageReport();
+        case 'What-sells-together':
+          console.log('Generating What Sells Together Report...');
+          await this.generateWhatSellsTogetherReport();
+        case 'Excess-report':
+          console.log('Generating Excess Report...');
+          await this.generateExcessReport();
         default:
           console.log('Unknown report type');
+          this.showDateFilter = false;
+          this.showDateFilter2 = false;
+          this.showDateFilter3 = false;
+          this.showDateFilter4 = false;
+          this.loading = false;
           break;
       }
       

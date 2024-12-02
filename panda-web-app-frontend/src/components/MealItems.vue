@@ -73,24 +73,29 @@ export default {
 <style scoped>
 .menu-items {
   padding: 20px;
-  max-width: 600px;
+  max-width: 100%;
   margin: auto;
 }
 
 .menu-item {
+  display: grid;
   border: 1px solid #ccc;
   border-radius: 4px;
-  padding: 15px;
-  margin: 10px 0;
-  background-color: #f9f9f9;
+  padding: 20px;
+  margin: auto;
+  background-color: #f9f9f9;  
+  max-width: 100%;
+  justify-content: center;
 }
 
 .category{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
   border: 1px solid black;
   border-radius: 4px;
-  overflow-y: scroll;
   left: 50%;
-  height:350px;
+  height: fit-content;
 }
 
 button{
@@ -117,5 +122,8 @@ button:active {
 .active-button {
   background-color: red;
   color: white;
+}
+img{
+  margin:auto;
 }
 </style>
