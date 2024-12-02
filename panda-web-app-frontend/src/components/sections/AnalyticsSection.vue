@@ -2,7 +2,7 @@
   <div class="analytics-section">
     <h2>Analytics Management</h2>
     <div class="analytics-content">
-      <div v-if="showDateFilter || showDateFilter2 || showDateFilter3" class="date-filter">
+      <div v-if="showDateFilter || showDateFilter2 || showDateFilter3 || showDateFilter4" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
@@ -72,6 +72,23 @@
           class="report-button press-again" 
           @click="handleReport('What-sells-together')" 
           title="Press again to generate the report."
+        >
+          Press again
+        </button>
+
+        <button 
+          v-if="!showDateFilter4" 
+          class="report-button" 
+          @click="handleExcessReport" 
+          title="Excess report displays inventory items that sold less than 10% of their quantity between the selected dates."
+        >
+          Excess Report
+        </button>
+        <button 
+          v-if="showDateFilter4" 
+          class="report-button press-again" 
+          @click="handleReport('Excess-report')" 
+          title="Press again to generate the excess report based on selected dates."
         >
           Press again
         </button>
@@ -171,6 +188,25 @@
         </table>
       </div>
 
+      <!-- Excess Report Table -->
+      <div v-if="excessReport.length">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Inventory Item</th>
+              <th>Quantity Sold</th>
+              <th>Total Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in excessReport" :key="entry.id">
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.sold }}</td>
+              <td>{{ entry.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -202,6 +238,8 @@ export default {
       showDateFilter2: false,
       pairsReport: [],
       showDateFilter3: false,
+      excessReport: [],
+      showDateFilter4: false,
     };
   },
   mounted() {
@@ -491,6 +529,72 @@ export default {
       }
     },
 
+    async generateExcessReport() {
+      this.validateDates();
+
+      if (!this.startDate || !this.endDate) {
+        alert("Please select both start and end dates.");
+        return;
+      }
+      this.loading = true;
+      console.log("Generating Excess Report...");
+
+      try {
+        const response = await api.get(`transactions/by_date_range?start_date=${this.startDate}&end_date=${this.endDate}`);
+        if (!response || !response.data) {
+          throw new Error(`Error fetching transactions: ${response.statusText}`);
+        }
+
+        const allTransactions = response.data;
+        const transactionIds = allTransactions.map(transaction => transaction.transaction_id);
+
+        const saleItemsResponse = await api.post('sale_items/by_transaction_ids', { transaction_ids: transactionIds });
+        const saleItemsForTransactions = saleItemsResponse.data;
+
+        const itemQuantities = {};
+
+        saleItemsForTransactions.forEach(sale_item => {
+          const invId = sale_item.inv_id;
+          const quantitySold = sale_item.quantity;
+
+          if (itemQuantities[invId]) {
+            itemQuantities[invId].sold += quantitySold;
+          } else {
+            itemQuantities[invId] = { sold: quantitySold, total: 0 };
+          }
+        });
+
+        const inventoryData = await api.get('/inventory_items');
+        const inventoryDataArray = inventoryData.data;
+
+        inventoryDataArray.forEach(item => {
+          if (itemQuantities[item.inv_id]) {
+            itemQuantities[item.inv_id].total = item.total_quantity;
+          }
+        });
+
+        this.excessReport = Object.keys(itemQuantities).map(invId => {
+          const item = itemQuantities[invId];
+          if (item.sold / item.total < 0.1) { // Sold less than 10%
+            return {
+              id: this.inventoryItems[invId] || invId,
+              sold: item.sold,
+              total: item.total,
+            };
+          }
+        }).filter(item => item); // Remove any null values
+
+        console.log('Excess Report: ', this.excessReport);
+      } catch (error) {
+        console.error('Error generating excess report:', error);
+      } finally {
+        if(this.excessReport.length === 0){
+          alert("No inventory items sold less than 10% of their quantity during this timeframe")
+        }
+        this.loading = false;
+      }
+    },
+
 
     async handleSalesReport() {
       // Show the date filter section only when 'Sales Report' is clicked
@@ -508,6 +612,10 @@ export default {
       this.showDateFilter3 = true;
     },
 
+    handleExcessReport() {
+      this.showDateFilter4 = true;
+    },
+
     async handleReport(reportType) {
       this.loading = true;
       await this.loadTransactions(); // Load the latest transactions each time a report is requested
@@ -515,6 +623,7 @@ export default {
       this.hourlyIncome = [];
       this.itemSales = [];
       this.inventoryUsageReport = [];
+      this.excessReport = [];
 
       switch (reportType) {
         case 'X-report':
@@ -541,11 +650,15 @@ export default {
         case 'What-sells-together':
           console.log('Generating What Sells Together Report...');
           await this.generateWhatSellsTogetherReport();
+        case 'Excess-report':
+          console.log('Generating Excess Report...');
+          await this.generateExcessReport();
         default:
           console.log('Unknown report type');
           this.showDateFilter = false;
           this.showDateFilter2 = false;
           this.showDateFilter3 = false;
+          this.showDateFilter4 = false;
           this.loading = false;
           break;
       }
