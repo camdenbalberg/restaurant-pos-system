@@ -319,31 +319,76 @@
           this.canDiscount = false;
         }
 
-        // go through each order item
-        // look at the items inside each orderitem...
-        // collect their quantity into a map <menu_item, quantity>
-        const map = new Map();
-        this.orderItems.forEach((orderItem) => {
-          for (let item of orderItem.items) {
-            if (!map.has(item)) {
-              map.set(item, orderItem.quantity);
-            } else {
-              map.set(item, orderItem.quantity + map.get(item));
-            } 
+        for (const orderItem of this.orderItems) {
+          // Consolidate items within each orderItem
+          const consolidatedItems = this.consolidateItems(orderItem.items);
+
+          try {
+            for (const item of consolidatedItems) {
+              const calculatedQuantity = orderItem.quantity * item.quantity;
+              const calculatedPrice = item.price * calculatedQuantity;
+
+              console.log(item);
+
+              // Validate data before making the API call
+              if (!item.menu_id || calculatedQuantity <= 0) {
+                console.error(`Invalid sale item data: menu_id=${item.menu_id}, quantity=${calculatedQuantity}, price=${calculatedPrice}`);
+                continue; // Skip invalid entries
+              }
+
+              // Make API call sequentially
+              await api.post('sale_items/add_sale_item', {
+                menu_id: item.menu_id,
+                quantity: calculatedQuantity,
+                price: calculatedPrice,
+                transaction_id: transactionResponse.transaction_id,
+              }).catch((error) => {
+                console.error("Error adding sale item:", error);
+              });
+            }
+          } catch (error) {
+            console.error("Error during sale item processing:", error);
+          }
+        }
+
+        this.flashScaffolding();
+        this.deleteAllItems();
+      },
+
+      consolidateItems(items) {
+        const consolidated = [];
+        const itemMap = new Map();
+        const menuIdOrder = new Set(); // To track the order of menu_ids
+        console.log(items);
+        items.forEach((item) => {
+          if (!item.menu_id) {
+            console.error(`Invalid item detected: ${JSON.stringify(item)}`);
+            return; // Skip invalid items
+          }
+
+          // Set a default quantity of 1 if not already present
+          if (!item.quantity) {
+            item.quantity = 1;
+          }
+
+          if (itemMap.has(item.menu_id)) {
+            // If menu_id exists, update the quantity
+            const existingItem = itemMap.get(item.menu_id);
+            existingItem.quantity += item.quantity; // Use item.quantity instead of incrementing by 1
+          } else {
+            // If menu_id doesn't exist, add it to the map
+            itemMap.set(item.menu_id, { ...item }); // Spread to avoid reference issues
+            menuIdOrder.add(item.menu_id); // Record the order of this menu_id
           }
         });
 
-        map.forEach(async (value, key) => {
-          const saleItemResponse = await api.post('sale_items/add_sale_item', {
-            menu_id: key.menu_id,
-            quantity: value,
-            price: key.price * value,
-          });
-          console.log(saleItemResponse);
+        // Maintain the original order by iterating over menuIdOrder
+        menuIdOrder.forEach((menu_id) => {
+          console.log(consolidated);
+          consolidated.push(itemMap.get(menu_id));
         });
-        
-        this.flashScaffolding();
-        this.deleteAllItems();
+        console.log("final: ", consolidated);
+        return consolidated;
       },
 
       getSubtotal() {
