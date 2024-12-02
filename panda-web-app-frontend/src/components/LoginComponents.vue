@@ -39,6 +39,7 @@
       Sign in With Google
     </button>
   </div>
+  <button id = "skip_login_button" @click="skipForm">Skip Login As Customer</button>
 </template>
 
 <script>
@@ -75,6 +76,30 @@ export default {
       try {
         if (this.username && this.password) {
           // Manual login flow
+          const response = await api.post('http://localhost/auth/login', {
+            username: this.username,
+            password: this.password,
+          });
+          if (response.data.success) {
+            console.log('Login successful:', response.data.user);
+            this.$backStack.push(this.$route.name);
+            this.$router.push('/');
+            this.flashScaffolding();
+          } else {
+            console.log('Invalid login:', response.data.error);
+            this.buttonText = "Submit\nInvalid";
+          }
+        }
+      } catch (error) {
+        console.error('Error logging in:', error);
+      }
+    },
+    async skipForm() {
+      try {
+        if (true) {
+          // Manual login flow
+          this.username = "5"
+          this.password = "b455mord";
           const response = await api.post('http://localhost/auth/login', {
             username: this.username,
             password: this.password,
