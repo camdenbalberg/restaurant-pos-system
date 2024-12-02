@@ -201,3 +201,16 @@ Then to run the development server using npm:
 ```
 npm run dev
 ```
+
+## Documentation
+We are using Vuese to generate documentation.
+
+```
+cd panda-web-app-frontend
+vuese gen --title "Project 3 - 12 Team 12" 
+(select Docute)
+
+vuese serve --open
+```
+
+For more information on how to annotate your code for Vuese to document it, see https://vuese.github.io/website/cli/#writing-documentation-for-your-component.
