@@ -22,6 +22,8 @@
       <button class="kart-button" @click="$emit('close')">Close</button>
       <button class="kart-button" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
       <button class="kart-button" @click="completeTransaction">Order</button>
+      
+      <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
 
 
       <div id="loyalty-modal" class="w3-modal">
