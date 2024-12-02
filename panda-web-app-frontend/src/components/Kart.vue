@@ -3,7 +3,7 @@
 
 
     <div class="popup">
-      <p>Cart</p>
+      <h1>Cart</h1>
       <ul>
         <li v-for="item in orderedItems" :key="item">
           <div v-for="(i,index) in item" :key="i" class="item">
@@ -19,9 +19,9 @@
       <div v-if="loading" class="loading-spinner">
         Loading...
       </div>
-      <button @click="$emit('close')">Close</button>
-      <button class="order-checkout" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
-      <button @click="completeTransaction">Order</button>
+      <button class="kart-button" @click="$emit('close')">Close</button>
+      <button class="kart-button" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
+      <button class="kart-button" @click="completeTransaction">Order</button>
 
 
       <div id="loyalty-modal" class="w3-modal">
@@ -318,6 +318,15 @@ export default {
     flex-wrap: wrap;
     padding: 20px;
     overflow-y: auto; /* Ensure the container is scrollable */
+  }
+
+  .kart-button {
+    margin: 35px;
+    font-size: 30px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-right: 50px;
+    padding-left: 50px;
   }
 
   /* Loyalty Modal */
