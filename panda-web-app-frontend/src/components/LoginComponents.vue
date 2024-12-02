@@ -98,16 +98,16 @@ export default {
       try {
         if (true) {
           // Manual login flow
-          this.username = "5"
-          this.password = "b455mord";
+          // this.username = "5"
+          // this.password = "b455mord";
           const response = await api.post('http://localhost/auth/login', {
-            username: this.username,
-            password: this.password,
+            username: "5",
+            password: "b455mord",
           });
           if (response.data.success) {
             console.log('Login successful:', response.data.user);
             this.$backStack.push(this.$route.name);
-            this.$router.push('/');
+            this.$router.push('/customer');
             this.flashScaffolding();
           } else {
             console.log('Invalid login:', response.data.error);
