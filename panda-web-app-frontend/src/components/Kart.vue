@@ -3,13 +3,13 @@
       <p>Cart</p>
       <ul>
         <li v-for="item in orderedItems" :key="item">
-          <div v-for="(i,index) in item" :key="i" class="item">
+          <div v-for="(i,index) in item" :key="index" class="item">
             <picture>
               <source :srcset="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
               <img :src="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" :alt="i.menu_name">
             </picture>
             <h2>{{ i.menu_name }}</h2>
-            <p>Price: ${{ i.price }}</p>
+            <p v-if="i.price > 0">Price: ${{ i.price }}</p>
           </div>
         </li>
       </ul>
@@ -56,6 +56,7 @@ export default {
         let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
 
         //add all sale items for transaction
+        this.loading = true;
         for (const item of this.orderedItems) {
           for (let i = 0; i < item.length; i++) {
               console.log('Added Sale Item:', item[i]);
@@ -83,7 +84,7 @@ export default {
             expense: false,
           }
         });
-
+        this.loading = false;
         //clear the cart
         this.$emit('close');
         this.$emit('empty-kart');
@@ -114,13 +115,38 @@ export default {
   border: 1px solid black;
   overflow-y:scroll;
 }
-li{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex: 1;
-  flex-wrap: wrap;
-  padding: 20px;
-  overflow-y: auto; /* Ensure the container is scrollable */
+.menu-items {
+  flex: 1 1 20%;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  max-width: 200px;
+  min-width: 100px;
+}
+.item {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
+}
+.popup button {
+  margin: 0.5em;
+  padding: 0.5em 0.75em; 
+  color: #242528;
+  background-color: #C3C7D0;
+}
+img{
+  margin:auto;
+}
+.loading-spinner {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
 }
 </style>
