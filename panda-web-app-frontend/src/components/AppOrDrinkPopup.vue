@@ -19,6 +19,9 @@ export default {
   components: {
     MealItems,
   },
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       selected_items: [],

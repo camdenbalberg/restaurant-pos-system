@@ -60,6 +60,9 @@ export default {
     CashierPopup,
   },
   emits: ['submitItem', 'submitMeal'],
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       loading: true,

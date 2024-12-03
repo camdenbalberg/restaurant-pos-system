@@ -198,6 +198,8 @@
   export default {
     name: 'RecipeSection',
     
+    // @vuese
+    // Initial fields.
     data() {
       return {
         recipes: [],

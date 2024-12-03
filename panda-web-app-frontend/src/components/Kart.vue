@@ -23,10 +23,12 @@
       <button class="kart-button" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
       <button class="kart-button" @click="completeTransaction">Order</button>
       
+      <!-- Loyalty information of loaded Customer -->
       <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
       <div v-show="discountsApplied">Added discounts: ${{ this.birthdayDiscounts + this.normalDiscounts }} off</div>
     </div>
 
+    <!-- Loyalty modal, separate from the other popup modal -->
     <div id="loyalty-modal" class="w3-modal">
       <div class="w3-modal-content w3-animate-top">
         <div class="w3-container">
@@ -99,10 +101,14 @@ import api from '@/api'
 
 export default {
   name: 'Kart',
+
+  // @vuese
+  // Initial fields.
   data() {
     return{
       loading: false,
 
+      // Loyalty information
       loyaltyScreen: 0,
       phone: "",
       birthday: "",
@@ -129,6 +135,9 @@ export default {
       required: true,
     },
   },
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },

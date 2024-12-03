@@ -122,12 +122,16 @@
     components: {
       CashierMenuItems,
     },
+
+    // @vuese
+    // Initial fields.
     data() {
       return {
         orderItems: [],
         isLocked: false,
         passkey: "",
 
+        // Loyalty information
         loyaltyScreen: 0,
         phone: "",
         birthday: "",
@@ -145,6 +149,9 @@
     mounted() {
       this.checkScreenLockStatus();
     },
+
+    // @vuese
+    // Enable flash scaffolding functionality from a shared js file.
     created() {
       this.flashScaffolding = shared.flashScaffolding
     },

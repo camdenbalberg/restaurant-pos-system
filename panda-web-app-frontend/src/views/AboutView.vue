@@ -3,6 +3,7 @@
   <div>
     <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
 
+    <!-- Show team pictures -->
     <h1><strong>MEET THE TEAM</strong></h1>
 
     <div class="team-grid">
@@ -20,6 +21,7 @@
     
 
 
+    <!-- Show general about text for the project -->
     <h1><strong>ABOUT</strong></h1>
 
     <p>
@@ -30,6 +32,7 @@
       The project is being developed using Vuejs and Ruby on Rails.
     </p>
     
+    <!-- Show watermark -->
     <div class="small-logo-wrapper">
       <img src="../assets/smalllogo.png" id="small-logo" alt="12Team12 Small Logo">
       <div id="small-logo-text">12Team12 Systems</div>

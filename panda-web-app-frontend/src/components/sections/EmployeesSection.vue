@@ -182,6 +182,8 @@ import api from '@/api';
 export default {
   name: 'EmployeesSection',
   
+  // @vuese
+  // Initial fields.
   data() {
     return {
       employees: [],

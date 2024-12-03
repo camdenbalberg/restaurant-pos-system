@@ -177,6 +177,8 @@ import api from '@/api';
 export default {
   name: 'MenuSection',
   
+  // @vuese
+  // Initial fields.
   data() {
     return {
       menuItems: [],

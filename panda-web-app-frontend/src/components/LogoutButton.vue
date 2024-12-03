@@ -9,6 +9,9 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import shared from '../shared'
 export default {
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },

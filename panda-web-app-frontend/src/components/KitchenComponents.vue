@@ -49,6 +49,8 @@ import { fetchTransactions } from '../api/transactionService';
 import { fetchMenuItems } from '../api/menuService';
 
 export default {
+  // @vuese
+  // Initial fields.
   data() {
     return {
       transactions: [],
@@ -61,6 +63,8 @@ export default {
     this.loadMenuItems();
   },
 
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
