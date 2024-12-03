@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
   <div id="app">
+    <!-- Scaffolding -->
     <div class="scaffold-overlay">
       <div class="scaffold">
 
@@ -55,6 +56,7 @@
       </div>
     </div>
 
+    <!-- Translation modal -->
     <div id="translate-modal" class="w3-modal">
       <div class="w3-modal-content w3-animate-top">
         <div class="w3-container">
@@ -67,6 +69,7 @@
       </div>
     </div>
 
+    <!-- Other content -->
     <router-view></router-view>
 
   </div>
@@ -82,6 +85,8 @@
     components: {
     },
 
+    // @vuese
+    // Initial fields.
     data() {
       return {
         time: "",
@@ -95,6 +100,8 @@
       };
     },
 
+    // @vuese
+    // Set up current weather and time widgets on initial page loading.
     mounted() {
       setInterval(() => {
         this.time = this.getTime();
@@ -112,6 +119,8 @@
       this.getWeather();
     },
 
+    // @vuese
+    // Enable flash scaffolding functionality from a shared js file.
     created() {
       this.flashScaffolding = shared.flashScaffolding
     },
