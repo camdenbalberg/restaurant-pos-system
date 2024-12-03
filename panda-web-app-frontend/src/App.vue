@@ -116,14 +116,19 @@
       this.flashScaffolding = shared.flashScaffolding
     },
 
-  methods: {
-    setup() {
-      const store = useStore();
+    methods: {
+      // @vuese
+      // Initial method to set up the authentication
+      setup() {
+        const store = useStore();
 
-      onMounted(() => {
-        store.dispatch('checkAuth'); // Check auth on app load
-      });
-    },
+        onMounted(() => {
+          store.dispatch('checkAuth'); // Check auth on app load
+        });
+      },
+
+      // @vuese
+      // API Weather script used to get the weather of the current city selected
       async getWeather() {
         // weather script
         const apiKey = '6fb6a81a74d923c021c776074b270bc9'; // Replace with your OpenWeather API key
@@ -159,6 +164,8 @@
         //end weather script
       },
 
+      // @vuese
+      // Get the time with the en-US time format.  Used for the time on the scaffolding.
       getTime() {
         const options = {
           hour: '2-digit',
@@ -170,6 +177,9 @@
         return `${date} -> ${time}`;
       },
 
+      // @vuese
+      // Get the current uptime of the website since it was initially loaded.
+      // Refreshing the pages resets uptime.
       getUptime() {
         var currentTime = new Date();
         var diffTime = Math.abs(currentTime - this.startTime);
@@ -187,6 +197,9 @@
         return diffHours + ":" + diffMinutes;
       },
 
+      // @vuese
+      // Function that executes when the home button is clicked.
+      // Adds the current page to the back stack so the back button works correctly.
       goHome() {
         if (this.$route.name == "/home") {
           this.$backStack.push("/");
@@ -197,6 +210,8 @@
         return this.$router.push('/');
       },
 
+      // @vuese
+      // Prompt the user with a dialog box for a new city to check weather for.
       changeCityClicked() {
         const city = prompt("Enter a city name for weather updates:", this.currentCity);
         if(city) {
@@ -206,6 +221,8 @@
         }
       },
 
+      // @vuese
+      // Modify the units of the weather widget on the scaffolding when clicked.
       weatherClicked() {
         switch (this.weatherConfig) {
           case 0:
@@ -232,10 +249,14 @@
         this.weatherConfig = (this.weatherConfig + 1) % 3
       },
 
+      // @vuese
+      // Toggle visibility of uptime in the time widget in the scaffolding.
       timeClicked() {
         this.timeConfig = (this.timeConfig + 1) % 2;
       },
 
+      // @vuese
+      // Initialize Google Translate.
       googleTranslateElementInit() {
         window.google.translate.TranslateElement(
           { pageLanguage: "en" },
@@ -243,14 +264,20 @@
         );
       },
 
+      // @vuese
+      // Go back to the previous page, which is represented by the top item in the back stack.
       goBack() {
         return this.$router.push(this.$backStack.pop());
       },
 
+      // @vuese
+      // Open the Google Translate modal.
       showModal() {
         this.$bvModal.show(translate-modal);
       },
 
+      // @vuese
+      // Hide the Google Translate modal.
       hideModal() {
         this.$bvModal.hide(translate-modal);
       },
