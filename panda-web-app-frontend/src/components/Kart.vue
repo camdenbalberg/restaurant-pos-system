@@ -206,10 +206,17 @@ export default {
       }
     },
 
+    // @vuese
+    // Calculate the total points that should be added to the Customer account.
+    // 1 Point for 1 dollar spent
     getAddedPoints() {
       return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
     },
 
+    // @vuese
+    // Add a Customer to the Customer table.
+    // Adds a Customer based on their phone number, birthday, and starting points.
+    // Also loads the Customer for checkout or loyalty implementation, will be in the same state as after calling loyaltyCheckCustomer().
     async loyaltyAddCustomer() {
       try {
         console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
@@ -232,6 +239,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if a Customer exists in the table given a phone number.
+    // Loads the given Customer for checkout or loyalty implementation.
     async loyaltyCheckCustomer() {
       try {
         console.log("Checking loyalty for " + this.prospectivePhone);
@@ -254,6 +264,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if more discounts can be applied for the loaded Customer.
+    // If more discounts can be applied, the discount buttons in the modal will be enabled.
     checkDiscounts() {
       if (parseInt(this.points) >= 10) {
         this.canDiscount = true;
@@ -276,6 +289,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Add a birthday discount of $10 off.
     applyBirthdayDiscount() {
       this.birthdayDiscounts += 10;
       this.discountsApplied = true;
@@ -284,6 +299,8 @@ export default {
       this.flashScaffolding();
     },
 
+    // @vuese
+    // Add a normnal discount of $1 off.
     applyDiscount() {
       this.normalDiscounts += 1;
       this.discountsApplied = true;
