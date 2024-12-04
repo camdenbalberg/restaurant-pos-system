@@ -66,6 +66,21 @@ class Api::V1::InventoryItemsController < ApplicationController
     render json: { error: "Inventory item not found" }, status: :not_found
   end
 
+  def update_stock
+    @inventory_item = InventoryItem.find(params[:id])
+    quantity_used = params[:quantity_used]
+
+    if @inventory_item && quantity_used
+      # Subtract the used quantity from the stock
+      @inventory_item.update(stock: @inventory_item.stock - quantity_used)
+      render json: { success: 'Inventory updated successfully', stock: @inventory_item.stock }, status: :ok
+    else
+      render json: { error: 'Failed to update inventory or invalid quantity' }, status: :unprocessable_entity
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Inventory item not found" }, status: :not_found
+  end
+
   private
 
   def inventory_params

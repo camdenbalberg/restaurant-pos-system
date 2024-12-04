@@ -54,11 +54,13 @@ export default {
       transactions: [],
       loading: true,
       menuItems: {},
+      inventoryItems: {},
     };
   },
   mounted() {
     this.loadTransctions();
     this.loadMenuItems();
+    this.fetchInventoryItems();
   },
 
   created() {
@@ -92,6 +94,21 @@ export default {
       }
     },
 
+    async fetchInventoryItems() {
+      this.loading = true;
+      try {
+        const response = await api.get('/inventory_items');
+        const inventoryData = response.data;
+        this.inventoryItems = inventoryData.reduce((acc, item) => {
+          acc[item.inv_id] = item.inv_name;
+          return acc;
+        }, {});
+        console.log("Inv: ", this.inventoryItems);
+      } catch (error) {
+        console.error('Error fetching inventory items:', error);
+      }
+    },
+
     getMenuName(menuId) {
       // console.log(menuId);
       return this.menuItems[menuId].name || 'Unknown Item'; // Return 'Unknown Item' if the menu_id is not found
@@ -99,12 +116,12 @@ export default {
 
     async bumpOrder(transactionId) {
       this.loading = true;
+      await this.takeFromInventory(transactionId);
       this.transactions = this.transactions.filter(item => item.transaction_id !== transactionId);
       //process on the backend
       try {
             // Make a PATCH request to the Rails backend to toggle the completed status
             const response = await api.patch(`/transactions/${transactionId}/toggle_completed`);
-
             if (response.status === 200) {
                 // Optionally, you can fetch the updated transactions list again
                 await this.loadTransctions(); // or just update the local state if needed
@@ -115,6 +132,49 @@ export default {
             console.error('Error bumping order:', error);
             this.loading = false;
         }
+  },
+
+  async takeFromInventory(transactionId) {
+    try {
+      console.log("Taking from inventory: ", this.transactions, transactionId);
+      // Filter transactions to find the correct one by transaction_id
+      const transaction = this.transactions.find(item => item.transaction_id === transactionId);
+      
+      // Ensure sale_items exists on the transaction
+      if (transaction && transaction.sale_items) {
+        const menuItemCounts = {};
+
+        // Aggregate quantities of the sale items
+        transaction.sale_items.forEach(saleItem => {
+          const menuId = saleItem.menu_id;
+          const quantity = saleItem.quantity;
+          menuItemCounts[menuId] = (menuItemCounts[menuId] || 0) + quantity;
+        });
+
+        // Loop through all items to adjust the inventory
+        for (const menuId of Object.keys(menuItemCounts)) {
+          const recipeResponse = await api.get(`recipes/${menuId}`);
+          const recipes = recipeResponse.data;
+
+          // Loop through the recipes and subtract the quantity from inventory
+          for (const recipe of recipes) {
+            const inventoryId = recipe.inv_id;
+            const recipeQuantity = recipe.quantity;
+            const totalUsed = menuItemCounts[menuId] * recipeQuantity;
+            console.log(inventoryId, recipeQuantity, totalUsed);
+            // Update the inventory stock in the backend
+            await api.patch(`/inventory_items/${inventoryId}/update_stock`, {
+              quantity_used: totalUsed
+            });
+          }
+        }
+      } else {
+        console.log("Transaction not found or no sale items available.");
+      }
+    } catch (error) {
+      console.error('Error subtracting inventory:', error);
+    }
+
   },
 
   isCombo(menuId){
