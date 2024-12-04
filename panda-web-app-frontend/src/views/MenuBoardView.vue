@@ -48,17 +48,19 @@ import { fetchMenuItems } from '../api/menuService';
 
 export default {
   // @vuese
-  // Initial fields.
+  // Component's initial state variables
   data() {
     return {
-      isLocked: false,
-      passkey: "",
-      menuItems: {},
-      loading: false,
-      carouselIndex: 0, // Track current slide
-      carouselInterval: null, // To store the interval for auto transition
+      isLocked: false, // State to check if the screen is locked
+      passkey: "", // Passkey for unlocking the screen
+      menuItems: {}, // Fetched menu items grouped by category
+      loading: false, // Loading state for menu data
+      carouselIndex: 0, // Current index for the carousel
+      carouselInterval: null, // Interval for automatic carousel sliding
     };
   },
+  // @vuese
+  // Computed properties for generating paired categories
   computed: {
     categoryPairs() {
       const categories = Object.entries(this.menuItems).map(([name, items]) => ({ 
@@ -73,6 +75,8 @@ export default {
       return pairs;
     },
   },
+  // @vuese
+  // Lifecycle hooks for initializing the component
   mounted() {
     this.loadMenuItems();
     this.startAutoSlide(); // Start the auto transition when the component mounts
@@ -84,6 +88,9 @@ export default {
       clearInterval(this.carouselInterval); // Clear interval when component is destroyed
     }
   },
+
+  // @vuese
+  // Navigation guard for verifying passkey before leaving the page
   beforeRouteLeave(to, from, next) {
     if (!this.isLocked) {
       next();  // Allow navigation if the screen is not locked
@@ -102,6 +109,8 @@ export default {
   },
 
   methods: {
+    // @vuese
+    // Unlock the screen with the provided passkey
     async handleUnlock() {
       try {
         const response = await api.unlockScreen({
@@ -125,6 +134,8 @@ export default {
       }
     },
     
+    // @vuese
+    // Check the screen lock status from the API
     async checkScreenLockStatus() {
       try {
         const response = await api.get('screen_status', {
@@ -141,6 +152,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Load menu items from the server and group them by category
     async loadMenuItems() {
       this.loading = true; 
       try {
@@ -162,6 +175,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Retrieve image for a given category name
     getCategoryImage(categoryName) {
       const images = {
         entree: 'https://i.imgur.com/BEhf8zt.png',
@@ -174,7 +189,8 @@ export default {
       return images[categoryName.toLowerCase()] || '../assets/biglogo.png';
     },
 
-    // Next slide method
+    // @vuese
+    // Navigate to the next carousel slide
     nextSlide() {
       if (this.carouselIndex < this.categoryPairs.length - 1) {
         this.carouselIndex++;
@@ -183,7 +199,8 @@ export default {
       }
     },
 
-    // Previous slide method
+    // @vuese
+    // Navigate to the previous carousel slide
     prevSlide() {
       if (this.carouselIndex > 0) {
         this.carouselIndex--;
@@ -192,12 +209,14 @@ export default {
       }
     },
 
-    // Set carousel index manually when clicking indicators
+    // @vuese
+    // Set the carousel to a specific slide index
     setCarouselIndex(index) {
       this.carouselIndex = index;
     },
 
-    // Start automatic slide transition every 10 seconds
+    // @vuese
+    // Start automatic carousel slide transitions
     startAutoSlide() {
       this.carouselInterval = setInterval(() => {
         this.nextSlide(); // Automatically go to the next slide
