@@ -1,6 +1,9 @@
 export default {
-  // https://stackoverflow.com/questions/35045119/how-can-i-share-a-method-between-components-in-vue-js
+  // @vuese
+  // Flash the scaffolding to alert the user something has changed.
+  // Call this function when something significant has happened, like an API request finishing or items added to cart.
   flashScaffolding: function () {
+    // https://stackoverflow.com/questions/35045119/how-can-i-share-a-method-between-components-in-vue-js
     var opacity = 0;
     var scaffold = document.getElementsByClassName("scaffold")[0];
     var intervalId = setInterval(function () {

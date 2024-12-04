@@ -61,6 +61,9 @@ export default {
     },
   },
   emits: ['cancel', 'submitMeal'],
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       categoryConfigs: {}, // Dynamically populated configurations

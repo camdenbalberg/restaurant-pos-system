@@ -57,6 +57,9 @@ export default {
     AppOrDrinkPopup,
     Recommendations,
   },
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       isLocked: false,
@@ -78,6 +81,9 @@ export default {
     this.fetchMenuItems();
     this.checkScreenLockStatus();
   },
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },

@@ -20,6 +20,9 @@
 
 export default {
   name: 'ScreensSection',
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       loading: false,

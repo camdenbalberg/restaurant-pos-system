@@ -31,6 +31,9 @@ export default {
       required: true,
     },
   },
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       menuItems: [],

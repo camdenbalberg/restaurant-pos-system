@@ -23,10 +23,12 @@
       <button class="kart-button" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
       <button class="kart-button" @click="completeTransaction">Order</button>
       
+      <!-- Loyalty information of loaded Customer -->
       <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
       <div v-show="discountsApplied">Added discounts: ${{ this.birthdayDiscounts + this.normalDiscounts }} off</div>
     </div>
 
+    <!-- Loyalty modal, separate from the other popup modal -->
     <div id="loyalty-modal" class="w3-modal">
       <div class="w3-modal-content w3-animate-top">
         <div class="w3-container">
@@ -99,10 +101,14 @@ import api from '@/api'
 
 export default {
   name: 'Kart',
+
+  // @vuese
+  // Initial fields.
   data() {
     return{
       loading: false,
 
+      // Loyalty information
       loyaltyScreen: 0,
       phone: "",
       birthday: "",
@@ -129,6 +135,9 @@ export default {
       required: true,
     },
   },
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
@@ -206,10 +215,17 @@ export default {
       }
     },
 
+    // @vuese
+    // Calculate the total points that should be added to the Customer account.
+    // 1 Point for 1 dollar spent
     getAddedPoints() {
       return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
     },
 
+    // @vuese
+    // Add a Customer to the Customer table.
+    // Adds a Customer based on their phone number, birthday, and starting points.
+    // Also loads the Customer for checkout or loyalty implementation, will be in the same state as after calling loyaltyCheckCustomer().
     async loyaltyAddCustomer() {
       try {
         console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
@@ -232,6 +248,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if a Customer exists in the table given a phone number.
+    // Loads the given Customer for checkout or loyalty implementation.
     async loyaltyCheckCustomer() {
       try {
         console.log("Checking loyalty for " + this.prospectivePhone);
@@ -254,6 +273,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if more discounts can be applied for the loaded Customer.
+    // If more discounts can be applied, the discount buttons in the modal will be enabled.
     checkDiscounts() {
       if (parseInt(this.points) >= 10) {
         this.canDiscount = true;
@@ -276,6 +298,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Add a birthday discount of $10 off.
     applyBirthdayDiscount() {
       this.birthdayDiscounts += 10;
       this.discountsApplied = true;
@@ -284,6 +308,8 @@ export default {
       this.flashScaffolding();
     },
 
+    // @vuese
+    // Add a normnal discount of $1 off.
     applyDiscount() {
       this.normalDiscounts += 1;
       this.discountsApplied = true;

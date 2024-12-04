@@ -220,6 +220,9 @@ import { fetchMenuItems } from '../../api/menuService';
 
 export default {
   name: 'AnalyticsSection',
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       allTransactions: [],

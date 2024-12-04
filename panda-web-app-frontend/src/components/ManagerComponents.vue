@@ -55,6 +55,9 @@
       InventorySection,
       ImageUpload
     },
+
+    // @vuese
+    // Initial fields.
     data() {
         return {
           menuId: '',
@@ -93,6 +96,10 @@
         ]
       }
     },
+
+  
+    // @vuese
+    // Enable flash scaffolding functionality from a shared js file.
     created() {
       this.flashScaffolding = shared.flashScaffolding
     },

@@ -189,6 +189,8 @@ import api from '@/api';
 export default {
   name: 'InventorySection',
   
+  // @vuese
+  // Initial fields.
   data() {
     return {
       inventoryItems: [],

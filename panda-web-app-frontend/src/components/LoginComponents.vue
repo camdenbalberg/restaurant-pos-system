@@ -47,6 +47,8 @@ import api from '@/api';
 import shared from '../shared'
 
 export default {
+  // @vuese
+  // Initial fields.
   data() {
     return {
       username: '',
@@ -55,6 +57,8 @@ export default {
     }
   },
 
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
@@ -72,6 +76,10 @@ export default {
     googleInitiateFlow() {
       window.location.href = 'http://localhost/auth/google_oauth2';
     },
+
+    // @vuese
+    // Normal login without using Google OAuth.
+    // Navigates to the home screen on success and not if there is an error or invalid credentials.
     async submitForm() {
       try {
         if (this.username && this.password) {

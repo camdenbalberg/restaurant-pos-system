@@ -44,6 +44,9 @@ export default {
     },
   },
   emits: ["selectItem"],
+
+  // @vuese
+  // Initial fields.
   data() {
     return {
       items: [],

@@ -35,6 +35,9 @@ export default {
             required: true,
         }
     },
+
+    // @vuese
+    // Initial fields.
     data() {
         return {
             recItem: null, //the selected random item to reccomend

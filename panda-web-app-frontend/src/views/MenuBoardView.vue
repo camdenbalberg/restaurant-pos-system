@@ -47,6 +47,8 @@ import api from '@/api'
 import { fetchMenuItems } from '../api/menuService';
 
 export default {
+  // @vuese
+  // Initial fields.
   data() {
     return {
       isLocked: false,
