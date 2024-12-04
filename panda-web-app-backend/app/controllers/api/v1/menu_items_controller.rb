@@ -6,7 +6,11 @@ class Api::V1::MenuItemsController < ApplicationController
 
 
   
-      # Query database for items and rendering it as json
+      # GET /api/v1/menu_items
+      # @description
+      # Queries the database for all menu items or filters them by category if a `category` parameter is provided.
+      # If the `category` parameter is not provided, all menu items are returned.
+      # @returns [Array<MenuItem>] List of menu items in JSON format.
       def index
         if params[:category]
           menu_items = MenuItem.where(category: params[:category])
@@ -17,6 +21,14 @@ class Api::V1::MenuItemsController < ApplicationController
       end
 
       # GET /api/v1/menu_items/:id
+      # @description
+      # Fetches a specific menu item by its ID.
+      # If the menu item is found, it returns the item in JSON format.
+      # If not found, it returns an error message with a `404 Not Found` status.
+      # @param id [Integer] The unique identifier of the menu item.
+      # @returns [MenuItem] The requested menu item in JSON format.
+      # @raises ActiveRecord::RecordNotFound if menu item with given ID is not found.
+
       def show
         menu_items = MenuItem.find(params[:id])
         render json: menu_items
@@ -25,6 +37,14 @@ class Api::V1::MenuItemsController < ApplicationController
       end
 
       # POST /api/v1/menu_items/add_menu_item
+      # @description
+      # Creates a new menu item with the provided `menu_name`, `price`, and `category`.
+      # If any required parameters are missing, it returns an error.
+      # @param menu_name [String] The name of the menu item.
+      # @param price [Decimal] The price of the menu item.
+      # @param category [String] The category the menu item belongs to.
+      # @returns [MenuItem] The newly created menu item in JSON format.
+      # @raises ActionController::ParameterMissing if required parameters are missing.
       def add_menu_item
         menu_name = params[:menu_name]
         price = params[:price]
@@ -51,6 +71,12 @@ class Api::V1::MenuItemsController < ApplicationController
       end
 
       # DELETE /api/v1/menu_items/:menu_id
+      # @description
+      # Deletes the menu item with the specified `menu_id`.
+      # Returns a success message if the item is deleted, or an error message if not found.
+      # @param menu_id [Integer] The unique identifier of the menu item.
+      # @returns [String] A success message in JSON format if the deletion is successful.
+      # @raises ActiveRecord::RecordNotFound if menu item with the given ID does not exist.
       def destroy
         menu_item = MenuItem.find_by(menu_id: params[:menu_id])
 
@@ -62,6 +88,11 @@ class Api::V1::MenuItemsController < ApplicationController
         end
       end
 
+      # @description
+      # Uploads an image to Imgur and returns the image URL if the upload is successful.
+      # This method is used for updating the image of a menu item.
+      # @param image [Tempfile] The image file to be uploaded to Imgur.
+      # @returns [String, nil] The Imgur URL of the uploaded image or `nil` if the upload fails.
       def upload_image_to_imgur(image)
         client_id = ENV['IMGUR_CLIENT_ID']  # Fetch the client ID from the environment variable
         client_secret = ENV['IMGUR_CLIENT_SECRET']  # Fetch the client secret (if needed)
@@ -92,6 +123,15 @@ class Api::V1::MenuItemsController < ApplicationController
 
       
       # PATCH /api/v1/menu_items/:menu_id/update_image
+      # @description
+      # Updates the image of a specific menu item by its `menu_id`.
+      # If an image is uploaded, it is sent to Imgur and the image URL is updated.
+      # If an image URL is provided, it will be used directly.
+      # @param menu_id [Integer] The unique identifier of the menu item to be updated.
+      # @param image [Tempfile] The image file to be uploaded to Imgur.
+      # @param image_url [String] A direct URL to the image to be associated with the menu item.
+      # @returns [MenuItem] The updated menu item with the new image in JSON format.
+      # @raises ActiveRecord::RecordNotFound if the menu item is not found.
       def update_image
         menu_item = MenuItem.find_by(menu_id: params[:menu_id])
         
@@ -138,7 +178,16 @@ class Api::V1::MenuItemsController < ApplicationController
       end
 
 
-      
+    # PATCH /api/v1/menu_items/:id
+    # @description
+    # Updates the details (menu_name, price, category) of an existing menu item identified by `id`.
+    # If the update is successful, returns the updated menu item.
+    # @param id [Integer] The unique identifier of the menu item.
+    # @param menu_name [String] The updated name of the menu item.
+    # @param price [Decimal] The updated price of the menu item.
+    # @param category [String] The updated category of the menu item.
+    # @returns [MenuItem] The updated menu item in JSON format.
+    # @raises ActiveRecord::RecordNotFound if the menu item is not found.
     def update
       @menu_item = MenuItem.find(params[:id])
       
@@ -151,6 +200,10 @@ class Api::V1::MenuItemsController < ApplicationController
       render json: { error: "Menu item not found" }, status: :not_found
     end
 
+    # @description
+    # Strong parameters for updating menu items.
+    # Ensures only permitted fields are allowed for update.
+    # @returns [Hash] The permitted parameters for updating a menu item.
     def menu_item_params
       params.permit(:menu_name, :price, :category)
     end
