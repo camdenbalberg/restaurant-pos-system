@@ -51,8 +51,21 @@ export default {
   // Initial fields.
   data() {
     return {
+      /**
+       * @description The username entered by the user.
+       * @type {String}
+       */
       username: '',
+      /**
+       * @description The password entered by the user.
+       * @type {String}
+       */
       password: '',
+      /**
+       * @description The text displayed on the submit button.
+       * @default 'Submit'
+       * @type {String}
+       */
       buttonText: 'Submit',
     }
   },
