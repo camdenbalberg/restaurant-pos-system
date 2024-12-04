@@ -21,8 +21,15 @@
 export default {
   name: 'ScreensSection',
 
-  // @vuese
-  // Initial fields.
+   // @vuese
+  /**
+   * @data
+   * @description
+   * Initial fields for the component.
+   * 
+   * - `loading`: A boolean flag to indicate loading state (true when the screen is being locked).
+   * - `passkey`: Stores the PIN entered by the user to lock the screen.
+   */
   data() {
     return {
       loading: false,
@@ -30,6 +37,16 @@ export default {
     };
   },
   methods:{
+     /**
+     * @method lockScreen
+     * @description
+     * This method locks the specified screen type (Customer, Cashier, or Menu Board) after the user 
+     * enters a valid six-digit PIN. It triggers a request to the API to lock the screen and then redirects 
+     * to the corresponding page based on the screen type.
+     * 
+     * @param {string} screenType - The type of screen to lock. It can be 'Customer', 'Cashier', or 'Menu_Board'.
+     * @returns {void}
+     */
     async lockScreen(screenType) {
       this.passkey = prompt("Enter a six digit pin ie \'123456\'' ");
       if (!/^\d{6}$/.test(this.passkey)) {
