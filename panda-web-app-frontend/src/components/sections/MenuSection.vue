@@ -178,7 +178,20 @@ export default {
   name: 'MenuSection',
   
   // @vuese
-  // Initial fields.
+  /**
+   * @data
+   * @description
+   * This section defines the initial data fields used in the component. 
+   * - `menuItems`: List of menu items fetched from the backend.
+   * - `loading`: A flag to indicate whether the component is in a loading state.
+   * - `showAddForm`: Flag to show or hide the form for adding/editing a menu item.
+   * - `editingMenuItem`: Holds the menu item currently being edited, or `null` if adding a new one.
+   * - `showDeleteConfirm`: Flag to show or hide the delete confirmation modal.
+   * - `deleteMenuItem`: The menu item to be deleted.
+   * - `selectedCategory`: Category selected for filtering menu items.
+   * - `formData`: Form data used to add or edit a menu item.
+   * - `selectedImage`: The selected image for the menu item.
+   */
   data() {
     return {
       menuItems: [],
@@ -198,10 +211,23 @@ export default {
   },
 
   computed: {
+    /**
+     * @computed uniqueCategories
+     * @description
+     * This computed property returns a list of unique categories extracted from the `menuItems` array.
+     * @returns {Array} List of unique categories.
+     */
     uniqueCategories() {
       return [...new Set(this.menuItems.map(item => item.category))];
     },
     
+    /**
+     * @computed filteredMenuItems
+     * @description
+     * This computed property filters the `menuItems` based on the selected category.
+     * If no category is selected, all menu items are shown.
+     * @returns {Array} Filtered menu items based on the selected category.
+     */
     filteredMenuItems() {
       if (!this.selectedCategory) return this.menuItems;
       return this.menuItems.filter(item => 
@@ -211,6 +237,14 @@ export default {
   },
 
   methods: {
+    /**
+     * @method fetchMenuItems
+     * @description
+     * Fetches menu items from the backend API and sets the `menuItems` data property.
+     * Sets the `loading` flag to `true` while the request is in progress.
+     * 
+     * @returns {Promise<void>}
+     */
     async fetchMenuItems() {
       this.loading = true;
       try {
@@ -223,10 +257,28 @@ export default {
       }
     },
 
+    /**
+     * @method handleImageChange
+     * @description
+     * Handles the change event when an image file is selected for a menu item.
+     * Updates the `selectedImage` data property with the selected file.
+     * 
+     * @param {Event} event - The file input change event.
+     * @returns {void}
+     */
     handleImageChange(event) {
       this.selectedImage = event.target.files[0];
     },
 
+     /**
+     * @method uploadImage
+     * @description
+     * Uploads an image for a menu item to the backend.
+     * If a new image is selected, it is sent to the backend to be associated with the given menu item ID.
+     * 
+     * @param {string} menuId - The ID of the menu item to associate the image with.
+     * @returns {Promise<void>}
+     */
     async uploadImage(menuId) {
       if (!this.selectedImage) return;
 
@@ -271,6 +323,15 @@ export default {
       }
     },
 
+     /**
+     * @method editMenuItem
+     * @description
+     * Opens the Add/Edit form for editing a specific menu item.
+     * Populates the form fields with the existing menu item data.
+     * 
+     * @param {Object} item - The menu item to be edited.
+     * @returns {void}
+     */
     editMenuItem(item) {
       this.editingMenuItem = item;
       this.formData = { 
@@ -281,11 +342,26 @@ export default {
       this.showAddForm = true;
     },
 
+    /**
+     * @method confirmDelete
+     * @description
+     * Confirms the deletion of a menu item and sets the `deleteMenuItem` property to the item to be deleted.
+     * 
+     * @param {Object} item - The menu item to be deleted.
+     * @returns {void}
+     */
     confirmDelete(item) {
       this.deleteMenuItem = item;
       this.showDeleteConfirm = true;
     },
 
+    /**
+     * @method handleDelete
+     * @description
+     * Deletes the selected menu item from the backend and removes it from the local `menuItems` array.
+     * 
+     * @returns {Promise<void>}
+     */
     async handleDelete() {
       try {
         await api.delete(`/menu_items/${this.deleteMenuItem.menu_id}`);
@@ -299,6 +375,14 @@ export default {
       }
     },
 
+    /**
+     * @method handleSubmit
+     * @description
+     * Handles form submission for adding or updating a menu item. If editing an existing item, it updates the item; otherwise, it adds a new item.
+     * After submitting the form, the menu item is saved to the backend and the list is refreshed.
+     * 
+     * @returns {Promise<void>}
+     */
     async handleSubmit() {
       try {
         let response;
@@ -336,6 +420,13 @@ export default {
       }
     },
 
+    /**
+     * @method closeForm
+     * @description
+     * Closes the Add/Edit form and resets all form data to its initial state.
+     * 
+     * @returns {void}
+     */
     closeForm() {
       this.showAddForm = false;
       this.editingMenuItem = null;
@@ -348,6 +439,13 @@ export default {
     }
   },
 
+  /**
+   * @created
+   * @description
+   * Fetches the menu items from the backend as soon as the component is created.
+   * 
+   * @returns {void}
+   */
   created() {
     this.fetchMenuItems();
   }
