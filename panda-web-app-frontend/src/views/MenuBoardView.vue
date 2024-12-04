@@ -2,18 +2,26 @@
   <div class="menu-board relative w-full" data-carousel="slide">
     <h1>Menu Items</h1>
 
+    <!-- Loading spinner shown while menu data is being fetched -->
     <div v-if="loading" class="loading-spinner">
       Loading...
     </div>
 
+    <!-- Menu category carousel -->
     <div v-if="!loading" class="menu-category-carousel relative h-auto overflow-hidden">
       <!-- Carousel wrapper -->
       <div class="carousel-inner flex" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
         <!-- Loop through categories in pairs of two -->
         <div v-for="(pair, index) in categoryPairs" :key="index" class="carousel-slide flex-shrink-0 min-w-full flex">
           <div v-for="category in pair" :key="category.name" class="menu-category w-1/2 px-2">
-            <img :src="category.image" :alt="`${category.name} image`" class="category-image mb-4 w-full h-48 object-cover rounded-lg" />
+            <!-- Category image -->
+            <img 
+              :src="category.image" 
+              :alt="`${category.name} image`" 
+              class="category-image mb-4 w-full h-48 object-cover rounded-lg" 
+            />
             <h2>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's'}}</h2>
+            <!-- Menu items within the category -->
             <div class="menu-items grid gap-4">
               <div v-for="item in category.items" :key="item.menu_id" class="menu-item">
                 <h3>{{ item.menu_name }}</h3>
@@ -24,18 +32,29 @@
         </div>
       </div>
 
+      <!-- Carousel navigation indicators -->
       <div class="carousel-indicators absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-3">
-        <button v-for="(pair, index) in categoryPairs" :key="index" @click="setCarouselIndex(index)" 
-                :class="['w-3 h-3 rounded-full', { 'bg-blue-600': carouselIndex === index, 'bg-gray-300': carouselIndex !== index }]" 
-                aria-current="carouselIndex === index" :aria-label="`Slide ${index + 1}`">
+        <button 
+          v-for="(pair, index) in categoryPairs" 
+          :key="index" 
+          @click="setCarouselIndex(index)" 
+          :class="['w-3 h-3 rounded-full', { 'bg-blue-600': carouselIndex === index, 'bg-gray-300': carouselIndex !== index }]" 
+          aria-current="carouselIndex === index" 
+          :aria-label="`Slide ${index + 1}`">
         </button>
       </div>
 
-      <!-- Slider controls -->
-      <button @click="prevSlide" class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Previous slide">
+      <!-- Previous and Next controls -->
+      <button 
+        @click="prevSlide" 
+        class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" 
+        aria-label="Previous slide">
         <span class="carousel-control-prev">&lt;</span>
       </button>
-      <button @click="nextSlide" class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Next slide">
+      <button 
+        @click="nextSlide" 
+        class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" 
+        aria-label="Next slide">
         <span class="carousel-control-next">&gt;</span>
       </button>
     </div>
