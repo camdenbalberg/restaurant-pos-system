@@ -107,9 +107,11 @@ router.beforeEach((to, from, next) => {
     } else if (to.meta.requiresManager && store.state.user.role !== 'manager') {
       // Redirect non-managers trying to access manager-only pages
       next('/');
+      alert("You do not have permission to access this page.");
     } else if (to.meta.requiresEmployee && store.state.user.role !== 'employee' && store.state.user.role !== 'manager') {
       // Redirect non-staff trying to access staff-only pages
       next('/');
+      alert("You do not have permission to access this page.");
     } else {
       // Allow navigation
       next();
