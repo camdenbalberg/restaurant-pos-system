@@ -37,20 +37,51 @@ export default {
     },
 
     // @vuese
-    // Initial fields.
+    /**
+     * @data
+     * @description
+     * Initial fields for the component.
+     * 
+     * - 'recItem' is the selected random item to recommend.
+     * - 'recList' is the list of possible recommendations.
+     */
     data() {
         return {
             recItem: null, //the selected random item to reccomend
             recList: [], //the list of possible reccomendations
         };
     },
+
+    // @vuese
+    /**
+     * @methods
+     * @description
+     * Methods for the component.
+     * 
+     * - 'getRandItem' gets a random item from the menu.
+     * - 'recommendItem' recommends items based off what user has in their cart.
+     * - 'addToKart' adds the recommended item to the cart.
+     */
     methods: {
+        // @vuese
+        /**
+         * @method getRandItem
+         * @description
+         * Get a random item from the menu.
+         */
         getRandItem(){
             //get a random item from the menu
             const rand = Math.floor(Math.random() * this.recList.length);
             this.recItem = this.recList[rand];
             console.log(this.recItem);
         },
+
+        // @vuese
+        /**
+         * @method recommendItem
+         * @description
+         * Recommend items based off what user has in their cart.
+         */
         recommendItem(){
             //recommend items based off what user has in their cart
             console.log(this.orderedItems);
@@ -116,6 +147,13 @@ export default {
                 return false;
             }
         },
+
+        // @vuese
+        /**
+         * @method addToKart
+         * @description
+         * Add the recommended item to the cart.
+         */
         addToKart(){
             if(this.recItem.category === 'meal'){
                 this.$emit('handle-show-meal', this.recItem);
