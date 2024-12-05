@@ -1,13 +1,27 @@
 class Api::V1::EmployeesController < ApplicationController
-  # Query database for items and rendering it as json
   
+  
+  # GET /api/v1/employees
+  # @description
+  # Queries the database for all employees and returns them as JSON.
+  # @returns [Array<Employee>] List of all employees in JSON format.
   def index
     @employees = Employee.all
     render json: @employees
   end
 
-  # GET /api/v1/employees_controller/id
-  # retrieve employee data with id
+  # GET /api/v1/employees/:id
+  # @description
+  # Retrieves employee data by ID with optional field filtering.
+  # Supports different views of employee data based on the 'fields' parameter.
+  # @param id [Integer] The unique identifier of the employee
+  # @param fields [String] Optional parameter to filter returned fields:
+  #   - "name_only": Returns only first and last name
+  #   - "is_manager": Returns only manager status
+  #   - "is_active": Returns only working status
+  #   - "contact_info": Returns email and phone number
+  # @returns [Employee] The requested employee data in JSON format
+  # @raises ActiveRecord::RecordNotFound if employee with given ID is not found
   def show
     @employee = Employee.find(params[:id])
 
@@ -29,6 +43,12 @@ class Api::V1::EmployeesController < ApplicationController
     render json: { error: "Employee with this id not found" }, status: :not_found
   end
 
+  # GET /api/v1/employees/by_password
+  # @description
+  # Finds employees by their password.
+  # @param password [String] The password to search for
+  # @returns [Array<Employee>] List of matching employees in JSON format
+  # @raises ActiveRecord::RecordNotFound if no employees found with given password
   def by_password
     pwd = params[:password]
     @employees = Employee.where(password: pwd)
@@ -41,6 +61,12 @@ class Api::V1::EmployeesController < ApplicationController
   end
 
 
+  # GET /api/v1/employees/by_employee_id
+  # @description
+  # Finds employees by their employee ID.
+  # @param employee_id [Integer] The employee ID to search for
+  # @returns [Array<Employee>] List of matching employees in JSON format
+  # @raises ActiveRecord::RecordNotFound if no employees found with given ID
   def by_employee_id
     usr = params[:employee_id]
     @employees = Employee.where(employee_id: usr)
@@ -53,6 +79,19 @@ class Api::V1::EmployeesController < ApplicationController
   end
 
   # POST /api/v1/employees/add_employee
+  # @description
+  # Creates a new employee with the provided information.
+  # Automatically generates a new employee ID based on the highest existing ID.
+  # @param first_name [String] Employee's first name
+  # @param last_name [String] Employee's last name
+  # @param email [String] Employee's email address
+  # @param is_manager [Boolean] Whether the employee is a manager
+  # @param hiring_date [Date] Employee's hire date
+  # @param phone_number [String] Employee's phone number
+  # @param password [String] Employee's password
+  # @param is_working [Boolean] Whether the employee is currently active
+  # @returns [Employee] The newly created employee in JSON format
+  # @raises [UnprocessableEntity] if required parameters are missing
   def add_employee
     # validates :employee_id, presence: true
     # validates :first_name, presence: true
@@ -95,7 +134,12 @@ class Api::V1::EmployeesController < ApplicationController
     end
   end
 
-  # DELETE /api/v1/employees/delete_employee
+  # DELETE /api/v1/employees/:id
+  # @description
+  # Deletes an employee from the system.
+  # @param id [Integer] The unique identifier of the employee to delete
+  # @returns [String] Success message in JSON format if deletion is successful
+  # @raises [UnprocessableEntity] if deletion fails
   def delete_employee
     @employee = Employee.find(params[:id])
     if @employee.destroy
@@ -105,6 +149,23 @@ class Api::V1::EmployeesController < ApplicationController
     end
   end
 
+
+  # PATCH /api/v1/employees/:id
+  # @description
+  # Updates an existing employee's information.
+  # Password is only updated if explicitly provided.
+  # @param id [Integer] The unique identifier of the employee
+  # @param first_name [String] Updated first name
+  # @param last_name [String] Updated last name
+  # @param email [String] Updated email address
+  # @param is_manager [Boolean] Updated manager status
+  # @param hiring_date [Date] Updated hire date
+  # @param phone_number [String] Updated phone number
+  # @param password [String] Optional new password
+  # @param is_working [Boolean] Updated working status
+  # @returns [Employee] The updated employee in JSON format
+  # @raises ActiveRecord::RecordNotFound if employee is not found
+  # @raises [UnprocessableEntity] if required parameters are missing
   def edit_employee
     @employee = Employee.find(params[:id])
     

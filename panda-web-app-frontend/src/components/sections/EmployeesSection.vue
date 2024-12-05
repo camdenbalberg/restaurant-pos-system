@@ -179,18 +179,36 @@
 <script>
 import api from '@/api';
 
+/**
+ * @component EmployeesSection
+ * @description A component that provides functionality for managing employee data,
+ * including adding new employees, editing existing employees, and handling employee status changes.
+ */
 export default {
   name: 'EmployeesSection',
   
-  // @vuese
-  // Initial fields.
+  /**
+   * Initial component data
+   * @returns {Object} Component data
+   */
   data() {
     return {
+      /** @type {Array} List of all employees fetched from the API */
       employees: [],
+      
+      /** @type {Boolean} Controls visibility of the add employee form */
       showAddForm: false,
+      
+      /** @type {Object|null} Currently edited employee object */
       editingEmployee: null,
+      
+      /** @type {Boolean} Controls visibility of delete confirmation modal */
       showDeleteConfirm: false,
+      
+      /** @type {Object|null} Employee object to be deleted */
       deleteEmployee: null,
+      
+      /** @type {Object} Form data for adding/editing employees */
       formData: {
         first_name: '',
         last_name: '',
@@ -205,25 +223,43 @@ export default {
   },
 
   methods: {
+    /**
+     * Fetches the list of employees from the backend API
+     * @async
+     * @returns {Promise<void>}
+     */
     async fetchEmployees() {
       try {
         const response = await api.get('/employees');
         this.employees = response.data;
       } catch (error) {
         console.error('Error fetching employees:', error);
-        // Add error handling/notification here
       }
     },
 
+    /**
+     * Formats a phone number string into a standardized format (XXX) XXX-XXXX
+     * @param {string} phone - Raw phone number input
+     * @returns {string} Formatted phone number
+     */
     formatPhoneNumber(phone) {
       const cleaned = phone.replace(/\D/g, '');
       return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6)}`;
     },
 
+    /**
+     * Converts a date string into a localized date format
+     * @param {string} date - Date string to format
+     * @returns {string} Formatted date
+     */
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
 
+    /**
+     * Prepares the form for editing an existing employee
+     * @param {Object} employee - Employee object to edit
+     */
     editEmployee(employee) {
       this.editingEmployee = employee;
       this.formData = { ...employee };
@@ -231,11 +267,20 @@ export default {
       this.formData.hiring_date = this.formData.hiring_date.split('T')[0];
     },
 
+    /**
+     * Initiates the deletion process for an employee
+     * @param {Object} employee - Employee to delete
+     */
     confirmDelete(employee) {
       this.deleteEmployee = employee;
       this.showDeleteConfirm = true;
     },
 
+    /**
+     * Processes the actual deletion of an employee from the system
+     * @async
+     * @returns {Promise<void>}
+     */
     async handleDelete() {
       try {
         await api.delete(`/employees/delete_employee/${this.deleteEmployee.employee_id}`);
@@ -246,10 +291,14 @@ export default {
         this.deleteEmployee = null;
       } catch (error) {
         console.error('Error deleting employee:', error);
-        // Add error handling/notification here
       }
     },
 
+    /**
+     * Handles form submission for both adding new employees and updating existing ones
+     * @async
+     * @returns {Promise<void>}
+     */
     async handleSubmit() {
       try {
         if (this.editingEmployee) {
@@ -270,10 +319,12 @@ export default {
         this.closeForm();
       } catch (error) {
         console.error('Error saving employee:', error);
-        // Add error handling/notification here
       }
     },
 
+    /**
+     * Closes the form and resets all form data to initial values
+     */
     closeForm() {
       this.showAddForm = false;
       this.editingEmployee = null;
@@ -290,6 +341,10 @@ export default {
     }
   },
 
+  /**
+   * Lifecycle hook - Called when component is created
+   * Fetches initial employee data
+   */
   created() {
     this.fetchEmployees();
   }
