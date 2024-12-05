@@ -2,18 +2,26 @@
   <div class="menu-board relative w-full" data-carousel="slide">
     <h1>Menu Items</h1>
 
+    <!-- Loading spinner shown while menu data is being fetched -->
     <div v-if="loading" class="loading-spinner">
       Loading...
     </div>
 
+    <!-- Menu category carousel -->
     <div v-if="!loading" class="menu-category-carousel relative h-auto overflow-hidden">
       <!-- Carousel wrapper -->
       <div class="carousel-inner flex" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
         <!-- Loop through categories in pairs of two -->
         <div v-for="(pair, index) in categoryPairs" :key="index" class="carousel-slide flex-shrink-0 min-w-full flex">
           <div v-for="category in pair" :key="category.name" class="menu-category w-1/2 px-2">
-            <img :src="category.image" :alt="`${category.name} image`" class="category-image mb-4 w-full h-48 object-cover rounded-lg" />
+            <!-- Category image -->
+            <img 
+              :src="category.image" 
+              :alt="`${category.name} image`" 
+              class="category-image mb-4 w-full h-48 object-cover rounded-lg" 
+            />
             <h2>{{ category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's'}}</h2>
+            <!-- Menu items within the category -->
             <div class="menu-items grid gap-4">
               <div v-for="item in category.items" :key="item.menu_id" class="menu-item">
                 <h3>{{ item.menu_name }}</h3>
@@ -24,18 +32,29 @@
         </div>
       </div>
 
+      <!-- Carousel navigation indicators -->
       <div class="carousel-indicators absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-3">
-        <button v-for="(pair, index) in categoryPairs" :key="index" @click="setCarouselIndex(index)" 
-                :class="['w-3 h-3 rounded-full', { 'bg-blue-600': carouselIndex === index, 'bg-gray-300': carouselIndex !== index }]" 
-                aria-current="carouselIndex === index" :aria-label="`Slide ${index + 1}`">
+        <button 
+          v-for="(pair, index) in categoryPairs" 
+          :key="index" 
+          @click="setCarouselIndex(index)" 
+          :class="['w-3 h-3 rounded-full', { 'bg-blue-600': carouselIndex === index, 'bg-gray-300': carouselIndex !== index }]" 
+          aria-current="carouselIndex === index" 
+          :aria-label="`Slide ${index + 1}`">
         </button>
       </div>
 
-      <!-- Slider controls -->
-      <button @click="prevSlide" class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Previous slide">
+      <!-- Previous and Next controls -->
+      <button 
+        @click="prevSlide" 
+        class="absolute top-1/2 left-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" 
+        aria-label="Previous slide">
         <span class="carousel-control-prev">&lt;</span>
       </button>
-      <button @click="nextSlide" class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" aria-label="Next slide">
+      <button 
+        @click="nextSlide" 
+        class="absolute top-1/2 right-0 z-30 flex items-center justify-center h-full -translate-y-1/2 cursor-pointer" 
+        aria-label="Next slide">
         <span class="carousel-control-next">&gt;</span>
       </button>
     </div>
@@ -47,16 +66,20 @@ import api from '@/api'
 import { fetchMenuItems } from '../api/menuService';
 
 export default {
+  // @vuese
+  // Component's initial state variables
   data() {
     return {
-      isLocked: false,
-      passkey: "",
-      menuItems: {},
-      loading: false,
-      carouselIndex: 0, // Track current slide
-      carouselInterval: null, // To store the interval for auto transition
+      isLocked: false, // State to check if the screen is locked
+      passkey: "", // Passkey for unlocking the screen
+      menuItems: {}, // Fetched menu items grouped by category
+      loading: false, // Loading state for menu data
+      carouselIndex: 0, // Current index for the carousel
+      carouselInterval: null, // Interval for automatic carousel sliding
     };
   },
+  // @vuese
+  // Computed properties for generating paired categories
   computed: {
     categoryPairs() {
       const categories = Object.entries(this.menuItems).map(([name, items]) => ({ 
@@ -71,6 +94,8 @@ export default {
       return pairs;
     },
   },
+  // @vuese
+  // Lifecycle hooks for initializing the component
   mounted() {
     this.loadMenuItems();
     this.startAutoSlide(); // Start the auto transition when the component mounts
@@ -82,6 +107,9 @@ export default {
       clearInterval(this.carouselInterval); // Clear interval when component is destroyed
     }
   },
+
+  // @vuese
+  // Navigation guard for verifying passkey before leaving the page
   beforeRouteLeave(to, from, next) {
     if (!this.isLocked) {
       next();  // Allow navigation if the screen is not locked
@@ -100,6 +128,8 @@ export default {
   },
 
   methods: {
+    // @vuese
+    // Unlock the screen with the provided passkey
     async handleUnlock() {
       try {
         const response = await api.unlockScreen({
@@ -123,6 +153,8 @@ export default {
       }
     },
     
+    // @vuese
+    // Check the screen lock status from the API
     async checkScreenLockStatus() {
       try {
         const response = await api.get('screen_status', {
@@ -139,6 +171,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Load menu items from the server and group them by category
     async loadMenuItems() {
       this.loading = true; 
       try {
@@ -160,6 +194,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Retrieve image for a given category name
     getCategoryImage(categoryName) {
       const images = {
         entree: 'https://i.imgur.com/BEhf8zt.png',
@@ -172,7 +208,8 @@ export default {
       return images[categoryName.toLowerCase()] || '../assets/biglogo.png';
     },
 
-    // Next slide method
+    // @vuese
+    // Navigate to the next carousel slide
     nextSlide() {
       if (this.carouselIndex < this.categoryPairs.length - 1) {
         this.carouselIndex++;
@@ -181,7 +218,8 @@ export default {
       }
     },
 
-    // Previous slide method
+    // @vuese
+    // Navigate to the previous carousel slide
     prevSlide() {
       if (this.carouselIndex > 0) {
         this.carouselIndex--;
@@ -190,12 +228,14 @@ export default {
       }
     },
 
-    // Set carousel index manually when clicking indicators
+    // @vuese
+    // Set the carousel to a specific slide index
     setCarouselIndex(index) {
       this.carouselIndex = index;
     },
 
-    // Start automatic slide transition every 10 seconds
+    // @vuese
+    // Start automatic carousel slide transitions
     startAutoSlide() {
       this.carouselInterval = setInterval(() => {
         this.nextSlide(); // Automatically go to the next slide

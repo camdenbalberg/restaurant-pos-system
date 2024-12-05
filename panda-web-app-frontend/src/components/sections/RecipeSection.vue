@@ -192,124 +192,220 @@
   </div>
 </template>
   
-  <script>
-  import api from '@/api';
+<script>
+import api from '@/api';
+
+/**
+ * @component RecipeSection
+ * @description A component that manages recipes for menu items, including adding, editing,
+ * and deleting recipes. Provides functionality for managing ingredients and their quantities
+ * for each menu item recipe.
+ */
+export default {
+  name: 'RecipeSection',
   
-  export default {
-    name: 'RecipeSection',
-    
-    data() {
-      return {
-        recipes: [],
-        menuItems: [],
-        inventoryItems: [],
-        loading: false,
-        showAddForm: false,
-        editingRecipe: null,
-        showDeleteConfirm: false,
-        deleteRecipe: null,
-        searchTerm: '',
-        formData: {
-          menu_id: '',
-          ingredients: [
-            { inv_id: '', quantity: 1 }
-          ]
-        }
+  /**
+   * Initial component data
+   * @returns {Object} Component data
+   */
+  data() {
+    return {
+      /** @type {Array} List of all recipes */
+      recipes: [],
+      
+      /** @type {Array} List of available menu items */
+      menuItems: [],
+      
+      /** @type {Array} List of available inventory items */
+      inventoryItems: [],
+      
+      /** @type {Boolean} Loading state indicator */
+      loading: false,
+      
+      /** @type {Boolean} Controls visibility of add/edit form */
+      showAddForm: false,
+      
+      /** @type {Object|null} Currently edited recipe */
+      editingRecipe: null,
+      
+      /** @type {Boolean} Controls visibility of delete confirmation */
+      showDeleteConfirm: false,
+      
+      /** @type {Object|null} Recipe to be deleted */
+      deleteRecipe: null,
+      
+      /** @type {String} Search term for filtering recipes */
+      searchTerm: '',
+      
+      /** @type {Object} Form data for adding/editing recipes */
+      formData: {
+        menu_id: '',
+        ingredients: [
+          { inv_id: '', quantity: 1 }
+        ]
       }
+    }
+  },
+
+  computed: {
+    /**
+     * Gets the unique menu items that have associated recipes
+     * @returns {Array} List of unique menu item IDs
+     */
+    uniqueMenuItems() {
+      return [...new Set(this.recipes.map(recipe => recipe.menu_id))];
     },
-  
-    computed: {
-      uniqueMenuItems() {
-        return [...new Set(this.recipes.map(recipe => recipe.menu_id))];
-      },
-  
-      groupedRecipes() {
-        // Group recipes by menu_id
-        const grouped = this.recipes.reduce((acc, recipe) => {
-          if (!acc[recipe.menu_id]) {
-            acc[recipe.menu_id] = [];
-          }
-          acc[recipe.menu_id].push(recipe);
-          return acc;
-        }, {});
-  
-        // Filter based on search term
-        if (this.searchTerm) {
-          const searchLower = this.searchTerm.toLowerCase();
-          return Object.fromEntries(
-            Object.entries(grouped).filter(([_, recipes]) => 
-              recipes[0].menu_name.toLowerCase().includes(searchLower) ||
-              recipes.some(recipe => 
-                recipe.inv_name.toLowerCase().includes(searchLower)
-              )
+
+    /**
+     * Groups recipes by menu item and filters based on search term
+     * @returns {Object} Grouped and filtered recipes
+     */
+    groupedRecipes() {
+      // Group recipes by menu_id
+      const grouped = this.recipes.reduce((acc, recipe) => {
+        if (!acc[recipe.menu_id]) {
+          acc[recipe.menu_id] = [];
+        }
+        acc[recipe.menu_id].push(recipe);
+        return acc;
+      }, {});
+
+      // Filter based on search term
+      if (this.searchTerm) {
+        const searchLower = this.searchTerm.toLowerCase();
+        return Object.fromEntries(
+          Object.entries(grouped).filter(([_, recipes]) => 
+            recipes[0].menu_name.toLowerCase().includes(searchLower) ||
+            recipes.some(recipe => 
+              recipe.inv_name.toLowerCase().includes(searchLower)
             )
-          );
-        }
-  
-        return grouped;
+          )
+        );
+      }
+
+      return grouped;
+    }
+  },
+
+  methods: {
+    /**
+     * Fetches all recipes from the backend API
+     * @async
+     * @returns {Promise<void>}
+     */
+    async fetchRecipes() {
+      this.loading = true;
+      try {
+        const response = await api.get('/recipes');
+        this.recipes = response.data;
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+      } finally {
+        this.loading = false;
       }
     },
-  
-    methods: {
-      async fetchRecipes() {
-        this.loading = true;
-        try {
-          const response = await api.get('/recipes');
-          this.recipes = response.data;
-        } catch (error) {
-          console.error('Error fetching recipes:', error);
-        } finally {
-          this.loading = false;
+
+    /**
+     * Fetches all menu items from the backend API
+     * @async
+     * @returns {Promise<void>}
+     */
+    async fetchMenuItems() {
+      try {
+        const response = await api.get('/menu_items');
+        this.menuItems = response.data;
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
+    },
+
+    /**
+     * Fetches all inventory items from the backend API
+     * @async
+     * @returns {Promise<void>}
+     */
+    async fetchInventoryItems() {
+      try {
+        const response = await api.get('/inventory_items');
+        this.inventoryItems = response.data;
+      } catch (error) {
+        console.error('Error fetching inventory items:', error);
+      }
+    },
+
+    /**
+     * Adds a new ingredient row to the recipe form
+     */
+    addIngredient() {
+      this.formData.ingredients.push({ inv_id: '', quantity: 1 });
+    },
+
+    /**
+     * Removes an ingredient from the recipe form
+     * @param {number} index - Index of the ingredient to remove
+     */
+    removeIngredient(index) {
+      this.formData.ingredients.splice(index, 1);
+    },
+
+    /**
+     * Prepares the form for editing an existing recipe
+     * @param {Array} recipes - Array of recipe objects for a menu item
+     */
+    editRecipe(recipes) {
+      this.editingRecipe = recipes;
+      this.formData = {
+        menu_id: recipes[0].menu_id,
+        ingredients: recipes.map(recipe => ({
+          inv_id: recipe.inv_id,
+          quantity: recipe.quantity
+        }))
+      };
+      this.showAddForm = true;
+    },
+
+    /**
+     * Initiates the deletion process for a recipe
+     * @param {Array} recipes - Array of recipe objects to delete
+     */
+    confirmDelete(recipes) {
+      this.deleteRecipe = recipes;
+      this.showDeleteConfirm = true;
+    },
+
+    /**
+     * Processes the actual deletion of a recipe
+     * @async
+     * @returns {Promise<void>}
+     */
+    async handleDelete() {
+      try {
+        for (const recipe of this.deleteRecipe) {
+          await api.delete(`/recipes`, {
+            params: {
+              menu_id: recipe.menu_id,
+              inv_id: recipe.inv_id
+            }
+          });
         }
-      },
-  
-      async fetchMenuItems() {
-        try {
-          const response = await api.get('/menu_items');
-          this.menuItems = response.data;
-        } catch (error) {
-          console.error('Error fetching menu items:', error);
-        }
-      },
-  
-      async fetchInventoryItems() {
-        try {
-          const response = await api.get('/inventory_items');
-          this.inventoryItems = response.data;
-        } catch (error) {
-          console.error('Error fetching inventory items:', error);
-        }
-      },
-  
-      addIngredient() {
-        this.formData.ingredients.push({ inv_id: '', quantity: 1 });
-      },
-  
-      removeIngredient(index) {
-        this.formData.ingredients.splice(index, 1);
-      },
-  
-      editRecipe(recipes) {
-        this.editingRecipe = recipes;
-        this.formData = {
-          menu_id: recipes[0].menu_id,
-          ingredients: recipes.map(recipe => ({
-            inv_id: recipe.inv_id,
-            quantity: recipe.quantity
-          }))
-        };
-        this.showAddForm = true;
-      },
-  
-      confirmDelete(recipes) {
-        this.deleteRecipe = recipes;
-        this.showDeleteConfirm = true;
-      },
-  
-      async handleDelete() {
-        try {
-          // Delete all recipe entries for this menu item
-          for (const recipe of this.deleteRecipe) {
+        await this.fetchRecipes();
+        this.showDeleteConfirm = false;
+        this.deleteRecipe = null;
+      } catch (error) {
+        console.error('Error deleting recipe:', error);
+      }
+    },
+
+    /**
+     * Handles form submission for both adding and updating recipes
+     * @async
+     * @returns {Promise<void>}
+     */
+    async handleSubmit() {
+      try {
+        if (this.editingRecipe) {
+          // Delete existing recipe entries
+          for (const recipe of this.editingRecipe) {
             await api.delete(`/recipes`, {
               params: {
                 menu_id: recipe.menu_id,
@@ -317,63 +413,50 @@
               }
             });
           }
-          await this.fetchRecipes();
-          this.showDeleteConfirm = false;
-          this.deleteRecipe = null;
-        } catch (error) {
-          console.error('Error deleting recipe:', error);
         }
-      },
-  
-      async handleSubmit() {
-        try {
-          if (this.editingRecipe) {
-            // Delete existing recipe entries
-            for (const recipe of this.editingRecipe) {
-              await api.delete(`/recipes`, {
-                params: {
-                  menu_id: recipe.menu_id,
-                  inv_id: recipe.inv_id
-                }
-              });
-            }
-          }
-  
-          // Add new recipe entries
-          for (const ingredient of this.formData.ingredients) {
-            await api.post('/recipes', {
-              menu_id: this.formData.menu_id,
-              inv_id: ingredient.inv_id,
-              quantity: ingredient.quantity
-            });
-          }
-  
-          await this.fetchRecipes();
-          this.closeForm();
-        } catch (error) {
-          console.error('Error saving recipe:', error);
+
+        // Add new recipe entries
+        for (const ingredient of this.formData.ingredients) {
+          await api.post('/recipes', {
+            menu_id: this.formData.menu_id,
+            inv_id: ingredient.inv_id,
+            quantity: ingredient.quantity
+          });
         }
-      },
-  
-      closeForm() {
-        this.showAddForm = false;
-        this.editingRecipe = null;
-        this.formData = {
-          menu_id: '',
-          ingredients: [
-            { inv_id: '', quantity: 1 }
-          ]
-        };
+
+        await this.fetchRecipes();
+        this.closeForm();
+      } catch (error) {
+        console.error('Error saving recipe:', error);
       }
     },
-  
-    created() {
-      this.fetchRecipes();
-      this.fetchMenuItems();
-      this.fetchInventoryItems();
+
+    /**
+     * Closes the form and resets form data to initial values
+     */
+    closeForm() {
+      this.showAddForm = false;
+      this.editingRecipe = null;
+      this.formData = {
+        menu_id: '',
+        ingredients: [
+          { inv_id: '', quantity: 1 }
+        ]
+      };
     }
+  },
+
+  /**
+   * Lifecycle hook - Called when component is created
+   * Fetches initial recipe data and required lookup data
+   */
+  created() {
+    this.fetchRecipes();
+    this.fetchMenuItems();
+    this.fetchInventoryItems();
   }
-  </script>
+}
+</script>
   
   <style scoped>
   .recipe-section {

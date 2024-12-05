@@ -11,6 +11,10 @@
     methods: {
         ...mapActions(['setUser', 'setToken']),
     },
+
+    // @vuese
+    // Create a session for authenticated user if authenticated and verified with the backend, redirect to home page
+    // Otherwise, do not authenticate user and redirect to login page
     async created() {
       this.flashScaffolding = shared.flashScaffolding
 

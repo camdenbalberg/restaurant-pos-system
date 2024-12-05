@@ -60,6 +60,9 @@ Rails.application.routes.draw do
           put '/:id', to: 'inventory_items#update'
           delete '/:id', to: 'inventory_items#destroy'
         end
+        member do
+          patch '/update_stock', to: 'inventory_items#update_stock'
+        end
       end
     end
   end
@@ -120,6 +123,7 @@ end
       resources :sale_items, only: [ :index, :show ] do
         collection do
           get "by_transaction_id/:id", to: "sale_items#by_transaction_id"
+          post 'by_transaction_id', to: 'sale_items#by_transaction_id'
           post 'by_transaction_ids', to: 'sale_items#by_transaction_ids'
         end
       end

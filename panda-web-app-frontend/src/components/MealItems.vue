@@ -31,6 +31,17 @@ export default {
       required: true,
     },
   },
+
+  // @vuese
+  /**
+   * @data
+   * @description
+   * Initial fields for the component.
+   * 
+   * - 'menuItems' holds the menu items.
+   * - 'loading' is a boolean to show loading state.
+   * - 'activeButtonIndex' is the index of the active button.
+   */
   data() {
     return {
       menuItems: [],
@@ -38,15 +49,48 @@ export default {
       activeButtonIndex: null,
     };
   },
+
+  // @vuese
+  /**
+   * @computed
+   * @description
+   * Computed properties for the component.
+   * 
+   * - 'filteredMenuItems' filters the menu items by category.
+   */
   computed: {
     filteredMenuItems() {
       return this.menuItems.filter(item => item.category === this.category);
     },
   },
+
+  // @vuese
+  /**
+   * @mounted
+   * @description
+   * Fetches the menu items when the component is mounted.
+   */
   mounted() {
     this.fetchMenuItems();
   },
+
+  // @vuese
+  /**
+   * @methods
+   * @description
+   * Methods for the component.
+   * 
+   * - 'fetchMenuItems' fetches the menu items.
+   * - 'selected' emits the selected item.
+   * - 'handleButtonClick' handles the button click event.
+   */
   methods: {
+    // @vuese
+    /**
+     * @method fetchMenuItems
+     * @description
+     * Fetches the menu items.
+     */
     async fetchMenuItems() {
       try {
         // Example usage of env var
@@ -58,10 +102,29 @@ export default {
         this.loading = false;
       }
     },
+
+    // @vuese
+    /**
+     * @method selected
+     * @description
+     * Emits the selected item.
+     * 
+     * @param {Object} item - The selected item.
+     */
     selected(item) {
       console.log('Selected New Item:', item); // Debugging log
       this.$emit('selected', item);
     },
+
+    // @vuese
+    /**
+     * @method handleButtonClick
+     * @description
+     * Handles the button click event.
+     * 
+     * @param {number} index - The index of the button.
+     * @param {Object} item - The selected item.
+     */
     handleButtonClick(index, item) {
       this.activeButtonIndex = index;
       this.selected(item);

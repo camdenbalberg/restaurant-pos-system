@@ -1,7 +1,9 @@
 <template>
     <div class="home">
+      <!-- Show logo and slogan -->
       <img src="../assets/biglogo.png" id="big-logo" alt="12Team12 Main Logo">
       <h1 class="slogan"><strong><i>Very good, very sugar</i></strong></h1>
+      <!-- Show the various screens the user can travel to from the home screen -->
       <ul class="home-links">
         <li>
           <button class="home-item" @click="travel('/cashier')">Cashier</button>
@@ -12,6 +14,7 @@
           <!-- <button class="home-item" @click="travel('/login')">Login</button> -->
         </li>
       </ul>
+      <!-- Logout button is separate from other links -->
       <ul class="home-links">
         <li><LogoutButton /></li>
       </ul>
@@ -29,6 +32,9 @@
 
     },
     methods: {
+      // @vuese
+      // When a button on the home screen is clicked, push the home page to the back stack and navigate to the requested screen.
+      // Back stack is used so when back button is clicked, the previous page can be loaded.
       async travel(destination) {
         this.$backStack.push("/");
         return this.$router.push(destination);
@@ -54,6 +60,7 @@
     color: var(--textColor);
   }
 
+  /* Team logo */
   img {
     scale: 0.75;
     /* Center the image */

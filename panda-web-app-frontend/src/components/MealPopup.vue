@@ -20,11 +20,30 @@ export default {
   components: {
     MealItems,
   },
+
+  // @vuese
+  /**
+   * @data
+   * @description
+   * Initial fields for the component.
+   * 
+   * - 'selected_items' holds the selected items for meal.
+   */
   data() {
     return {
       selected_items: [],
     };
   },
+
+  // @vuese
+  /**
+   * @props
+   * @description
+   * Props for the component.
+   * 
+   * - 'menu_item' is the menu item object.
+   * - 'cat' is the array of categories.
+   */
   props: {
     menu_item: {
       type: Object,
@@ -38,15 +57,49 @@ export default {
       },
     },
   },
+
+  // @vuese
+  /**
+   * @created
+   * @description
+   * Initializes the selected items array.
+   */
   created() {
     this.initializeSelectedItems();
   },
+
+  // @vuese
+  /**
+   * @methods
+   * @description
+   * Methods for the component.
+   * 
+   * - 'initializeSelectedItems' initializes the selected items array.
+   * - 'addToKart' adds selected items to the cart.
+   * - 'currentItems' puts respective entree or side in the selected_items array.
+   */
   methods: {
+    // @vuese
+    /**
+     * @method initializeSelectedItems
+     * @description
+     * Initializes the selected items array with number of entrees and sides.
+     * 
+     * @returns {void}
+     */
     initializeSelectedItems() {
-      //initialize selected_items array with number of entrees and sides
       this.selected_items = new Array(this.cat.length).fill(null);
       console.log(this.cat);
     },
+
+    // @vuese
+    /**
+     * @method addToKart
+     * @description
+     * Adds selected items to the cart.
+     * 
+     * @returns {void}
+     */
     addToKart() {
       const allItemsSelected = this.selected_items.every(item => item !== null);
       if (allItemsSelected) {
@@ -58,6 +111,18 @@ export default {
         console.log('Please select all items before adding to the cart.');
       }
     },
+
+    // @vuese
+    /**
+     * @method currentItems
+     * @description
+     * Puts respective entree or side in the selected_items array.
+     * 
+     * @param {number} index - The index of the selected item.
+     * @param {object} item - The selected item object.
+     * 
+     * @returns {void}
+     */
     currentItems(index, item) {
       console.log('Selected Item:', item);
       console.log('Selected Index:', index);

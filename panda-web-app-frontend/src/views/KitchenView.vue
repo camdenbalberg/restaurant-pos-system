@@ -1,7 +1,9 @@
 <!-- src/views/AboutView.vue -->
 <template>
+  <!-- Main container for the About view -->
   <body>
     <div>
+      <!-- Transactions component renders the content -->
       <Transactions />
     </div>
   </body>
@@ -9,12 +11,15 @@
 
 
 <script>
- 
+  /**
+ * Imports the Transactions component from KitchenComponents.vue.
+ * This component handles displaying or managing transactions data.
+ */
   import Transactions from '../components/KitchenComponents.vue';
   export default { 
     name: 'HomeView',
     components: {
-    Transactions,
+    Transactions, // Registers the Transactions component for use in the template
     },
   };
 </script>

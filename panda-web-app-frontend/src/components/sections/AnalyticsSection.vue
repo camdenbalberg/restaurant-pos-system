@@ -1,14 +1,28 @@
 <template>
+  <!-- @vuese: analytics-section -->
+  <!-- Main section for managing analytics and reports -->
   <div class="analytics-section">
     <h2>Analytics Management</h2>
+
+    <!-- @vuese: analytics-content -->
+    <!-- Container for the content of analytics management -->
     <div class="analytics-content">
+
+      <!-- @vuese: date-filter -->
+      <!-- Date filter inputs for filtering reports by date range -->
       <div v-if="showDateFilter || showDateFilter2 || showDateFilter3 || showDateFilter4" class="date-filter">
         <label>Start Date:</label>
         <input type="date" v-model="startDate" />
         <label>End Date:</label>
         <input type="date" v-model="endDate" />
       </div>
+
+      <!-- @vuese: report-buttons -->
+      <!-- Section containing buttons to generate various reports -->
       <div class="report-buttons">
+
+        <!-- @vuese: x-report-button -->
+        <!-- Button to generate the X-report -->
         <button 
           class="report-button" 
           @click="handleReport('X-report')" 
@@ -17,6 +31,8 @@
           X-report
         </button>
 
+        <!-- @vuese: z-report-button -->
+        <!-- Button to generate the Z-report -->
         <button 
           class="report-button" 
           @click="handleReport('Z-report')" 
@@ -25,6 +41,8 @@
           Z-report
         </button>
 
+        <!-- @vuese: sales-report-button -->
+        <!-- Button to generate or filter the sales report -->
         <button 
           v-if="!showDateFilter" 
           class="report-button" 
@@ -42,6 +60,8 @@
           Press again
         </button>
 
+        <!-- @vuese: product-usage-button -->
+        <!-- Button to generate or filter the product usage report -->
         <button 
           v-if="!showDateFilter2" 
           class="report-button" 
@@ -59,6 +79,8 @@
           Press again
         </button>
 
+        <!-- @vuese: what-sells-together-button -->
+        <!-- Button to generate or filter the report for menu items sold together -->
         <button 
           v-if="!showDateFilter3" 
           class="report-button" 
@@ -76,6 +98,8 @@
           Press again
         </button>
 
+        <!-- @vuese: excess-report-button -->
+        <!-- Button to generate or filter the excess inventory report -->
         <button 
           v-if="!showDateFilter4" 
           class="report-button" 
@@ -93,12 +117,17 @@
           Press again
         </button>
       </div>
-      
+
+      <!-- @vuese: loading-spinner -->
+      <!-- Loading spinner displayed while reports are being generated -->
       <div v-if="loading" class="loading-spinner">
         Loading...
       </div>
 
-      <!-- X-report Table -->
+      <!-- @vuese: report-tables -->
+      <!-- Dynamic tables to display various reports -->
+
+      <!-- X-report table -->
       <div v-if="hourlySales.length">
         <table class="report-table">
           <thead>
@@ -116,7 +145,7 @@
         </table>
       </div>
 
-      <!-- Z-report Table -->
+      <!-- Z-report table -->
       <div v-if="hourlyIncome.length">
         <table class="report-table">
           <thead>
@@ -134,6 +163,8 @@
         </table>
       </div>
 
+      <!-- Additional reports tables (Sales, Inventory Usage, Pairs, and Excess Reports) -->
+      <!-- Each section dynamically renders a table based on its respective data -->
       <!-- Sales Report Table -->
       <div v-if="itemSales.length">
         <table class="report-table">
@@ -151,7 +182,6 @@
           </tbody>
         </table>
       </div>
-
       <!-- Inventory Usage Report Table -->
       <div v-if="inventoryUsageReport.length">
         <table class="report-table">
@@ -169,7 +199,6 @@
           </tbody>
         </table>
       </div>
-
       <!-- What sells together table -->
       <div v-if="pairsReport.length">
         <table class="report-table">
@@ -187,7 +216,6 @@
           </tbody>
         </table>
       </div>
-
       <!-- Excess Report Table -->
       <div v-if="excessReport.length">
         <table class="report-table">
@@ -211,6 +239,7 @@
   </div>
 </template>
 
+
 <script>
 import api from '@/api';
 import axios from 'axios';
@@ -219,35 +248,68 @@ import { fetchTransactionsForDate } from '../../api/transactionService';
 import { fetchMenuItems } from '../../api/menuService';
 
 export default {
-  name: 'AnalyticsSection',
+  /**
+   * The AnalyticsSection component provides functionality for generating various reports, such as sales per hour, income per hour, inventory usage, and more.
+   */
+   name: 'AnalyticsSection',
+
+
+  // @vuese
+  // **Data properties**
+  // All reactive properties used in the component.
   data() {
     return {
+      /** @description List of all transactions fetched from the API */
       allTransactions: [],
+      /** @description List of transactions filtered or displayed */
       transactions: [],
+      /** @description Loading state for API calls or computations */
       loading: false,
+      /** @description Mapping of menu item IDs to names */
       menuItems: {},
-      hourlySales: [], 
+      /** @description Sales data grouped by hour */
+      hourlySales: [],
+      /** @description Income data grouped by hour */
       hourlyIncome: [],
+      /** @description Sales data for specific items */
       itemSales: [],
+      /** @description Report data for inventory usage */
       inventoryUsageReport: [],
+      /** @description Mapping of inventory item IDs to names */
       inventoryItems: {},
+      /** @description Flag indicating if the Z-report was generated */
       zReportGenerated: false,
+      /** @description Start date for date-range filters */
       startDate: null,
+      /** @description End date for date-range filters */
       endDate: null,
+      /** @description Flags for showing or hiding date filter sections */
       showDateFilter: false,
       showDateFilter2: false,
-      pairsReport: [],
       showDateFilter3: false,
-      excessReport: [],
       showDateFilter4: false,
+      /** @description Report for identifying pairs of items that sell together */
+      pairsReport: [],
+      /** @description Report for identifying excess inventory */
+      excessReport: [],
     };
   },
+
+  // @vuese
+  // **Lifecycle Hooks**
+  // Automatically executed at specific component lifecycles.
   mounted() {
     this.loadTransactions();
     this.loadMenuItems();
     this.fetchInventoryItems();
   },
+  // @vuese
+  // **Methods**
   methods: {
+    /**
+     * Fetches all transactions from the API and updates the `transactions` array.
+     * @returns {Promise<void>}
+     */
     async loadTransactions() {
       try {
         console.log("Fetching transactions...");
@@ -257,6 +319,10 @@ export default {
       }
     },
 
+    /**
+     * Fetches menu items from the API and creates a mapping of menu IDs to names.
+     * @returns {Promise<void>}
+     */
     async loadMenuItems() {
       try {
         const menuData = await fetchMenuItems();  // Fetch menu items from API
@@ -269,6 +335,10 @@ export default {
       }
     },
 
+     /**
+     * Calculates the number of sales for each hour in the day.
+     * The hours range from 10 AM to 9 PM.
+     */
     calculateSalesPerHour() {// X-report
       const salesCount = Array(12).fill(0); // 12 hours from 10 AM to 9 PM
 
@@ -294,6 +364,9 @@ export default {
       this.loading = false;
     },
 
+    /**
+     * Calculates the total income for each hour in the day.
+     */
     calculateIncomePerHour() { //Z-report
       const incomeCount = Array(12).fill(0);
 
@@ -318,6 +391,10 @@ export default {
       this.loading = false;
     },
 
+
+    /**
+     * Fetches transactions in a date range and calculates the sales data per menu item.
+     */
     async calculateMenuItemsPerHour() { //Sales report
       this.validateDates();
 
@@ -368,6 +445,26 @@ export default {
       }
     },
 
+    /**
+     * @method generateProductUsageReport
+     * @description 
+     * This method generates a product usage report based on the selected date range. It fetches the transactions, sale items, and recipe information 
+     * to calculate the total inventory usage for each inventory item involved in the sales during the specified period. The report will include the 
+     * inventory item name (if available) and the total amount used for each item.
+     *
+     * It performs the following steps:
+     * 1. Validates the selected date range.
+     * 2. Fetches the transactions for the given date range.
+     * 3. Retrieves the sale items for each transaction.
+     * 4. Counts the quantity sold for each menu item.
+     * 5. Fetches the recipe for each menu item to determine which inventory items were used and in what quantities.
+     * 6. Calculates the total amount of each inventory item used based on the menu item quantities.
+     * 7. Generates and stores the report in the `inventoryUsageReport` array.
+     *
+     * If an error occurs at any point, an error message is logged to the console.
+     *
+     * @returns {void}
+     */
     async generateProductUsageReport() {
       this.validateDates();
 
@@ -436,6 +533,15 @@ export default {
       }
     },
 
+    /**
+     * @method validateDates
+     * @description
+     * Validates the selected start and end dates to ensure the start date is not later than the end date.
+     * If the dates are reversed, this method will swap them to ensure the start date is earlier than the end date.
+     * This is an internal utility method called by other methods that require valid date ranges.
+     *
+     * @returns {void}
+     */
     validateDates() {
         if (this.startDate && this.endDate) {
           const start = new Date(this.startDate);
@@ -449,6 +555,15 @@ export default {
         }
     },
 
+    /**
+     * @method fetchInventoryItems
+     * @description
+     * This method fetches all inventory items from the API and maps their inventory IDs to their respective names. 
+     * The data is stored in the `inventoryItems` object, where the key is the inventory ID and the value is the inventory name.
+     * This method is typically used to initialize or update the list of inventory items.
+     *
+     * @returns {void}
+     */
     async fetchInventoryItems() {
       this.loading = true;
       try {
@@ -468,6 +583,17 @@ export default {
       }
     },
 
+    /**
+     * @method generateWhatSellsTogetherReport
+     * @description
+     * This method generates a "What Sells Together" report for a selected date range. It identifies pairs of menu items 
+     * that were sold together in the same transaction, calculates the frequency of these pairs, and generates a report 
+     * sorted by the most frequent pairs.
+     * 
+     * If an error occurs during data fetching or report generation, it logs the error in the console.
+     *
+     * @returns {void}
+     */
     async generateWhatSellsTogetherReport() {
       this.validateDates();
 
@@ -529,6 +655,18 @@ export default {
       }
     },
 
+    /**
+     * @method generateExcessReport
+     * @description
+     * This method generates an "Excess Report" based on the selected date range. It identifies inventory items that 
+     * have sold less than 10% of their available stock during the specified period. The report is generated by comparing 
+     * the total quantity sold with the total available quantity for each item.
+     * 
+     * If no items have sold less than 10%, it alerts the user.
+     * If an error occurs during the process, it logs the error to the console.
+     *
+     * @returns {void}
+     */
     async generateExcessReport() {
       this.validateDates();
 
@@ -595,27 +733,87 @@ export default {
       }
     },
 
-
+    /**
+ * @method handleSalesReport
+ * @description
+ * This method is called when the "Sales Report" option is selected. It shows the date filter section by setting 
+ * the `showDateFilter` property to `true`. This method is used to initiate the process of generating a sales report 
+ * by enabling the necessary date filter UI component.
+ *
+ * @returns {void}
+ */
     async handleSalesReport() {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter = true;
       // this.handleReport('Sales-report');
     },
 
+
+/**
+ * @method handleProductUsage
+ * @description
+ * This method is called when the "Product Usage" option is selected. It shows the date filter section by setting 
+ * the `showDateFilter2` property to `true`. This method is used to initiate the process of generating a product 
+ * usage report by enabling the necessary date filter UI component.
+ *
+ * @returns {void}
+ */
     async handleProuctUsage() {
       // Show the date filter section only when 'Sales Report' is clicked
       this.showDateFilter2 = true;
       // this.handleReport('Sales-report');
     },
     
+    /**
+ * @method handleWhatSellsTogether
+ * @description
+ * This method is called when the "What Sells Together" option is selected. It shows the date filter section by setting 
+ * the `showDateFilter3` property to `true`. This method is used to initiate the process of generating a "What Sells 
+ * Together" report by enabling the necessary date filter UI component.
+ *
+ * @returns {void}
+ */
     async handleWhatSellsTogether() {
       this.showDateFilter3 = true;
     },
 
+
+/**
+ * @method handleExcessReport
+ * @description
+ * This method is called when the "Excess Report" option is selected. It shows the date filter section by setting 
+ * the `showDateFilter4` property to `true`. This method is used to initiate the process of generating an excess report 
+ * by enabling the necessary date filter UI component.
+ *
+ * @returns {void}
+ */
     handleExcessReport() {
       this.showDateFilter4 = true;
     },
 
+    /**
+ * @method handleReport
+ * @description
+ * This method handles the report generation process based on the provided `reportType`. It first loads the latest 
+ * transactions and then performs the corresponding report generation based on the `reportType` argument.
+ * 
+ * The method supports multiple report types:
+ * - 'X-report': Generates an hourly sales report.
+ * - 'Z-report': Generates an income per hour report, but only once per day.
+ * - 'Sales-report': Generates a sales report based on menu items per hour.
+ * - 'Product-usage': Generates a product usage report.
+ * - 'What-sells-together': Generates a report showing items that are sold together frequently.
+ * - 'Excess-report': Generates an excess report based on inventory data.
+ * 
+ * Each report type triggers a specific method for generating the corresponding report (e.g., `calculateSalesPerHour`, 
+ * `calculateIncomePerHour`, etc.). The method also controls the visibility of the date filter sections based on 
+ * the selected report.
+ * 
+ * After generating the report, the date filter UI components are hidden, and the loading state is set to `false`.
+ *
+ * @param {string} reportType - The type of report to generate (e.g., 'X-report', 'Z-report', etc.)
+ * @returns {void}
+ */
     async handleReport(reportType) {
       this.loading = true;
       await this.loadTransactions(); // Load the latest transactions each time a report is requested
@@ -623,6 +821,7 @@ export default {
       this.hourlyIncome = [];
       this.itemSales = [];
       this.inventoryUsageReport = [];
+      this.pairsReport = [];
       this.excessReport = [];
 
       switch (reportType) {

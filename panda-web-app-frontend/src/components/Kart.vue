@@ -23,72 +23,73 @@
       <button class="kart-button" onclick="document.getElementById('loyalty-modal').style.display='block'" @click="loyaltyScreen = 0">Loyalty</button>
       <button class="kart-button" @click="completeTransaction">Order</button>
       
+      <!-- Loyalty information of loaded Customer -->
       <div v-show="phone">Loyalty loaded: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
       <div v-show="discountsApplied">Added discounts: ${{ this.birthdayDiscounts + this.normalDiscounts }} off</div>
+    </div>
 
+    <!-- Loyalty modal, separate from the other popup modal -->
+    <div id="loyalty-modal" class="w3-modal">
+      <div class="w3-modal-content w3-animate-top">
+        <div class="w3-container">
+          <span onclick="document.getElementById('loyalty-modal').style.display='none'"
+          class="w3-button w3-display-topright">&times;</span>
+          <h1>Loyalty</h1>
 
-      <div id="loyalty-modal" class="w3-modal">
-        <div class="w3-modal-content w3-animate-top">
-          <div class="w3-container">
-            <span onclick="document.getElementById('loyalty-modal').style.display='none'"
-            class="w3-button w3-display-topright">&times;</span>
-            <h1>Loyalty</h1>
-
-            <div v-if="loyaltyScreen == 0">
-              <h2>Loyalty Root</h2>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
-                <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
-              </div>
+          <div v-if="loyaltyScreen == 0">
+            <h2>Loyalty Root</h2>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 1">Add Customer</button>
+              <button class="modal-button" @click="loyaltyScreen = 2">Check Existing</button>
             </div>
-
-            <div v-else-if="loyaltyScreen == 1">
-              <h2>Loyalty Add Customer</h2>
-              <div class="modal-column">
-                <div class="modal-row">
-                  <label for="loyalty-phone">Phone:</label>
-                  <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
-                </div>
-                <div class="modal-row">
-                  <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
-                  <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
-                </div>
-                <div class="modal-row">
-                  <label for="loyalty-points">Points:</label>
-                  <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
-                </div>
-                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
-                <div v-show="loyaltyErrorAdd">Unable to add customer</div>
-              </div>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-                <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
-              </div>
-            </div>
-
-            <div v-else>
-              <h2>Loyalty Check Customer</h2>
-              <div class="modal-column">
-                <div class="modal-row">
-                  <label for="loyalty-phone">Phone:</label>
-                  <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
-                </div>
-                <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
-                <div v-show="loyaltyErrorFind">Unable to find customer</div>
-              </div>
-              <div class="modal-row">
-                <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
-                <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
-              </div>
-            </div>
-
           </div>
-          <div class="modal-row">
-            <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
-            <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+
+          <div v-else-if="loyaltyScreen == 1">
+            <h2>Loyalty Add Customer</h2>
+            <div class="modal-column">
+              <div class="modal-row">
+                <label for="loyalty-phone">Phone:</label>
+                <input class="modal-input" type="text" id="loyalty-phone" v-model="prospectivePhone">
+              </div>
+              <div class="modal-row">
+                <label for="loyalty-birthday">Birthday (yyyy-mm-dd):</label>
+                <input class="modal-input"type="text" id="loyalty-birthday" v-model="prospectiveBirthday">
+              </div>
+              <div class="modal-row">
+                <label for="loyalty-points">Points:</label>
+                <input class="modal-input"type="text" id="loyalty-points" v-model="prospectivePoints">
+              </div>
+              <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+              <div v-show="loyaltyErrorAdd">Unable to add customer</div>
+            </div>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+              <button class="modal-button" @click="loyaltyAddCustomer()">Add Customer</button>
+            </div>
           </div>
-          
+
+          <div v-else>
+            <h2>Loyalty Check Customer</h2>
+            <div class="modal-column">
+              <div class="modal-row">
+                <label for="loyalty-phone">Phone:</label>
+                <input class="modal-input"type="text" id="loyalty-phone" v-model="prospectivePhone">
+              </div>
+              <div v-show="phone">Loaded customer: ({{ this.phone }}, {{ this.birthday }}, {{ this.points }})</div>
+              <div v-show="loyaltyErrorFind">Unable to find customer</div>
+            </div>
+            <div class="modal-row">
+              <button class="modal-button" @click="loyaltyScreen = 0">Back</button>
+              <button class="modal-button" @click="loyaltyCheckCustomer()">Check Customer</button>
+            </div>
+          </div>
+
         </div>
+        <div class="modal-row">
+          <button v-show="canBirthday" class="modal-button" @click="applyBirthdayDiscount()">Apply Birthday Discount</button>
+          <button v-show="canDiscount" class="modal-button" @click="applyDiscount()">Apply $1 Discount</button>
+        </div>
+        
       </div>
     </div>
 </template>
@@ -100,10 +101,35 @@ import api from '@/api'
 
 export default {
   name: 'Kart',
+
+  // @vuese
+  /**
+   * @data
+   * @description
+   * Initial fields for the component.
+   * 
+   * - 'loading' is the loading state of the component.
+   * - 'loyaltyScreen' is the current screen of the loyalty modal.
+   * - 'phone' is the phone number of the loaded Customer.
+   * - 'birthday' is the birthday of the loaded Customer.
+   * - 'points' is the loyalty points of the loaded Customer.
+   * - 'id' is the id of the loaded Customer.
+   * - 'prospectivePhone' is the phone number of the prospective Customer.
+   * - 'prospectiveBirthday' is the birthday of the prospective Customer.
+   * - 'prospectivePoints' is the loyalty points of the prospective Customer.
+   * - 'loyaltyErrorFind' is the error state of finding a Customer.
+   * - 'loyaltyErrorAdd' is the error state of adding a Customer.
+   * - 'canDiscount' is the state of being able to apply a discount.
+   * - 'canBirthday' is the state of being able to apply a birthday discount.
+   * - 'birthdayDiscounts' is the total birthday discounts applied.
+   * - 'normalDiscounts' is the total normal discounts applied.
+   * - 'discountsApplied' is the state of discounts being applied.
+   */
   data() {
     return{
       loading: false,
 
+      // Loyalty information
       loyaltyScreen: 0,
       phone: "",
       birthday: "",
@@ -121,19 +147,62 @@ export default {
       discountsApplied:  false,
     }
   },
+
+  // @vuese
+  /**
+   * @components
+   * @description
+   * Components used in the component.
+   * 
+   * - 'MealItem' is the MealItem component.
+   */
   components: {
     MealItem,
   },
+
+  // @vuese
+  /**
+   * @props
+   * @description
+   * Props for the component.
+   * 
+   * - 'orderedItems' is the list of ordered items.
+   */
   props: {
     orderedItems: {
       type: Array,
       required: true,
     },
   },
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
+
+  // @vuese
+  /**
+   * @methods
+   * @description
+   * Methods for the component.
+   * 
+   * - 'completeTransaction' completes the transaction.
+   * - 'getAddedPoints' calculates the total points that should be added to the Customer account.
+   * - 'loyaltyAddCustomer' adds a Customer to the Customer table.
+   * - 'loyaltyCheckCustomer' checks if a Customer exists in the table given a phone number.
+   * - 'checkDiscounts' checks if more discounts can be applied for the loaded Customer.
+   * - 'applyBirthdayDiscount' adds a birthday discount of $10 off.
+   * - 'applyDiscount' adds a normal discount of $1 off.
+   */
   methods: {
+    
+    // @vuese
+    /**
+     * @method completeTransaction
+     * @description
+     * Complete the transaction.
+     */
     async completeTransaction() {
       try{
         this.loading = true;
@@ -207,10 +276,17 @@ export default {
       }
     },
 
+    // @vuese
+    // Calculate the total points that should be added to the Customer account.
+    // 1 Point for 1 dollar spent
     getAddedPoints() {
       return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
     },
 
+    // @vuese
+    // Add a Customer to the Customer table.
+    // Adds a Customer based on their phone number, birthday, and starting points.
+    // Also loads the Customer for checkout or loyalty implementation, will be in the same state as after calling loyaltyCheckCustomer().
     async loyaltyAddCustomer() {
       try {
         console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
@@ -233,6 +309,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if a Customer exists in the table given a phone number.
+    // Loads the given Customer for checkout or loyalty implementation.
     async loyaltyCheckCustomer() {
       try {
         console.log("Checking loyalty for " + this.prospectivePhone);
@@ -255,6 +334,9 @@ export default {
       this.checkDiscounts();
     },
 
+    // @vuese
+    // Check if more discounts can be applied for the loaded Customer.
+    // If more discounts can be applied, the discount buttons in the modal will be enabled.
     checkDiscounts() {
       if (parseInt(this.points) >= 10) {
         this.canDiscount = true;
@@ -277,6 +359,8 @@ export default {
       }
     },
 
+    // @vuese
+    // Add a birthday discount of $10 off.
     applyBirthdayDiscount() {
       this.birthdayDiscounts += 10;
       this.discountsApplied = true;
@@ -285,6 +369,8 @@ export default {
       this.flashScaffolding();
     },
 
+    // @vuese
+    // Add a normnal discount of $1 off.
     applyDiscount() {
       this.normalDiscounts += 1;
       this.discountsApplied = true;
@@ -356,6 +442,10 @@ export default {
   }
 
   /* Loyalty Modal */
+
+  .loyalty-modal {
+    position: fixed;
+  }
 
   .modal-button {
     margin: 35px;

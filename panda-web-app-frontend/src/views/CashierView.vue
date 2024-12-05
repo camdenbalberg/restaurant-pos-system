@@ -118,16 +118,21 @@
   import shared from '../shared'
 
   export default {
-    name: 'Cashier View',
+    name: 'CashierView',
     components: {
       CashierMenuItems,
     },
+
+    // @vuese
+    // Initial fields.
     data() {
       return {
         orderItems: [],
+
         isLocked: false,
         passkey: "",
 
+        // Loyalty information
         loyaltyScreen: 0,
         phone: "",
         birthday: "",
@@ -145,6 +150,9 @@
     mounted() {
       this.checkScreenLockStatus();
     },
+
+    // @vuese
+    // Enable flash scaffolding functionality from a shared js file.
     created() {
       this.flashScaffolding = shared.flashScaffolding
     },
@@ -412,10 +420,17 @@
         });
       },
 
+      // @vuese
+      // Calculate the total points that should be added to the Customer account.
+      // 1 Point for 1 dollar spent
       getAddedPoints() {
         return this.orderItems.reduce((total, item) => {return total += item.price}, 0);
       },
 
+      // @vuese
+      // Add a Customer to the Customer table.
+      // Adds a Customer based on their phone number, birthday, and starting points.
+      // Also loads the Customer for checkout or loyalty implementation, will be in the same state as after calling loyaltyCheckCustomer().
       async loyaltyAddCustomer() {
         try {
           console.log(`Adding loyalty for (${this.prospectivePhone},${this.prospectiveBirthday},${this.prospectivePoints})`);
@@ -438,6 +453,9 @@
         this.checkDiscounts();
       },
 
+      // @vuese
+      // Check if a Customer exists in the table given a phone number.
+      // Loads the given Customer for checkout or loyalty implementation.
       async loyaltyCheckCustomer() {
         try {
           console.log("Checking loyalty for " + this.prospectivePhone);
@@ -460,6 +478,9 @@
         this.checkDiscounts();
       },
 
+      // @vuese
+      // Check if more discounts can be applied for the loaded Customer.
+      // If more discounts can be applied, the discount buttons in the modal will be enabled.
       checkDiscounts() {
         if (parseInt(this.points) >= 10) {
           this.canDiscount = true;
@@ -482,6 +503,9 @@
         }
       },
 
+      // @vuese
+      // Add a birthday discount of $10 off.
+      // Adds an item to the orderItems list which is a discount.
       applyBirthdayDiscount() {
         const orderItem = { 
           index: this.orderItems.length,
@@ -496,11 +520,13 @@
         this.orderItems.push(orderItem);
       },
 
+      // Add a normal discount of $1 off.
+      // Adds an item to the orderItems list which is a discount
       applyDiscount() {
         const orderItem = { 
           index: this.orderItems.length,
           name: "$1 Discount",
-          price: -1,  // With tax it will be 1 dollar
+          price: -1,  
           quantity: 1,
           items: [],
         }

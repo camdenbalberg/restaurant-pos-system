@@ -1,4 +1,8 @@
 // src/router.js
+/**
+ * Vue Router instance configuration file.
+ * Manages application routes and navigation guards.
+ */
 import store from '@/store';
 import { createRouter, createWebHistory } from "vue-router";
 import { authStatus } from "@/auth/index.js";
@@ -12,6 +16,10 @@ import CustomerView from "@/views/CustomerView.vue"; // Create this component
 import CashierView from '@/views/CashierView.vue';
 import MenuBoardView from "../views/MenuBoardView.vue";
 
+/**
+ * Application routes.
+ * Each route defines a path, name, and component to render, along with optional metadata.
+ */
 const routes = [
   {
     path: "/",
@@ -73,11 +81,20 @@ const routes = [
   },
 ];
 
+
+/**
+ * Creates and configures the Vue Router instance.
+ * Includes navigation guards to enforce authentication and role-based access control.
+ */
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
+/**
+ * Global navigation guard.
+ * Checks for authentication and user roles before allowing navigation to routes.
+ */
 router.beforeEach((to, from, next) => {
   console.log('Navigating to:', to.name);
   console.log('Requires Auth:', to.meta.requiresAuth);

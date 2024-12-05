@@ -186,28 +186,59 @@
 <script>
 import api from '@/api';
 
+/**
+ * @component InventorySection
+ * @description A component that manages inventory items, including tracking stock levels,
+ * adding new items, and monitoring inventory status. Provides functionality for sorting,
+ * filtering, and managing stock levels with warning indicators.
+ */
 export default {
   name: 'InventorySection',
   
+  /**
+   * Initial component data
+   * @returns {Object} Component data
+   */
   data() {
     return {
+      /** @type {Array} List of all inventory items */
       inventoryItems: [],
+      
+      /** @type {Boolean} Loading state indicator */
       loading: false,
+      
+      /** @type {Boolean} Controls visibility of add/edit form */
       showAddForm: false,
+      
+      /** @type {Object|null} Currently edited inventory item */
       editingInventoryItem: null,
+      
+      /** @type {Boolean} Controls visibility of delete confirmation */
       showDeleteConfirm: false,
+      
+      /** @type {Object|null} Item to be deleted */
       deleteInventoryItem: null,
+      
+      /** @type {Object} Form data for adding/editing items */
       formData: {
         inv_name: '',
         stock: 0,
         base_stock: 0
       },
+      
+      /** @type {String} Current sort column */
       sortBy: '',
+      
+      /** @type {String} Current sort direction ('asc' or 'desc') */
       sortDirection: 'asc'
     };
   },
 
   computed: {
+    /**
+     * Calculates the number of items that are below their base stock level
+     * @returns {number} Count of low stock items
+     */
     lowStockItems() {
       return this.inventoryItems.filter(item => 
         item.stock <= item.base_stock
@@ -216,6 +247,11 @@ export default {
   },
 
   methods: {
+    /**
+     * Retrieves all inventory items from the backend API
+     * @async
+     * @returns {Promise<void>}
+     */
     async fetchInventoryItems() {
       this.loading = true;
       try {
@@ -223,29 +259,46 @@ export default {
         this.inventoryItems = response.data;
       } catch (error) {
         console.error('Error fetching inventory items:', error);
-        // Add error notification here
       } finally {
         this.loading = false;
       }
     },
 
+    /**
+     * Determines the stock status of an item based on current quantity vs base stock
+     * @param {Object} item - Inventory item to check
+     * @returns {string} Status label ('Critical', 'Low', or 'Good')
+     */
     getStockStatus(item) {
       if (item.stock <= item.base_stock * 0.2) return 'Critical';
       if (item.stock <= item.base_stock) return 'Low';
       return 'Good';
     },
 
+    /**
+     * Prepares the form for editing an existing inventory item
+     * @param {Object} item - Item to edit
+     */
     editInventoryItem(item) {
       this.editingInventoryItem = item;
       this.formData = { ...item };
       this.showAddForm = true;
     },
 
+    /**
+     * Initiates the deletion process for an inventory item
+     * @param {Object} item - Item to delete
+     */
     confirmDelete(item) {
       this.deleteInventoryItem = item;
       this.showDeleteConfirm = true;
     },
 
+    /**
+     * Processes the actual deletion of an inventory item
+     * @async
+     * @returns {Promise<void>}
+     */
     async handleDelete() {
       try {
         await api.delete(`/inventory_items/${this.deleteInventoryItem.inv_id}`);
@@ -256,10 +309,14 @@ export default {
         this.deleteInventoryItem = null;
       } catch (error) {
         console.error('Error deleting inventory item:', error);
-        // Add error notification here
       }
     },
 
+    /**
+     * Handles form submission for both adding and updating inventory items
+     * @async
+     * @returns {Promise<void>}
+     */
     async handleSubmit() {
       try {
         if (this.editingInventoryItem) {
@@ -278,10 +335,12 @@ export default {
         this.closeForm();
       } catch (error) {
         console.error('Error saving inventory item:', error);
-        // Add error notification here
       }
     },
 
+    /**
+     * Closes the form and resets form data to initial values
+     */
     closeForm() {
       this.showAddForm = false;
       this.editingInventoryItem = null;
@@ -292,6 +351,10 @@ export default {
       };
     },
 
+    /**
+     * Sorts the inventory table based on the specified column
+     * @param {string} column - Column to sort by
+     */
     sortTable(column) {
       if (this.sortBy === column) {
         // Toggle sorting direction
@@ -331,6 +394,10 @@ export default {
     }
   },
 
+  /**
+   * Lifecycle hook - Called when component is created
+   * Fetches initial inventory data
+   */
   created() {
     this.fetchInventoryItems();
   }

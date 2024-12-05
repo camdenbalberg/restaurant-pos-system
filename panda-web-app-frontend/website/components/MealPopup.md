@@ -1,5 +1,7 @@
 # MealPopup
 
+Adjust path if necessary
+
 ## Props
 
 <!-- @vuese:MealPopup:props:start -->

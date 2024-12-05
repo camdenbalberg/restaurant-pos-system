@@ -9,9 +9,15 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import shared from '../shared'
 export default {
+
+  // @vuese
+  // Enable flash scaffolding functionality from a shared js file.
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
+
+  // @vuese
+  // Set created user in store to null and redirect to login page
   setup() {
     const store = useStore();
     const router = useRouter();
