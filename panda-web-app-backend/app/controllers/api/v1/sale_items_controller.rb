@@ -70,8 +70,6 @@ class Api::V1::SaleItemsController < ApplicationController
     # @param transaction_id [Integer] The ID of the transaction to which the sale item is associated.
     # @returns [SaleItem] The newly created sale item in JSON format or an error message if creation fails.
     # @raises ActionController::ParameterMissing if any required parameters are missing.
-  def add_sale_item
-
     def add_sale_item
         menu_id = params[:menu_id]
         quantity = params[:quantity]

@@ -112,10 +112,12 @@ export default {
             this.flashScaffolding();
           } else {
             console.log('Invalid login:', response.data.error);
+            alert("Invalid credentials.");
             this.buttonText = "Submit\nInvalid";
           }
         }
       } catch (error) {
+        alert("Invalid credentials.");
         console.error('Error logging in:', error);
       }
     },
