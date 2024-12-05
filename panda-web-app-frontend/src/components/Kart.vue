@@ -103,7 +103,28 @@ export default {
   name: 'Kart',
 
   // @vuese
-  // Initial fields.
+  /**
+   * @data
+   * @description
+   * Initial fields for the component.
+   * 
+   * - 'loading' is the loading state of the component.
+   * - 'loyaltyScreen' is the current screen of the loyalty modal.
+   * - 'phone' is the phone number of the loaded Customer.
+   * - 'birthday' is the birthday of the loaded Customer.
+   * - 'points' is the loyalty points of the loaded Customer.
+   * - 'id' is the id of the loaded Customer.
+   * - 'prospectivePhone' is the phone number of the prospective Customer.
+   * - 'prospectiveBirthday' is the birthday of the prospective Customer.
+   * - 'prospectivePoints' is the loyalty points of the prospective Customer.
+   * - 'loyaltyErrorFind' is the error state of finding a Customer.
+   * - 'loyaltyErrorAdd' is the error state of adding a Customer.
+   * - 'canDiscount' is the state of being able to apply a discount.
+   * - 'canBirthday' is the state of being able to apply a birthday discount.
+   * - 'birthdayDiscounts' is the total birthday discounts applied.
+   * - 'normalDiscounts' is the total normal discounts applied.
+   * - 'discountsApplied' is the state of discounts being applied.
+   */
   data() {
     return{
       loading: false,
@@ -126,9 +147,27 @@ export default {
       discountsApplied:  false,
     }
   },
+
+  // @vuese
+  /**
+   * @components
+   * @description
+   * Components used in the component.
+   * 
+   * - 'MealItem' is the MealItem component.
+   */
   components: {
     MealItem,
   },
+
+  // @vuese
+  /**
+   * @props
+   * @description
+   * Props for the component.
+   * 
+   * - 'orderedItems' is the list of ordered items.
+   */
   props: {
     orderedItems: {
       type: Array,
@@ -141,7 +180,29 @@ export default {
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
+
+  // @vuese
+  /**
+   * @methods
+   * @description
+   * Methods for the component.
+   * 
+   * - 'completeTransaction' completes the transaction.
+   * - 'getAddedPoints' calculates the total points that should be added to the Customer account.
+   * - 'loyaltyAddCustomer' adds a Customer to the Customer table.
+   * - 'loyaltyCheckCustomer' checks if a Customer exists in the table given a phone number.
+   * - 'checkDiscounts' checks if more discounts can be applied for the loaded Customer.
+   * - 'applyBirthdayDiscount' adds a birthday discount of $10 off.
+   * - 'applyDiscount' adds a normal discount of $1 off.
+   */
   methods: {
+    
+    // @vuese
+    /**
+     * @method completeTransaction
+     * @description
+     * Complete the transaction.
+     */
     async completeTransaction() {
       try{
         this.loading = true;

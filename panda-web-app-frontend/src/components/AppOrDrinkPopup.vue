@@ -27,6 +27,16 @@ export default {
       selected_items: [],
     };
   },
+  
+  // @vuese
+  /**
+   * @props
+   * @description
+   * Props for the component.
+   * 
+   * - 'menu_item' is the menu item object.
+   * - 'cat' is the array of categories.
+   */
   props: {
     menu_item: {
       type: String,
@@ -40,15 +50,46 @@ export default {
       }
     },
   },
+
+  // @vuese
+  /**
+   * @created
+   * @description
+   * Initializes the selected items array.
+   */
   created() {
     this.initializeSelectedItems();
   },
+
+  // @vuese
+  /**
+   * @methods
+   * @description
+   * Methods for the component.
+   * 
+   * - 'initializeSelectedItems' initializes the selected items array.
+   * - 'addToKart' emits the selected items to the parent component.
+   * - 'currentItems' puts the selected entree or side in the selected_items array.
+   */
   methods: {
+    // @vuese
+    /**
+     * @method initializeSelectedItems
+     * @description
+     * Initializes the selected items array.
+     */
     initializeSelectedItems() {
       //initialize selected_items array with number of entrees and sides
       this.selected_items = new Array(this.cat.length).fill(null);
       console.log(this.cat);
     },
+
+    // @vuese
+    /**
+     * @method addToKart
+     * @description
+     * Emits the selected items to the parent component.
+     */
     addToKart() {
       const allItemsSelected = this.selected_items.every(item => item !== null);
       if (allItemsSelected) {
@@ -59,6 +100,16 @@ export default {
         console.log('Please select all items before adding to the cart.');
       }
     },
+
+    // @vuese
+    /**
+     * @method currentItems
+     * @description
+     * Puts the selected entree or side in the selected_items array.
+     * 
+     * @param {number} index - The index of the selected item.
+     * @param {Object} item - The selected item object.
+     */
     currentItems(index, item) {
       console.log('Selected Item:', item);
       console.log('Selected Index:', index);
