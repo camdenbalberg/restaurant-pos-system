@@ -6,8 +6,8 @@
       <div v-for="meal in filteredMenuItems" :key="meal">
         <button @click="handleShowMeal(meal)">
           <picture>
-            <source :srcset="`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
-            <img :src="`../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
+            <source :srcset="meal.image_url ||`../../src/assets/menu/${meal.menu_id}.avif`" type="image/avif">
+            <img :src="meal.image_url || `../../src/assets/menu/${meal.menu_id}.avif`" :alt="meal.menu_name">
           </picture>
           {{ meal.menu_name }}
           <!--Only show price of meal if it is premium-->
