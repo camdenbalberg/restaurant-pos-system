@@ -78,14 +78,18 @@ export default {
 }
 
 .menu-item {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 20px;
-  margin: auto;
-  background-color: #f9f9f9;  
-  max-width: 100%;
-  justify-content: center;
+  margin: 10px;
+  background-color: #f9f9f9;
+  width: calc(20% - 20px); /* Adjust width to fit two items per row */
+  box-sizing: border-box;
+  height: auto; /* Set a fixed height for consistency */
 }
 
 .category{
