@@ -212,6 +212,22 @@ export default {
         const transactionIdResponse = await api.get('/transactions/highest_transaction_id');
         let nextTransactionId = transactionIdResponse.data.transaction_id + 1;
 
+        // account for loyalty discounts
+        cost -= this.birthdayDiscounts + this.normalDiscounts;
+
+        //add the transaction
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0];
+        const currentTime = now.toTimeString().split(' ')[0];
+        const response = await api.post('/transactions/add_transaction', {
+          transaction: {
+            date: currentDate,
+            time: currentTime,
+            total_cost: cost,
+            expense: false,
+          }
+        });
+
         //add all sale items for transaction
         this.loading = true;
         for (const item of this.orderedItems) {
@@ -229,21 +245,6 @@ export default {
             }
         }
 
-        // account for loyalty discounts
-        cost -= this.birthdayDiscounts + this.normalDiscounts;
-
-        //add the transaction
-        const now = new Date();
-        const currentDate = now.toISOString().split('T')[0];
-        const currentTime = now.toTimeString().split(' ')[0];
-        const response = await api.post('/transactions/add_transaction', {
-          transaction: {
-            date: currentDate,
-            time: currentTime,
-            total_cost: cost,
-            expense: false,
-          }
-        });
         this.loading = false;
         //clear the cart
         this.$emit('close');

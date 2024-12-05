@@ -202,7 +202,6 @@ export default {
             this.loading = false;
         }
   },
-<script>
 /**
  * @function takeFromInventory
  * @description Adjusts inventory stock based on a specific transaction's sale items.
