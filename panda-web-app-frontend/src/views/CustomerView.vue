@@ -1,7 +1,7 @@
 <template>
   <!--Holds buttons for meal items-->
   <div class="container">
-    <div :class="['button-container', { 'no-scroll': mealType }]">
+    <div class="button-container">
       <!--Loop through all meals and preps the popus-->
       <div v-for="meal in filteredMenuItems" :key="meal">
         <button @click="handleShowMeal(meal)">
@@ -32,9 +32,11 @@
       <!--Button for Kart-->
       <button @click="showRec" class="kart">
         <img src="../assets/shopping-cart.png" alt="kart" class="kart-picture">
+        <p>Kart</p>
+        <div v-if="orderedItems.length > 0" class="orderNum">{{ orderedItems.length }}</div>
       </button>
     </div>
-    <!--All the different popups-->>
+    <!--All the different popups-->
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
     <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
@@ -395,29 +397,28 @@ export default {
 
 <style scoped>
 .container {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
 }
 
 .button-container {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: normal;
   flex: 1;
   flex-wrap: wrap;
   padding: 20px;
-  overflow-y: auto; /* Ensure the container is scrollable */
-}
-
-.button-container.no-scroll {
-  overflow: hidden; /* Hide the scrollbar when the popup is visible */
 }
 
 .kart {
   display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
+  align-content: center;
+  align-items: center;
   border-radius: 50%;
   transition: scale 0.5s ease;
   transition: background-color 0.25s ease;
@@ -443,6 +444,19 @@ export default {
   left: 50%;
 }
 
+.orderNum {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color:crimson;
+  color: white;
+  border-radius: 50%;
+  font-size: 16px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid black;
+}
+
 .circle:hover {
   background-color: var(--accentColorWeak);
   scale: 1.1;
@@ -463,7 +477,7 @@ button {
   border: 1px solid black;
   color: black;
   max-width: 200px;
-  min-width: 100px;
+  min-width: 200px;
 }
 
 footer {
