@@ -118,7 +118,7 @@
   import shared from '../shared'
 
   export default {
-    name: 'Cashier View',
+    name: 'CashierView',
     components: {
       CashierMenuItems,
     },
@@ -128,6 +128,7 @@
     data() {
       return {
         orderItems: [],
+
         isLocked: false,
         passkey: "",
 
@@ -519,14 +520,13 @@
         this.orderItems.push(orderItem);
       },
 
-      // @vuese
-      // Add a normnal discount of $1 off.
-      // Adds an item to the orderItems list which is a discount/
+      // Add a normal discount of $1 off.
+      // Adds an item to the orderItems list which is a discount
       applyDiscount() {
         const orderItem = { 
           index: this.orderItems.length,
           name: "$1 Discount",
-          price: -1,  // With tax it will be 1 dollar
+          price: -1,  
           quantity: 1,
           items: [],
         }

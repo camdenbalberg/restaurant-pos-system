@@ -3,73 +3,16 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>My Docs</title>
-    <link rel="stylesheet" href="https://unpkg.com/docute@4/dist/docute.css">
+    <title>Components</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docute@4/dist/docute.css">
   </head>
   <body>
     <div id="docute"></div>
-    <script src="https://unpkg.com/docute@4/dist/docute.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docute@4/dist/docute.js"></script>
     <script>
       new Docute({
         target: '#docute',
-        sidebar: [
-          {
-            title: 'Project 3 - 12 Team 12',
-            links: [
-              
-                {
-                  title: 'MealPopup',
-                  link: '/components/MealPopup'
-                },
-              
-                {
-                  title: 'CashierMenuItems',
-                  link: '/components/CashierMenuItems'
-                },
-              
-                {
-                  title: 'CashierPopup',
-                  link: '/components/CashierPopup'
-                },
-              
-                {
-                  title: 'CashierSelection',
-                  link: '/components/CashierSelection'
-                },
-              
-                {
-                  title: 'ImageUpload',
-                  link: '/components/ImageUpload'
-                },
-              
-                {
-                  title: 'Kart',
-                  link: '/components/Kart'
-                },
-              
-                {
-                  title: 'MealItems',
-                  link: '/components/MealItems'
-                },
-              
-                {
-                  title: 'MealPopup',
-                  link: '/components/MealPopup'
-                },
-              
-                {
-                  title: 'Recommendations',
-                  link: '/components/Recommendations'
-                },
-              
-                {
-                  title: 'ScreensSection',
-                  link: '/components/ScreensSection'
-                }
-              
-            ]
-          }
-        ]
+        sidebar: JSON.parse('[{&#34;title&#34;:&#34;BASIC&#34;,&#34;links&#34;:[{&#34;title&#34;:&#34;App&#34;,&#34;link&#34;:&#34;/components/App&#34;},{&#34;title&#34;:&#34;HomeComponents&#34;,&#34;link&#34;:&#34;/components/HomeComponents&#34;},{&#34;title&#34;:&#34;ImageUpload&#34;,&#34;link&#34;:&#34;/components/ImageUpload&#34;},{&#34;title&#34;:&#34;Kart&#34;,&#34;link&#34;:&#34;/components/Kart&#34;},{&#34;title&#34;:&#34;LoginComponents&#34;,&#34;link&#34;:&#34;/components/LoginComponents&#34;},{&#34;title&#34;:&#34;MealItems&#34;,&#34;link&#34;:&#34;/components/MealItems&#34;},{&#34;title&#34;:&#34;MealPopup&#34;,&#34;link&#34;:&#34;/components/MealPopup&#34;},{&#34;title&#34;:&#34;MealPopup&#34;,&#34;link&#34;:&#34;/components/MealPopup&#34;},{&#34;title&#34;:&#34;MenuBoardView&#34;,&#34;link&#34;:&#34;/components/MenuBoardView&#34;},{&#34;title&#34;:&#34;Recommendations&#34;,&#34;link&#34;:&#34;/components/Recommendations&#34;},{&#34;title&#34;:&#34;ScreensSection&#34;,&#34;link&#34;:&#34;/components/ScreensSection&#34;}]},{&#34;title&#34;:&#34;CashierView&#34;,&#34;links&#34;:[{&#34;title&#34;:&#34;CashierMenuItems&#34;,&#34;link&#34;:&#34;/components/CashierMenuItems&#34;},{&#34;title&#34;:&#34;CashierPopup&#34;,&#34;link&#34;:&#34;/components/CashierPopup&#34;},{&#34;title&#34;:&#34;CashierSelection&#34;,&#34;link&#34;:&#34;/components/CashierSelection&#34;}]}]'.replace(/\&\#34\;/g, '"'))
       })
     </script>
   </body>
