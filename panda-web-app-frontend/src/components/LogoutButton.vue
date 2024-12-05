@@ -15,6 +15,9 @@ export default {
   created() {
     this.flashScaffolding = shared.flashScaffolding
   },
+
+  // @vuese
+  // Set created user in store to null and redirect to login page
   setup() {
     const store = useStore();
     const router = useRouter();
