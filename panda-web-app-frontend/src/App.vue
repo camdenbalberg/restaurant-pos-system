@@ -15,21 +15,21 @@
 
         <button class="scaffold-item" id="back-button" @click="goBack">
           <div class="scaffold-button-pair">
-            <span class="material-symbols-outlined">arrow_back</span>
+            <span translate="no" class="material-symbols-outlined">arrow_back</span>
             Back
           </div>
         </button>
 
         <button class="scaffold-item" id="home-button" @click="goHome">
           <div class="scaffold-button-pair">
-            <span class="material-symbols-outlined">home</span>
+            <span translate="no" class="material-symbols-outlined">home</span>
             Home
           </div>
         </button>
 
         <button type="button" onclick="document.getElementById('translate-modal').style.display='block'" class="scaffold-item">
           <div class="scaffold-button-pair">
-            <span class="material-symbols-outlined">translate</span>
+            <span translate="no" class="material-symbols-outlined">translate</span>
             Translate
           </div>
         </button>
@@ -44,7 +44,7 @@
 
           <button class="scaffold-item" id ="changeCity" @click="changeCityClicked">
             <div class="scaffold-button-pair">
-              <span class="material-symbols-outlined">location_city</span>
+              <span translate="no" class="material-symbols-outlined">location_city</span>
               Change city
             </div>
           </button>
