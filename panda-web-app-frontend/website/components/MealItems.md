@@ -20,3 +20,15 @@
 <!-- @vuese:MealItems:events:end -->
 
 
+## Methods
+
+<!-- @vuese:MealItems:methods:start -->
+|Method|Description|Parameters|
+|---|---|---|
+|fetchMenuItems|Fetches the menu items.|-|
+|selected|Emits the selected item.|-|
+|handleButtonClick|Handles the button click event.|-|
+
+<!-- @vuese:MealItems:methods:end -->
+
+

@@ -26,6 +26,7 @@
 <!-- @vuese:Kart:methods:start -->
 |Method|Description|Parameters|
 |---|---|---|
+|completeTransaction|Complete the transaction.|-|
 |getAddedPoints|Calculate the total points that should be added to the Customer account. 1 Point for 1 dollar spent|-|
 |loyaltyAddCustomer|Add a Customer to the Customer table. Adds a Customer based on their phone number, birthday, and starting points. Also loads the Customer for checkout or loyalty implementation, will be in the same state as after calling loyaltyCheckCustomer().|-|
 |loyaltyCheckCustomer|Check if a Customer exists in the table given a phone number. Loads the given Customer for checkout or loyalty implementation.|-|

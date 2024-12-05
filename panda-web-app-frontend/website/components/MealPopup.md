@@ -24,3 +24,15 @@ Adjust path if necessary
 <!-- @vuese:MealPopup:events:end -->
 
 
+## Methods
+
+<!-- @vuese:MealPopup:methods:start -->
+|Method|Description|Parameters|
+|---|---|---|
+|initializeSelectedItems|Initializes the selected items array with number of entrees and sides.|-|
+|addToKart|Adds selected items to the cart.|-|
+|currentItems|Puts respective entree or side in the selected_items array.|-|
+
+<!-- @vuese:MealPopup:methods:end -->
+
+

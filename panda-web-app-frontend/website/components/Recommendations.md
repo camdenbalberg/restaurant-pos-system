@@ -25,3 +25,15 @@ Adjust path if necessary
 <!-- @vuese:Recommendations:events:end -->
 
 
+## Methods
+
+<!-- @vuese:Recommendations:methods:start -->
+|Method|Description|Parameters|
+|---|---|---|
+|getRandItem|Get a random item from the menu.|-|
+|recommendItem|Recommend items based off what user has in their cart.|-|
+|addToKart|Add the recommended item to the cart.|-|
+
+<!-- @vuese:Recommendations:methods:end -->
+
+
