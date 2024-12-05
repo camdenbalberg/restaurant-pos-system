@@ -27,17 +27,22 @@
 <script>
 import api from '@/api';
 
+// @vuese
+// @group CashierView
 export default {
   name: 'CashierSelection',
   props: {
+    // The category of this menu selection.
     category: {
       type: String,
       required: true,
     },
+    // The max number of selections you can make from this category.
     maxSelections: {
       type: Number,
       required: true,
     },
+    // The items selected from this category.
     selectedItems: {
       type: Array,
       required: true,
@@ -80,6 +85,8 @@ export default {
     },
     handleSelection(item) {
       if (!this.isDisabled(item)) {
+        // Selects an item from the given display for CashierPopup to handle.
+        // @arg the selected item
         this.$emit('selectItem', item);
       }
     },

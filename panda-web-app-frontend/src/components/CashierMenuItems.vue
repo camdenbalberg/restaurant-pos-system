@@ -19,7 +19,7 @@
       <div class="menu-category-title">Appetizers</div>
       <ul class="cashier-selection-list">
         <li v-for="item in appetizers" :key="item.menu_id">
-          <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+          <button class="menu-item" :id="item.menu_id" @click="submitItem(item)">
             {{ item.menu_name }}
           </button>
         </li>
@@ -30,7 +30,7 @@
       <div class="menu-category-title">Drinks</div>
       <ul class="cashier-selection-list">
         <li v-for="item in drinks" :key="item.menu_id">
-          <button class="menu-item" :id="item.menu_id" @click="$emit('submitItem', item)">
+          <button class="menu-item" :id="item.menu_id" @click="submitItem(item)">
             {{ item.menu_name }}
           </button>
         </li>
@@ -54,6 +54,8 @@
 import api from '@/api';
 import CashierPopup from './CashierPopup.vue';
 
+// @vuese
+// @group CashierView
 export default {
   name: 'CashierMenuItems',
   components: {
@@ -81,6 +83,8 @@ export default {
     this.fetchMenuItems();
   },
   methods: {
+    // @vuese
+    // Fetches menu items from API
     async fetchMenuItems() {
       try {
         const response = await api.get('/menu_items');
@@ -95,6 +99,9 @@ export default {
       }
     },
 
+    // @vuese
+    // Will open a meal popup when a meal is selected
+    // @arg the meal as a menu_item
     async handleShowMeal(meal) {
       try {
         const mealStructure = await this.getEntreesSides(meal);
@@ -114,6 +121,9 @@ export default {
       }
     },
 
+    // @vuese
+    // Get the among of sides and entrees a meal has
+    // @arg the meal as a menu_item
     async getEntreesSides(meal) {
       try {
         const response = await api.get(`/recipes/${meal.menu_id}`);
@@ -135,11 +145,16 @@ export default {
       }
     },
 
+    // @vuese
+    // Opens a meal popup for a given meal
+    // @arg the meal as a menu_item
     showPopup(menuItem) {
       this.popup = true;
       this.selectedItem = menuItem;
     },
 
+    // @vuese
+    // Close the meal popup
     closePopup() {
       this.popup = false;
       this.selectedItem = null;
@@ -148,7 +163,15 @@ export default {
       this.selectedItems = {};
     },
 
+    submitItem(item) {
+      // Sends a non-meal item to CashierView
+      // @arg a menu item
+      this.$emit("submitItem", item);
+    },
+
     submitMeal(meal) {
+      // Sends a completed meal item to CashierView
+      // @arg a completed meal from the popup menu
       this.$emit("submitMeal", meal);
       this.closePopup();
     },

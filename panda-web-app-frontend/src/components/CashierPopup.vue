@@ -34,16 +34,20 @@
 <script>
 import CashierSelection from './CashierSelection.vue';
 
+// @vuese
+// @group CashierView
 export default {
   name: 'CashierPopup',
   components: {
     CashierSelection,
   },
   props: {
+    // The meal item this popup is building
     menu_item: {
       type: Object,
       required: true,
     },
+    // The menu item categories that will be displayed
     cat: {
       type: Array,
       required: true,
@@ -51,6 +55,7 @@ export default {
         return value.every(item => typeof item === 'string');
       },
     },
+    // The max selections of each category you can select for this popup
     maxSelections: {
       type: Object,
       required: true,
@@ -74,8 +79,9 @@ export default {
     this.initializePopup();
   },
   methods: {
+    // @vuese
+    // Dynamically configure categories and initialize selectedItems
     initializePopup() {
-      // Dynamically configure categories and initialize selectedItems
       this.categoryConfigs = this.cat.reduce((acc, category) => {
         acc[category] = { max: this.maxSelections[category] || 0 };
         return acc;
@@ -85,6 +91,11 @@ export default {
         this.selectedItems[category] = [];
       }
     },
+
+    // @vuese
+    // Select a menu item from a category
+    // @arg the menu category
+    // @arg the selected item
     selectItem(category, item) {
       const maxSelections = this.categoryConfigs[category].max;
       const selected = this.selectedItems[category];
@@ -98,6 +109,7 @@ export default {
         alert(`You can only select up to ${maxSelections} items for ${category}.`);
       }
     },
+
     submitMeal() {
       const allCategoriesSelected = Object.keys(this.categoryConfigs).every(
         category => this.selectedItems[category].length === this.categoryConfigs[category].max
@@ -109,6 +121,9 @@ export default {
           selections: this.selectedItems,
         };
         console.log('Submitting meal:', completeMeal);
+
+        // Once finished, sends the completed meal to CashierView
+        // @arg the completed meal
         this.$emit('submitMeal', completeMeal);
       } else {
         alert('Please complete all selections before submitting.');
