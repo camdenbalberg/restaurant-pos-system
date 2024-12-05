@@ -47,43 +47,47 @@ import api from '@/api';
 import shared from '../shared'
 
 export default {
+
   // @vuese
   // Initial fields.
   data() {
     return {
-      /**
-       * @description The username entered by the user.
-       * @type {String}
-       */
+
+      // @vuese
+      // The username entered by the user.
+      // type: {String}
       username: '',
-      /**
-       * @description The password entered by the user.
-       * @type {String}
-       */
+
+      //
+      // The password entered by the user.
+      // type: {String}
       password: '',
-      /**
-       * @description The text displayed on the submit button.
-       * @default 'Submit'
-       * @type {String}
-       */
+
+      // The text displayed on the submit button.
+      // default: 'Submit'
+      // type: {String}
       buttonText: 'Submit',
     }
   },
 
-  // @vuese
-  // Enable flash scaffolding functionality from a shared js file.
   created() {
+    // @vuese
+    // Enable flash scaffolding functionality from a shared js file.
     this.flashScaffolding = shared.flashScaffolding
   },
 
   methods: {
+
+    // @vuese
+    // Initiates the Google login flow by redirecting to Google OAuth.
+    // Changes the button state briefly for a visual effect.
     googleLogin() {
       this.isClicked = true;
       setTimeout(() => {
         this.isClicked = false;
       }, 1000); // Animation duration (1 second)
 
-      // Call the original googleLogin method
+      // Call OAuth flow initiater
       this.googleInitiateFlow();
     },
     googleInitiateFlow() {
@@ -115,6 +119,8 @@ export default {
         console.error('Error logging in:', error);
       }
     },
+    // @vuese
+    // Allows to skip login process (for development use)
     async skipForm() {
       try {
         if (true) {
