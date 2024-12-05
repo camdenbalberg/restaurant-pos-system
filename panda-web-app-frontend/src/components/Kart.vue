@@ -5,7 +5,7 @@
     <div class="popup">
       <h1>Cart</h1>
       <ul>
-        <li v-for="item in orderedItems" :key="item">
+        <li v-for="item in orderedItems" :key="item" class ="meal">
           <div v-for="(i,index) in item" :key="index" class="item">
             <picture>
               <source :srcset="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
@@ -398,24 +398,33 @@ export default {
     border: 1px solid black;
     overflow-y:scroll;
   }
-  .menu-items {
-    flex: 1 1 20%;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: white;
-    border: 1px solid black;
-    color: black;
-    max-width: 200px;
-    min-width: 100px;
-  }
-  .item {
+  .meal{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: normal;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 15px;
-    margin: 10px 0;
+    padding: 20px;
+    margin: 10px;
     background-color: #f9f9f9;
+    width: auto;
+    box-sizing: border-box;
+    height: auto; /* Set a fixed height for consistency */
+  }
+  .item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    width: calc(20% - 20px); /* Adjust width to fit two items per row */
+    box-sizing: border-box;
+    height: auto; /* Set a fixed height for consistency */
   }
   .popup button {
     margin: 0.5em;
