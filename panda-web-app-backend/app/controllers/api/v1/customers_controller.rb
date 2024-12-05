@@ -22,6 +22,14 @@ class Api::V1::CustomersController < ApplicationController
       render json: { error: "No customer found with given id" }, status: :not_found
   end
 
+  # POST /api/v1/customers/add_customer
+  # @description
+  # Enroll a Customer in the loyalty program by adding them to the database
+  # @param phone [String] The Customer's phone number
+  # @param birthday [Date] The Customer's birthday
+  # @param loyalty_points[Integer] The starting number of loyalty points
+  # @returns [String] Success message in JSON format if deletion is successful
+  # @raises [UnprocessableEntity] if deletion fails
   def add_customer
     customer_phone = params[:phone]
     customer_birthday = params[:birthday]
@@ -47,6 +55,12 @@ class Api::V1::CustomersController < ApplicationController
     end
   end
 
+  # GET /api/v1/customers/by_phone
+  # @description
+  # Finds Customers by their phone number
+  # @param phone [String] The phone number to find Customers by
+  # @returns [Array<Customer>] List of matching Customers in JSON format
+  # @raises ActiveRecord::RecordNotFound if no Customers found with given ID
   def by_phone
     customer_phone = params[:phone]
 
@@ -59,6 +73,13 @@ class Api::V1::CustomersController < ApplicationController
     render json: { error: "No customers found for this phone"}, status: :not_found
   end
 
+  # PUT /api/v1/employees/:id
+  # @description
+  # Updates an existing Customer's loyalty points (can increase or decrease)
+  # @param id [Integer] The unique identifier of the Customer
+  # @returns [Customer] The updated Customer in JSON format
+  # @raises ActiveRecord::RecordNotFound if Customer is not found
+  # @raises [UnprocessableEntity] if required parameters are missing
   def add_points
     @customer = Customer.find(params[:id])
     customer_points = params[:loyalty_points]
