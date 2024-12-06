@@ -5,7 +5,7 @@
     <div class="popup">
       <h1>Cart</h1>
       <ul>
-        <li v-for="item in orderedItems" :key="item" class ="meal">
+        <li v-for="(item, ind) in orderedItems" :key="item" class ="meal">
           <div v-for="(i,index) in item" :key="index" class="item">
             <picture>
               <source :srcset="i.image_url ||`../../src/assets/menu/${i.menu_id}.avif`" type="image/avif">
@@ -14,6 +14,7 @@
             <h2>{{ i.menu_name }}</h2>
             <p v-if="i.price > 0">Price: ${{ i.price }}</p>
           </div>
+          <button @click="removeItem(ind)">Remove</button>
         </li>
       </ul>
       <div v-if="loading" class="loading-spinner">
@@ -380,6 +381,10 @@ export default {
       this.checkDiscounts();
       
       this.flashScaffolding();
+    },
+
+    removeItem(index) {
+      this.$emit('remove-item', index);
     },
   }
 };
