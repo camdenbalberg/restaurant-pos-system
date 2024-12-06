@@ -38,7 +38,7 @@
     </div>
     <!--All the different popups-->
     <MealPopup v-if="mealType" :menu_item="mealType" :cat="mealItems" @close="closeMeal" @add-to-kart="addToKart($event)"/>
-    <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart"/>
+    <Kart v-if="kartVisible" :orderedItems="orderedItems" @close="closeKart" @empty-kart="emptyKart" @remove-item="removeItem($event)"/>
     <AppOrDrinkPopup v-if="appOrDrinkType" :menu_item="appOrDrinkType" :cat="appOrDrinkItems" @close="closeAppOrDrink" @add-to-kart="addToKart($event)"/>
     <Recommendations v-if="recVisible" :menuItems="menuItems" :orderedItems="orderedItems" @close="closeRec" @add-to-kart="addToKart($event)" @handle-show-meal="handleShowMeal($event)"/>
   </div>
@@ -390,6 +390,20 @@ export default {
         console.log(entreesSides);
         this.flashScaffolding();
         return entreesSides;
+    },
+
+    /**
+     * @method removeItem
+     * @description
+     * Handle removing an item from the kart
+     * 
+     * @param {number} index - The index of the item to be removed
+     * @returns {void}
+     */
+    removeItem(index) {
+      console.log('Removing item:', index);
+      this.orderedItems.splice(index, 1);
+      this.flashScaffolding();
     },
   },
 };
