@@ -91,7 +91,7 @@ export default {
       this.googleInitiateFlow();
     },
     googleInitiateFlow() {
-      window.location.href = 'http://localhost/auth/google_oauth2';
+      window.location.href = '/auth/google_oauth2';
     },
 
     // @vuese
@@ -101,7 +101,7 @@ export default {
       try {
         if (this.username && this.password) {
           // Manual login flow
-          const response = await api.post('http://localhost/auth/login', {
+          const response = await api.post('/auth/login', {
             username: this.username,
             password: this.password,
           });
@@ -121,31 +121,11 @@ export default {
         console.error('Error logging in:', error);
       }
     },
-    // @vuese
-    // Allows to skip login process (for development use)
-    async skipForm() {
-      try {
-        if (true) {
-          // Manual login flow
-          // this.username = "5"
-          // this.password = "b455mord";
-          const response = await api.post('http://localhost/auth/login', {
-            username: "5",
-            password: "b455mord",
-          });
-          if (response.data.success) {
-            console.log('Login successful:', response.data.user);
-            this.$backStack.push(this.$route.name);
-            this.$router.push('/customer');
-            this.flashScaffolding();
-          } else {
-            console.log('Invalid login:', response.data.error);
-            this.buttonText = "Submit\nInvalid";
-          }
-        }
-      } catch (error) {
-        console.error('Error logging in:', error);
-      }
+    // Guest login — navigates directly to the customer view
+    skipForm() {
+      this.$backStack.push(this.$route.name);
+      this.$router.push('/customer');
+      this.flashScaffolding();
     },
   }
 };

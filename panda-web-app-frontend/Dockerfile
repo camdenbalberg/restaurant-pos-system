@@ -12,9 +12,8 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Expose the port for the Vite development server
-# Typically, Vite runs on port 5173 for development, so exposing 5173
-EXPOSE 5173
+# Expose port 80 (matches vite.config.js server.port)
+EXPOSE 80
 
 # Start Vite development server
 CMD ["npm", "run", "dev"]

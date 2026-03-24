@@ -28,7 +28,6 @@ class SessionsController < ApplicationController
     expire_at = 2.hours.from_now.to_i
     token = JWT.encode({ user_id: user.id, expire: expire_at }, Rails.application.credentials.secret_key_base, 'HS256')
     Rails.logger.info "[SESSIONS CONTROL] Current Environment: #{Rails.env}"
-    Rails.logger.info "[SESSIONS CONTROL] Secret Key Base Used for Decoding: #{Rails.application.credentials.secret_key_base}"
 
     response.set_cookie('auth_token', {
                           value: token,
@@ -61,8 +60,6 @@ class SessionsController < ApplicationController
           # Check if user is employee
           # If not employee make them customer
           if employee && employee.password == params[:password]
-              Rails.logger.info "[PASSWORD]: #{params[:password]}"
-
               user_role = employee.is_manager ? "manager" : "employee"
 
               # Create a user for employee

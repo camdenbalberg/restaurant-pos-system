@@ -3,8 +3,7 @@ import api from '@/api';
 
 export const fetchTransactions = async () => {
   try {
-    console.log(import.meta.env.VITE_API_BACKEND_URL);
-    // Get today's date in YYYY-MM-DD format (commented out for testing)
+    // Get today's date in YYYY-MM-DD format
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0];
 
@@ -34,9 +33,6 @@ export const fetchTransactions = async () => {
 
 export const fetchTransactionsForDate = async (date) => {
   try {
-    // Log the backend URL for verification
-    console.log(import.meta.env.VITE_API_BACKEND_URL);
-
     // Make a request to fetch transactions for the specified date
     const response = await api.get(`/transactions/by_date/${date}`);
     const transactions = response.data;

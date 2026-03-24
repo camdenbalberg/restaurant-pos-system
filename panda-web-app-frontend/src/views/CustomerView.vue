@@ -123,7 +123,6 @@ export default {
       next();  // Allow navigation if the screen is not locked
     } else {
       const enteredPasskey = prompt("Please enter the passcode to leave the page.");
-      console.log(this.passkey); //remove later
       if (enteredPasskey === this.passkey) {
         this.flashScaffolding();
         this.isLocked = false;
@@ -359,8 +358,6 @@ export default {
      */
     async fetchMenuItems() {
       try {
-          // Example usage of env var
-          console.log(import.meta.env.VITE_API_BACKEND_URL);
           const response = await api.get('/menu_items');
           this.menuItems = response.data;
           this.flashScaffolding();

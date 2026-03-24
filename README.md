@@ -1,216 +1,149 @@
-# 12 Team 12 Systems
+# Restaurant POS System
 
-![12 Team 12 Logo](panda-web-app-frontend/src/assets/biglogo.png)
+A full-stack restaurant point-of-sale and management platform built for a Panda Express-style fast-casual restaurant. Features role-based views for cashiers, kitchen staff, managers, and customers — with Google OAuth, multi-language support, and real-time weather integration.
 
-This is a very serious project regarding sugar chicken.
+Built as a team of 6 during CSCE 331 (Intro to Software Engineering) at Texas A&M University.
 
-# QUICKSTART
-This product utilizes the following tech-stack:
-  - Front-end: Vue.js + Vite build tool, Tailwind CSS
-  - Back-end: Ruby on RAILS
-  - Web-Server: Nginx
-  - Database: PostgreSQL (hosted on AWS)
-  - Deployment & Infrastructure: Docker
-  - And Several APIs: Google OAuth2, Google Translate, OpenWeather
+![App Logo](panda-web-app-frontend/src/assets/biglogo.png)
 
+---
 
-Before anything download the .env file in the team google drive and include it inside the cloned repository
+## Features
 
-- [Windows users](#WINDOWS)
-- [Linux users](#LINUX)
+- **Cashier View** — Process orders, manage transactions, and handle payments
+- **Kitchen View** — Real-time order queue for kitchen staff
+- **Manager View** — Inventory management, sales reports, and employee administration
+- **Customer Kiosk** — Self-service ordering with meal customization and a shopping cart
+- **Menu Board** — Lockable customer-facing display
+- **Google OAuth** — Secure sign-in for employees and managers
+- **Multi-Language Support** — Google Translate integration for accessibility
+- **Weather Widget** — Live weather display with city selection
+- **Loyalty Program** — Customer points tracking
 
-## WINDOWS
-#### Prerequisites
-Download and install Docker Desktop [here](https://docs.docker.com/desktop/install/windows-install/)
+---
 
-I recommend also installing general tools to build both the backend and or the front end individually if necessary:
-- Download ruby for backend development (for C gems, uses MSYS2!!): [download](https://rubyinstaller.org/)
-  Then proceed to install rails:
-  ```
-  ## Verify ruby installed correctly and is on PATH (may need to restart shell)
-  ruby --version
+## Tech Stack
 
-  # Now install rails
-  gem install rails
-  ```
-- Download Node.js (LTS version, currently 20.18): [download](https://nodejs.org/en)
-- Download postgreSQL 17 (if not installed already): [download](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
+| Layer | Technology |
+|---|---|
+| **Frontend** | Vue.js 3, Vite, Tailwind CSS, Vuex, Vue Router |
+| **Backend** | Ruby on Rails 7, Puma |
+| **Database** | PostgreSQL (hosted on AWS) |
+| **Auth** | Google OAuth 2.0, JWT |
+| **Infrastructure** | Docker, Docker Compose, Nginx (reverse proxy) |
+| **APIs** | Google Translate, OpenWeather |
 
-## Run app
-!!! Make sure Docker engine is running (easiest way of doing this is launching Docker Desktop)
+---
 
-To start up the containers and launch both the front and backend:
-`docker-compose up --build`
-
-Alternatively, let Docker Desktop find the container and images and run there.
-
-### Connecting to App
-~~To connect to database: http://localhost:3000/~~
-
-~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
-
-Now that Nginx has been added and being used as a reverse proxy, in your browser:
-`http://localhost` or simply `localhost`
-
-And to connect to specific rails controllers (backend API):
-`http://localhost/api/v1/menu_items`
-
-### Running the backend
-If you choose not to use Docker to run individually, do the following before doing any of the steps below:
-```
-gem install bundler
-cd panda-web-app-backend
-bundle install
-```
-
-To run the backend only, you can do either the following:
-- In the main project folder: `docker-compose up --build backend`
-- In the folder panda-web-app-backend: rails s[erver]
-
-If adding new gems to the rails project:
-```
-# Alternatively code (in root folder) code panda-web-app-backend/Gemfile
-cd panda-web-app-backend
-code .
-##### Edit Gemfile (then returning to cli)
-bundle install   # Configures project with the updated gems
-```
-
-### Running the frontend
-
-Make sure you have Node.js installed from [prerequisites](#Prerequisites) and npm is on path:
-```
-npm --version
-10.8.2
-```
-If using Docker, you can run the container like so:
-`docker-compose up --build frontend`
-
-Otherwise, after verifying npm command, do the following in order to install all dependencies for Vite + Vue app:
-```
-cd panda-web-app-frontend
-npm install
-```
-Then to run the development server using npm:
-```
-npm run dev
-```
-
-Although you are able to run each the backend and frontend individually without the use of Docker and containers, it is highly discouraged and might not work as expected due to port configuration.
-
-## LINUX
+## Getting Started
 
 ### Prerequisites
-In order to begin development on the app, download all the required packages:
-- (Do not copy and paste all, only what you choose or need) Using the package manager of choice or for your distribution:
-  ```
-  sudo apt update && sudo apt upgrade
-  # Install nvm (Node Version Manager)
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 
-  # Load nvm  or alternatively source shell (e.g. source ~/.bashrc)
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+- [Docker Desktop](https://docs.docker.com/desktop/) (required)
+- [Node.js 20 LTS](https://nodejs.org/) (optional, for local frontend dev)
+- [Ruby + Rails](https://rubyinstaller.org/) (optional, for local backend dev)
 
-  # Install the desired version of Node.js
-  nvm install 20
-  nvm use 20
+### 1. Clone the repo
 
-  # Install dependencies & postgresql (if already installed exclude)
-  sudo apt install -y build-essential libssl-dev libreadline-dev zlib1g-dev postgresql postgresql-contrib libpq-dev
-
-  ####### Install Ruby using RVM
-  \curl -sSL https://get.rvm.io | bash -s stable --ruby
-
-  # Load RVM
-  source ~/.rvm/scripts/rvm
-
-  # or instead
-  sudo apt-get install ruby-full
-   
-  # Install Rails
-  gem install rails
-  gem install bundler
-  ```
-Then ensure everything is set up properly:
+```bash
+git clone https://github.com/camdenbalberg/restaurant-pos-system.git
+cd restaurant-pos-system
 ```
-node -v
-npm -v
-ruby -v
-rails -v
-psql --version
-git --version
+
+### 2. Set up environment variables
+
+Copy the example env file and fill in your values:
+
+```bash
+cp .env.example .env
 ```
-You could also install Docker Desktop for your distro here: [instructions](https://docs.docker.com/desktop/install/linux/)
 
-## Run app
-!!!! Make sure Docker engine is running (easiest way of doing this is launching Docker Desktop)
+See [`.env.example`](.env.example) for all required variables.
 
-To start up the containers and launch both the front and backend:
-`docker-compose up --build`
+### 3. Run with Docker
 
-Alternatively, let Docker Desktop find the container and images and run there.
+Make sure Docker Desktop is running, then:
 
-### Connecting to App
-~~To connect to database: http://localhost:3000/~~
-
-~~To connect to web app: http://localhost:5173/  , or if using terminal simply the link provided in the terminal~~
-
-Now that Nginx has been added and being used as a reverse proxy, in your browser:
-`http://localhost` or simply `localhost`
-
-And to connect to specific rails controllers (backend API):
-`http://localhost/api/v1/menu_items`
-
-### Running the backend
-If you choose not to use Docker to run individually, do the following before doing any of the steps below:
+```bash
+docker-compose up --build
 ```
+
+### 4. Open the app
+
+Navigate to **http://localhost** in your browser.
+
+The API is available at `http://localhost/api/v1/`.
+
+---
+
+## Running Without Docker (Optional)
+
+> Docker is recommended. Running services individually may cause port configuration issues.
+
+**Backend:**
+```bash
+cd panda-web-app-backend
 gem install bundler
-cd panda-web-app-backend
 bundle install
+rails server
 ```
 
-To run the backend only, you can do either the following:
-- In the main project folder: `docker-compose up --build backend`
-- In the folder panda-web-app-backend: rails s[erver]
-
-If adding new gems to the rails project:
-```
-# Alternatively in root folder: vim panda-web-app-backend/Gemfile
-cd panda-web-app-backend
-vim Gemfile   ## Edit Gemfile (add new Gem)
-bundle install   # Configures project with the updated gems
-```
-
-### Running the frontend
-
-Make sure you have Node.js installed from [prerequisites](#Prerequisites) and npm is on path:
-```
-npm --version
-10.8.2
-```
-If using Docker, you can run the container like so:
-`docker-compose up --build frontend`
-
-Otherwise, after verifying npm command, do the following in order to install all dependencies for Vite + Vue app:
-```
+**Frontend:**
+```bash
 cd panda-web-app-frontend
 npm install
-```
-Then to run the development server using npm:
-```
 npm run dev
 ```
 
-## Documentation
-We are using Vuese to generate documentation.
+---
+
+## Meet the Team
+
+<table>
+  <tr>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/connor.jpg" width="200"><br><b>Connor</b><br>Scrum Master</td>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/leonardo.jpg" width="200"><br><b>Leonardo</b><br>Refactoring God</td>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/eduardo.jpg" width="200"><br><b>Eduardo</b><br>Customer Concierge</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/nathan.jpg" width="200"><br><b>Nathan</b><br>Design Dynamo</td>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/steven.jpg" width="200"><br><b>Steven</b><br>Clutch King</td>
+    <td align="center"><img src="panda-web-app-frontend/src/assets/about/camden.jpg" width="200"><br><b>Camden</b><br>Employee Enforcer</td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="panda-web-app-frontend/src/assets/about/all.jpg" width="600">
+  <br><i>The whole crew</i>
+</p>
+
+---
+
+## Project Structure
 
 ```
-cd panda-web-app-frontend
-vuese gen --title "Project 3 - 12 Team 12" 
-(select Docute)
-
-vuese serve --open
+restaurant-pos-system/
+├── panda-web-app-frontend/    # Vue 3 + Vite frontend
+│   ├── src/
+│   │   ├── views/             # Page-level components (Cashier, Kitchen, Manager, etc.)
+│   │   ├── components/        # Reusable UI components
+│   │   ├── api/               # Axios API client
+│   │   ├── store/             # Vuex state management
+│   │   └── assets/            # Images, logos, team photos
+│   └── Dockerfile
+├── panda-web-app-backend/     # Ruby on Rails API
+│   ├── app/
+│   │   ├── controllers/       # API endpoints
+│   │   └── models/            # Database models
+│   ├── config/                # Rails configuration
+│   └── Dockerfile
+├── nginx.conf                 # Nginx reverse proxy config
+├── docker-compose.yml         # Multi-container orchestration
+└── .env.example               # Environment variable template
 ```
 
-For more information on how to annotate your code for Vuese to document it, see https://vuese.github.io/website/cli/#writing-documentation-for-your-component.
+---
+
+## License
+
+This project was built for educational purposes as part of CSCE 331 at Texas A&M University.

@@ -76,7 +76,7 @@ export default createStore({
     */
     async logout({ commit }) {
       try {
-        await api.post('http://localhost/auth/logout'); // Make the logout request to the backend
+        await api.post('/auth/logout');
         commit('setAuthentication', false); // Clear authentication state
         commit('setUser', null); // Clear user state
       } catch (error) {

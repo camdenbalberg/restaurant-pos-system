@@ -109,7 +109,6 @@
       }, 60 * 1000); 
 
       setInterval(() => {
-        console.log("Updating weather");
         this.getWeather();
       }, 60 * 60 * 1000);  // Fetch weather updates every hour
 
@@ -140,7 +139,7 @@
       // API Weather script used to get the weather of the current city selected
       async getWeather() {
         // weather script
-        const apiKey = '6fb6a81a74d923c021c776074b270bc9'; // Replace with your OpenWeather API key
+        const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
         const city = this.currentCity; // Change to your preferred city
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
@@ -226,7 +225,6 @@
         if(city) {
           this.currentCity = city;
           this.getWeather();
-          console.log("Changed city to ", this.currentCity);
         }
       },
 
